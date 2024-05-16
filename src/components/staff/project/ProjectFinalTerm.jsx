@@ -311,7 +311,8 @@ const ProjectManagerFinalTerm = () => {
           setCheckTab(value);
           if (value === "notyet") {
             getTopicFinalTerm();
-          } else if (value === "wait") {
+          } else if (value === "dabaocao") {
+
           } else if (value === "tongket") {
             getTopicSumarizeTerm();
           } else {

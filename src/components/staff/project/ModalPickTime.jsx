@@ -33,6 +33,9 @@ const ModalPickTime = ({ visible, onCancel, dataUser }) => {
 
     if (endDate.day() === 6) {
       endDate = endDate.add(1, "day");
+      if(endDate.day() === 0) {
+        endDate = endDate.add(1, "day");
+      }
     } else if (endDate.day() === 0) {
       endDate = endDate.add(2, "day");
     }

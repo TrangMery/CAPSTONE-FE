@@ -273,7 +273,8 @@ const ProjectManagerMidTerm = () => {
           setCheckTab(value);
           if (value === "notyet") {
             getTopicMidTerm();
-          } else if (value === "wait") {
+          } else if (value === "dabaocao") {
+
           } else {
             getTopicWaitCouncil();
           }

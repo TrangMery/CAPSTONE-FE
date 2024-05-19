@@ -102,13 +102,13 @@ const LayoutUser = () => {
       state: "EarlyTermReport",
       progress: "Completed",
       isReject: true,
-      message: "Hoàn thành giai đoạn đầu kì",
+      message: "Hoàn thành giai đoạn đầu kỳ",
     },
     {
       state: "MidtermReport",
       progress: "WaitingForMakeReviewSchedule",
       isReject: true,
-      message: "Đề tài chuyển sang giai đoạn giữa kì",
+      message: "Đề tài chuyển sang giai đoạn giữa kỳ",
     },
     {
       state: "MidtermReport",
@@ -126,7 +126,7 @@ const LayoutUser = () => {
       state: "MidtermReport",
       progress: "Completed",
       isReject: true,
-      message: "Hoàn thành giai đoạn giữa kì",
+      message: "Hoàn thành giai đoạn giữa kỳ",
     },
     {
       state: "FinaltermReport",

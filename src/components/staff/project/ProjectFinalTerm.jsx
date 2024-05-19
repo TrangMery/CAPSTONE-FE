@@ -26,6 +26,7 @@ import {
   getFinalTerm,
   getFinalTermReport,
   getTopicHasSubmitFileMoney,
+  topicFinalTearmCreatedDeadline,
 } from "../../../services/api";
 import ModalMidTerm from "./ModalMidterm";
 import { useNavigate } from "react-router-dom";
@@ -174,10 +175,16 @@ const ProjectManagerFinalTerm = () => {
     },
     {
       title:
-        checkTab === "notyet" ? "Ngày kết thúc giữa kì" : "Hạn nộp tài liệu",
+        checkTab === "notyet" ? "Ngày kết thúc giữa kỳ" : "Hạn nộp tài liệu",
       render: (text, record, index) => {
         if (checkTab === "notyet") {
           return <div>{dayjs(record.uploadEvaluateAt).format(dateFormat)}</div>;
+        } else if (checkTab === "dabaocao") {
+          return (
+            <div>
+              {dayjs(record.supplementationDeadline).format(dateFormat)}
+            </div>
+          );
         }
         return (
           <div>
@@ -233,7 +240,12 @@ const ProjectManagerFinalTerm = () => {
                     type="primary"
                     onClick={() => {
                       navigate(
-                        `/staff/finalterm/add-council/${record.topicId}`
+                        `/staff/finalterm/add-council/${record.topicId}`,
+                        {
+                          state: {
+                            maxDate: record.documentSupplementationDeadline,
+                          },
+                        }
                       );
                     }}
                   >
@@ -269,6 +281,18 @@ const ProjectManagerFinalTerm = () => {
       const res = await getFinalTerm();
       setIsLoading(true);
       if (res && res?.data) {
+        setData(res.data);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicFinalTerm: " + error);
+    }
+  };
+  const getHasCreateDeadline = async () => {
+    try {
+      const res = await topicFinalTearmCreatedDeadline();
+      setIsLoading(true);
+      if (res && res.statusCode === 200) {
         setData(res.data);
         setIsLoading(false);
       }
@@ -312,7 +336,7 @@ const ProjectManagerFinalTerm = () => {
           if (value === "notyet") {
             getTopicFinalTerm();
           } else if (value === "dabaocao") {
-
+            getHasCreateDeadline();
           } else if (value === "tongket") {
             getTopicSumarizeTerm();
           } else {
@@ -349,7 +373,7 @@ const ProjectManagerFinalTerm = () => {
   return (
     <div>
       <h2 style={{ fontWeight: "bold", fontSize: "30px", color: "#303972" }}>
-        Danh sách đề tài cuối kì
+        Danh sách đề tài cuối kỳ
       </h2>
       <Table
         rowClassName={(record, index) =>

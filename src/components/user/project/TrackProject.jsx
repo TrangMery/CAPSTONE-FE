@@ -216,7 +216,7 @@ const TrackProject = () => {
               items={[
                 {
                   key: "2",
-                  label: "Báo cáo giữa kì",
+                  label: "Báo cáo giữa kỳ",
                   children:
                     dataProcess.middleTermReportProcess?.length > 0 ? (
                       <>
@@ -226,7 +226,7 @@ const TrackProject = () => {
                             return (
                               <>
                                 <h4>
-                                  Báo cáo giữa kì lần {item.numberOfReport}
+                                  Báo cáo giữa kỳ lần {item.numberOfReport}
                                 </h4>
                                 {item.deadlineForDocumentSupplementation ? (
                                   <>
@@ -326,7 +326,7 @@ const TrackProject = () => {
               items={[
                 {
                   key: "3",
-                  label: "Báo cáo cuối kì",
+                  label: "Báo cáo cuối kỳ",
                   children:
                     dataProcess.finalTermReportProcess !== null ? (
                       <>
@@ -375,8 +375,8 @@ const TrackProject = () => {
                               title:
                                 dataProcess.finalTermReportProcess
                                   .waitingForDocumentSupplementation === "Done"
-                                  ? "Đã nộp tài liệu cuối kì"
-                                  : "Nộp tài liệu cuối kì",
+                                  ? "Đã nộp tài liệu cuối kỳ"
+                                  : "Nộp tài liệu cuối kỳ",
                               status:
                                 dataProcess.finalTermReportProcess
                                   .waitingForDocumentSupplementation === "Done"

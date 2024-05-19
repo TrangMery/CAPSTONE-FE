@@ -190,7 +190,7 @@ const TrackProjectStaff = () => {
           items={[
             {
               key: "1",
-              label: "Báo cáo giữa kì",
+              label: "Báo cáo giữa kỳ",
               children: (
                 <>
                   <p>Trạng thái: </p>
@@ -261,7 +261,7 @@ const TrackProjectStaff = () => {
           items={[
             {
               key: "3",
-              label: "Báo cáo cuối kì",
+              label: "Báo cáo cuối kỳ",
               extra: renderExtra(3),
             },
           ]}

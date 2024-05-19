@@ -3,7 +3,6 @@ import qs from "query-string";
 
 // gọi tất cả api ở đây
 
-
 // get user information
 export const getUserInformation = (params) => {
   return axios.get(`api/user/infor?${qs.stringify(params)}`);
@@ -148,10 +147,8 @@ export const getTopicUploadDoc = () => {
 };
 
 //get topic waiting for upload contract
-export const getTopicUploadContract = (param) => {
-  return axios.get(
-    `api/topic/early-topic-waiting-upload-contract?${qs.stringify(param)}`
-  );
+export const getTopicUploadContract = () => {
+  return axios.get("api/topic/early-topic-waiting-upload-contract");
 };
 
 // upload contract result for topic
@@ -282,6 +279,10 @@ export const getAllDepartment = () => {
 export const uploadInforUser = (data) => {
   return axios.post("api/user/register-user-infor", data);
 };
+// topic has created deadline
+export const topicMidTearmCreatedDeadline = () => {
+  return axios.get("api/topic/middle-topic-waiting-document-supplementation");
+};
 
 //move to final term
 export const moveToFinalTerm = (param) => {
@@ -317,6 +318,11 @@ export const councilConfigFinalterm = (data) => {
 // upload final-term contract
 export const uploadResultFinal = (data) => {
   return axios.post("/api/review/update-final-meeting-result", data);
+};
+
+// topic has created deadline
+export const topicFinalTearmCreatedDeadline = () => {
+  return axios.get("api/topic/final-topic-waiting-document-supplementation");
 };
 
 // resubmit final-term document
@@ -416,19 +422,34 @@ export const getNotifications = (param) => {
 // leader get all members
 export const getAllMembersByLeader = (param) => {
   return axios.get(`/api/topic/participant?${qs.stringify(param)}`);
-}
+};
 
-//user get all articles 
+//user get all articles
 export const getAllArticle = (param) => {
   return axios.get(`/api/article?${qs.stringify(param)}`);
-}
+};
 
-//user create a new article 
+//user create a new article
 export const createArticle = (data) => {
-  return axios.post("/api/article/create",data);
-}
+  return axios.post("/api/article/create", data);
+};
 
-//user update a article 
+//user update a article
 export const updateArticle = (data) => {
-  return axios.put("/api/article/update",data);
-}
+  return axios.put("/api/article/update", data);
+};
+
+//admin update file type 
+export const updateFileType = (data) => {
+  return axios.put("/api/filetype", data);
+};
+
+//admin add new fileType 
+export const addFileType = (data) => {
+  return axios.post("/api/filetype", data);
+};
+
+//admin delete fileType 
+export const deleteFileType = (data) => {
+  return axios.delete("/api/filetype", data);
+};

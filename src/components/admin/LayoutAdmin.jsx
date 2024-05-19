@@ -1,6 +1,7 @@
 import {
   CalendarOutlined,
   DownOutlined,
+  FileOutlined,
   FolderAddOutlined,
   HomeOutlined,
   SolutionOutlined,
@@ -21,6 +22,7 @@ import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import "../staff/staff.scss";
 import logo from "../../assets/logoBV.png";
 import { jwtDecode } from "jwt-decode";
+import ManagerFileType from "./ManagerFile";
 const { Header, Content, Sider } = Layout;
 const items = [
   // {
@@ -42,6 +44,11 @@ const items = [
     label: <Link to="/admin/add-department">Quản lý các khoa</Link>,
     key: "add-department",
     icon: <SolutionOutlined />,
+  },
+  {
+    label: <Link to="/admin/file">Quản lý tài liệu</Link>,
+    key: "file",
+    icon: <FileOutlined />,
   },
   {
     label: <Link to="/admin/export-file">Xuất file báo cáo</Link>,

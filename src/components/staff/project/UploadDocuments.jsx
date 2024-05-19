@@ -33,16 +33,10 @@ const UploadDocument = () => {
   const [isModalContractOpen, setIsModalContractOpen] = useState(false);
   const [dataTopic, setDataTopic] = useState([]);
   const [checkTab, setCheckTab] = useState("confirm");
-  const staffId = "2D5E2220-EEEF-4FDC-8C98-1B5C5012319C";
   const navigate = useNavigate();
-  console.log('====================================');
-  console.log(dataTopic);
-  console.log('====================================');
   const getTopicUpload = async () => {
     try {
-      const res = await getTopicUploadDoc({
-        staffId: staffId,
-      });
+      const res = await getTopicUploadDoc();
       if (res && res.isSuccess) {
         setDataTopic(res.data);
       }
@@ -52,9 +46,7 @@ const UploadDocument = () => {
   };
   const getTopicUploadCont = async () => {
     try {
-      const res = await getTopicUploadContract({
-        staffId: staffId,
-      });
+      const res = await getTopicUploadContract();
       if (res && res.isSuccess) {
         setDataTopic(res.data);
       }
@@ -64,9 +56,7 @@ const UploadDocument = () => {
   };
   const getTopicUploadResubmit = async () => {
     try {
-      const res = await getTopicWaitingResubmit({
-        staffId: staffId,
-      });
+      const res = await getTopicWaitingResubmit();
 
       if (res && res.isSuccess) {
         setDataTopic(res.data);
@@ -187,7 +177,7 @@ const UploadDocument = () => {
         topicId: topicId,
       });
       if (result && result.statusCode === 200) {
-        message.success("Chuyển sang giai đoạn báo cáo giữa kì thành công");
+        message.success("Chuyển sang giai đoạn báo cáo giữa kỳ thành công");
         navigate("/staff/midterm");
       }
     } catch (error) {
@@ -219,19 +209,16 @@ const UploadDocument = () => {
             {record.state === "EarlytermReport"
               ? "Đăng kí đề tài"
               : record.state === "MidtermReport"
-              ? "Báo cáo giữa kì"
-              : "Báo cáo cuối kì"}
+              ? "Báo cáo giữa kỳ"
+              : "Báo cáo cuối kỳ"}
           </>
         );
       },
     },
     {
-      title: checkTab === "submitted" ? "Ngày tải lên biên bản" : "Ngày họp ",
+      title: "Ngày họp",
       render: (text, record, index) => {
-        if (checkTab === "confirm") {
-          return <div>{dayjs(record.createdAt).format(dateFormat)}</div>;
-        }
-        return <div>{dayjs(record.createdAt).format(dateFormat)}</div>;
+        return <div>{dayjs(record.meetingTime).format(dateFormat)}</div>;
       },
       key: "createdAt",
     },

@@ -19,12 +19,12 @@ import {
 import { useLocation } from "react-router-dom";
 import { UploadOutlined } from "@ant-design/icons";
 import locale from "antd/locale/vi_VN";
-dayjs.extend(utc);
+
 const ModalMidTerm = (props) => {
   const today = dayjs();
   const { token } = theme.useToken();
   const [directiveMinutes, setDirectiveMinutes] = useState("");
-  const [selectedTime, setSelectedTime] = useState(today);
+  const [selectedTime, setSelectedTime] = useState();
   const [holiday, setholiday] = useState([]);
   const location = useLocation();
   const path = location.pathname.split("/");
@@ -67,7 +67,7 @@ const ModalMidTerm = (props) => {
       console.log("====================================");
     }
   };
-  const mindate = dayjs().add(1, "day")
+  
   const propsUpload = {
     name: "file",
     multiple: false,
@@ -128,7 +128,13 @@ const ModalMidTerm = (props) => {
     if (dayOfWeek === 0 || dayOfWeek === 6) {
       return true;
     }
+    // Get today's date
+    const mindate = dayjs().add(1, "day");
 
+    // Disable dates before today
+    if (current.isBefore(mindate, "day")) {
+      return true;
+    }
     // Disable holidays
     const holidays = ["2024-04-30", "2024-05-01", "2024-04-29"];
     return holidays.some((holiday) => current.isSame(holiday, "day"));
@@ -151,7 +157,6 @@ const ModalMidTerm = (props) => {
           <ConfigProvider locale={locale}>
             <Calendar
               locale={locale}
-              mindate={mindate}
               mode="month"
               fullscreen={false}
               onChange={onChange}

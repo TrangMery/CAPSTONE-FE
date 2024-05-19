@@ -27,6 +27,7 @@ import AdminPage from "./pages/admin/index.jsx";
 import ManagerAccount from "./components/admin/ManagerAccount.jsx";
 import ManagerHoliday from "./components/admin/MangerHoliday.jsx";
 import ManagerDepartment from "./components/admin/ManagerDepart.jsx";
+import ManagerFileType from "./components/admin/ManagerFile.jsx";
 
 const Layout = () => {
   return <LoginPage />;
@@ -210,6 +211,10 @@ function App() {
         {
           path: "export-file",
           element: <>Quản lý file</>,
+        },
+        {
+          path: "file",
+          element: <ManagerFileType/>,
         },
         {
           path: "add-holiday",

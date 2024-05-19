@@ -38,17 +38,17 @@ const items = [
     icon: <UnorderedListOutlined />,
     children: [
       {
-        label: <Link to="/staff/earlyterm">Đầu kì</Link>,
+        label: <Link to="/staff/earlyterm">Đầu kỳ</Link>,
         key: "earlyterm",
         icon: <CalendarOutlined />,
       },
       {
-        label: <Link to="/staff/midterm">Giữa kì</Link>,
+        label: <Link to="/staff/midterm">Giữa kỳ</Link>,
         key: "midterm",
         icon: <HourglassOutlined />,
       },
       {
-        label: <Link to="/staff/finalterm">Cuối kì</Link>,
+        label: <Link to="/staff/finalterm">Cuối kỳ</Link>,
         key: "finalterm",
         icon: <FlagOutlined />,
       },

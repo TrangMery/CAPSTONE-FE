@@ -13,24 +13,12 @@ const ManagerAccount = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const mergeArrays = (arr1, arr2) => {
-    // Duyệt qua từng phần tử của mảng 2
-    const resultArray = arr2.map((item2) => {
-      // Kiểm tra xem phần tử có tồn tại trong mảng 1 không
-      const isDuplicate = arr1.some((item1) => item1 === item2.accountEmail);
-      // Trả về phần tử kèm thuộc tính isDuplicate
-      return { ...item2, isDuplicate };
-    });
 
-    return resultArray;
-  };
   const getUser = async () => {
     try {
       setLoading(true);
       const res = await getAllUserAdmin();
-      // const res1 = await getAccountInactive();
       if (res && res.statusCode === 200) {
-        // const mergeArray = mergeArrays(res1.data, res?.data);
         setListUser(res.data);
         setLoading(false);
       }
@@ -81,29 +69,6 @@ const ManagerAccount = () => {
         return <>{record.isDean ? "Dean" : "User"}</>;
       },
     },
-    // {
-    //   title: "Trạng thái tài khoản",
-    //   dataIndex: "isDuplicate",
-    //   key: "isDuplicate",
-    //   render: (text, record) => {
-    //     if (record.isDuplicate) {
-    //       return (
-    //         <Button
-    //           type="primary"
-    //           onClick={() => {
-    //             handleActiveAccount(record.accountEmail);
-    //           }}
-    //         >
-    //           Kích hoạt
-    //         </Button>
-    //       );
-    //     }
-    //     const color = "green";
-    //     const status = "Đã kích hoạt";
-    //     return <Tag color={color}>{status}</Tag>;
-    //   },
-    //   align: "center",
-    // },
     {
       title: "Hành động",
       render: (text, record, index) => {

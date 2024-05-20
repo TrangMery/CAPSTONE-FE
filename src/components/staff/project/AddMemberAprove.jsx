@@ -40,7 +40,6 @@ const AddMemberApprove = () => {
   const [maxSelectedMembers, setMaxSelectedMembers] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [newData, setNewData] = useState([]);
-  const userId = localStorage.getItem("userId");
   const isRowDisabled = (record) => {
     // Check if the row should be disabled based on the number of selected members
     return (
@@ -59,6 +58,8 @@ const AddMemberApprove = () => {
   };
   // check path
   const location = useLocation();
+
+  const maxDate = location.state.maxDate;
   let checkPath = location.pathname.split("/");
   let path = checkPath[3];
   let topicID = checkPath[4];
@@ -503,6 +504,7 @@ const AddMemberApprove = () => {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         dataUser={selectedUser}
+        maxDate={maxDate}
       />
 
       {/* modal pick time for member approval */}

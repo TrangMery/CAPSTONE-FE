@@ -3,8 +3,6 @@ import { Button, Space, Table, Tabs, Tag, Tooltip, message } from "antd";
 import { CloudDownloadOutlined, EditOutlined } from "@ant-design/icons";
 import {
   assignDeanByAdmin,
-  createAccountAdminEmail,
-  getAccountInactive,
   getAllUserAdmin,
 } from "../../services/api";
 import UploadByFile from "./modalUploadUser";

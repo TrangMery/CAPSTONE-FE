@@ -29,14 +29,14 @@ import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
-const dateFormat = "DD/MM/YYYY";
+const dateFormat = "DD/MM/YYYY HH:mm";
 const { TextArea } = Input;
 
 const ModalPickTimeLeader = (props) => {
   const isModalOpen = props.isModalOpen;
   const today = dayjs().add(1, "day");
   const [selectedLeader, setSelectedLeader] = useState(null);
-  const [meetingDate, setMeetingDate] = useState(today);
+  const [meetingDate, setMeetingDate] = useState();
   const [meetingDetails, setMeetingDetails] = useState("");
   const [council, setCouncil] = useState([]);
   const [holiday, setholiday] = useState([]);
@@ -53,20 +53,23 @@ const ModalPickTimeLeader = (props) => {
     setSelectedLeader(itemId);
     setCouncil(updatedDataUser);
   };
-  const handleDateChange = (date) => {
-    setMeetingDate(date);
+  const handleDateChange = (value) => {
+    setMeetingDate(value);
   };
 
   const handleDetailsChange = (e) => {
     setMeetingDetails(e.target.value);
   };
-  const maxDate = dayjs()
-  .add(1, "day")
-  .startOf("day")
-  .add(7, "day")
-  .add(holiday.length, "day")
-  .add(dayjs().day() === 6 ? 1 : 0, "day")
-  .add(dayjs().day() === 0 ? 1 : 0, "day");
+  let maxDate = dayjs().add(1, "day");
+  if (maxDate.day() === 6) {
+    maxDate = maxDate.add(1, "day");
+    if (maxDate.day() === 0) {
+      maxDate = maxDate.add(1, "day");
+    }
+  } else if (maxDate.day() === 0) {
+    maxDate = maxDate.add(2, "day");
+  }
+  maxDate = maxDate.add(7, "day").add(holiday.length, "day");
   const disabledDate = (current) => {
     if (current && (current.day() === 6 || current.day() === 0)) {
       return true;
@@ -114,9 +117,12 @@ const ModalPickTimeLeader = (props) => {
               <Col>
                 <Form.Item name="date" label="Ngày họp" labelCol={{ span: 24 }}>
                   <DatePicker
-                    format={dateFormat}
-                    defaultValue={today}
-                    minDate={today}
+                    showTime={{
+                      format: "HH:mm",
+                    }}
+                    format={"DD/MM/YYYY HH:mm"}
+                    defaultValue={dayjs(props.maxDate).add(1, "day")}
+                    minDate={dayjs(props.maxDate).add(1, "day")}
                     maxDate={maxDate}
                     onChange={handleDateChange}
                     disabledDate={disabledDate}
@@ -261,6 +267,7 @@ const ModalPickTimeLeader = (props) => {
   useEffect(() => {
     getHoliday();
   }, []);
+
   return (
     <>
       <Modal

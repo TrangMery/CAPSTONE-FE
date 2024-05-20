@@ -13,7 +13,6 @@ import {
 } from "antd";
 import {
   createAccountAdmin,
-  createAccountAdminEmail,
   uploadFileAdmin,
 } from "../../services/api";
 const { Dragger } = Upload;
@@ -60,29 +59,7 @@ const UploadByFile = (props) => {
   const [fileList, setFileList] = useState([]);
   const [listAccounts, setAccountList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const handleActiveAccount = async () => {
-    try {
-      let data = {
-        emails: [],
-      };
-      listAccounts.forEach((element) => {
-        data.emails.push(element.accountEmail);
-      });
-      const res = await createAccountAdminEmail(data);
-      setLoading(true);
-      if (res && res.statusCode === 200) {
-        setLoading(false);
-        notification.success({
-          description: `Thêm mới ${listAccounts.length} tài khoản thành công`,
-          message: "Tạo tài khoản",
-        });
-        props.getUser();
-        handleCancel();
-      }
-    } catch (error) {
-      console.log("có lỗi tại active", error);
-    }
-  };
+
 
   const handleSubmit = async () => {
     try {
@@ -91,7 +68,13 @@ const UploadByFile = (props) => {
       };
       const res = await createAccountAdmin(data);
       if (res && res.statusCode === 200) {
-        handleActiveAccount();
+        setLoading(false);
+        notification.success({
+          description: `Thêm mới ${listAccounts.length} tài khoản thành công`,
+          message: "Tạo tài khoản",
+        });
+        props.getUser();
+        handleCancel();
       }
     } catch (error) {
       console.log("có lỗi tại thêm account ", error);
@@ -216,10 +199,12 @@ const UploadByFile = (props) => {
           return;
         }
         const response = await uploadFileAdmin(file);
+        setLoading(true);
         if (response.status === 500) {
           onError(response, file);
           message.error(`${file.name} file tải lên không thành công.`);
         } else {
+          setLoading(false);
           setAccountList(response.data);
           onSuccess(response, file);
           message.success(`${file.name} file tải lên thành công.`);
@@ -248,6 +233,7 @@ const UploadByFile = (props) => {
         maskClosable={false}
         okText="Thêm mới"
         centered
+        loading={loading}
       >
         <Dragger {...propsUpload}>
           <p className="ant-upload-drag-icon">

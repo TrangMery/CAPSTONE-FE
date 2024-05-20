@@ -221,7 +221,8 @@ const ProjectManager = () => {
                     type="primary"
                     onClick={() => {
                       navigate(
-                        `/staff/earlyterm/add-council/${record.topicId}`
+                        `/staff/earlyterm/add-council/${record.topicId}`,
+                        { state: {maxDate: record.reviewEndDate} }
                       );
                     }}
                   >

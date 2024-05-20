@@ -439,17 +439,32 @@ export const updateArticle = (data) => {
   return axios.put("/api/article/update", data);
 };
 
-//admin update file type 
+//admin update file type
 export const updateFileType = (data) => {
   return axios.put("/api/filetype", data);
 };
 
-//admin add new fileType 
+//admin add new fileType
 export const addFileType = (data) => {
   return axios.post("/api/filetype", data);
 };
 
-//admin delete fileType 
+//admin delete fileType
 export const deleteFileType = (data) => {
-  return axios.delete("/api/filetype", data);
+  return axios.delete("/api/filetype", { data });
+};
+
+//admin add contract type
+export const addContractType = (data) => {
+  return axios.post("/api/contracttype", data);
+};
+
+//admin update contract type
+export const updateContractType = (data) => {
+  return axios.put("/api/contracttype", data);
+};
+
+//admin delete contract type
+export const deleteContractType = (data) => {
+  return axios.delete("/api/contracttype", { data });
 };

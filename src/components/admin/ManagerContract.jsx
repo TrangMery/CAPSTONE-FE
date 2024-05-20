@@ -7,7 +7,6 @@ import {
   Tooltip,
   Button,
   message,
-  Tabs,
 } from "antd";
 import {
   DeleteOutlined,
@@ -15,12 +14,13 @@ import {
   FileAddOutlined,
 } from "@ant-design/icons";
 import {
-  deleteFileType,
-  getFileType,
-  updateFileType,
+  deleteContractType,
+  getContractType,
+  updateContractType,
 } from "../../services/api";
 import "./department.scss";
 import FileModal from "./fileModal";
+import ContractModal from "./contractModal";
 const EditableCell = ({
   editing,
   dataIndex,
@@ -55,7 +55,7 @@ const EditableCell = ({
     </td>
   );
 };
-const ManagerFileType = () => {
+const ManagerContractType = () => {
   const [form] = Form.useForm();
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -63,23 +63,22 @@ const ManagerFileType = () => {
   const [listFile, setListFile] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [editingKey, setEditingKey] = useState("");
-  const [currentTab, setCurrentTab] = useState(0);
-  const isEditing = (record) => record.fileTypeId === editingKey;
+  const isEditing = (record) => record.contractTypeId === editingKey;
   const edit = (record) => {
     form.setFieldsValue({
       typeName: "",
       ...record,
     });
-    setEditingKey(record.fileTypeId);
+    setEditingKey(record.contractTypeId);
   };
   const cancel = () => {
     setEditingKey("");
   };
-  const getFile = async () => {
+  const getContract = async () => {
     try {
       setLoading(true);
-      const res = await getFileType({
-        stateNumber: currentTab,
+      const res = await getContractType({
+        ContractTypeSateNumber : 0
       });
       if (res && res.statusCode === 200) {
         setListFile(res.data);
@@ -96,14 +95,14 @@ const ManagerFileType = () => {
     try {
       const row = await form.validateFields();
       const data = {
-        fileTypeId: dataIndex,
+        contractTypeId: dataIndex,
         typeName: row.typeName,
-        state: currentTab,
+        state: 0,
       };
-      const res = await updateFileType(data);
+      const res = await updateContractType(data);
       if (res && res.statusCode === 200) {
         message.success("Cập nhật thành công");
-        getFile();
+        getContract();
         cancel();
       }
     } catch (error) {
@@ -116,12 +115,12 @@ const ManagerFileType = () => {
   const handleDelete = async (id) => {
     try {
       const data = {
-        fileTypeId: id,
+        contractTypeId: id,
       };
-      const res = await deleteFileType(data);
+      const res = await deleteContractType(data);
       if (res && res.isSuccess) {
         message.success("Xóa thành công");
-        getFile();
+        getContract();
         cancel();
       }
     } catch (e) {
@@ -162,7 +161,7 @@ const ManagerFileType = () => {
         return editable ? (
           <span>
             <Typography.Link
-              onClick={() => handleEdit(record.fileTypeId)}
+              onClick={() => handleEdit(record.contractTypeId)}
               style={{
                 marginRight: 8,
               }}
@@ -183,7 +182,7 @@ const ManagerFileType = () => {
             </Typography.Link>
             <Tooltip placement="top" title="Xóa file">
               <DeleteOutlined
-                onClick={() => handleDelete(record.fileTypeId)}
+                onClick={() => handleDelete(record.contractTypeId)}
                 style={style2}
               />
             </Tooltip>
@@ -193,28 +192,7 @@ const ManagerFileType = () => {
       align: "center",
     },
   ];
-  const items = [
-    {
-      key: "0",
-      label: `Sơ duyệt`,
-      children: <></>,
-    },
-    {
-      key: "1",
-      label: `Đầu kỳ`,
-      children: <></>,
-    },
-    {
-      key: "2",
-      label: `Giữa kỳ`,
-      children: <></>,
-    },
-    {
-      key: "3",
-      label: `Cuối kỳ`,
-      children: <></>,
-    },
-  ];
+
   const renderHeader = () => (
     <div>
       <div
@@ -239,27 +217,11 @@ const ManagerFileType = () => {
           Thêm loại file
         </Button>
       </div>
-      <Tabs
-        defaultActiveKey="0"
-        items={items}
-        onChange={(value) => {
-          setCurrentTab(value);
-          if (value === "0") {
-            setCurrentTab(0);
-          } else if (value === "1") {
-            setCurrentTab(1);
-          } else if (value === "2") {
-            setCurrentTab(2);
-          } else {
-            setCurrentTab(3);
-          }
-        }}
-      />
     </div>
   );
   useEffect(() => {
-    getFile();
-  }, [currentTab]);
+    getContract();
+  }, []);
 
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination.current !== current) {
@@ -318,12 +280,12 @@ const ManagerFileType = () => {
           }}
         />
       </Form>
-      <FileModal
+      <ContractModal
         openModal={openModal}
         setOpenModal={setOpenModal}
-        getFile={getFile}
+        getContract={getContract}
       />
     </div>
   );
 };
-export default ManagerFileType;
+export default ManagerContractType;

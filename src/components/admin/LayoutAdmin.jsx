@@ -3,6 +3,7 @@ import {
   DownOutlined,
   FileOutlined,
   FolderAddOutlined,
+  FolderOutlined,
   HomeOutlined,
   SolutionOutlined,
   UnorderedListOutlined,
@@ -49,6 +50,11 @@ const items = [
     label: <Link to="/admin/file">Quản lý tài liệu</Link>,
     key: "file",
     icon: <FileOutlined />,
+  },
+  {
+    label: <Link to="/admin/contract">Quản lý hợp đồng</Link>,
+    key: "contract",
+    icon: <FolderOutlined />,
   },
   {
     label: <Link to="/admin/export-file">Xuất file báo cáo</Link>,

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Button, Col, Divider, Form, Input, Modal, Row, Select, message } from "antd";
-import { addFileType } from "../../services/api";
+import { addContractType } from "../../services/api";
 
-const FileModal = (props) => {
+const ContractModal = (props) => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const handleOk = () => {
@@ -15,14 +15,14 @@ const FileModal = (props) => {
     try {
       const data = {
         typeName: values.name,
-        state: values.state,
+        state: 0,
       };
-      const res = await addFileType(data);
+      const res = await addContractType(data);
       setLoading(true);
       if (res && res.statusCode === 200) {
-        message.success("Thêm mới loại file thành công");
+        message.success("Thêm mới loại hợp đồng thành công");
         setLoading(false);
-        props.getFile();
+        props.getContract();
         form.resetFields();
         handleCancel();
       }
@@ -37,7 +37,7 @@ const FileModal = (props) => {
       <Modal
         maskClosable={false}
         open={props.openModal}
-        title="Thêm mới loại file"
+        title="Thêm mới hợp đồng"
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
@@ -65,54 +65,16 @@ const FileModal = (props) => {
             <Col span={24}>
               <Form.Item
                 name="name"
-                label="Tên loại file"
+                label="Tên loại hợp đồng"
                 labelCol={{ span: 24 }}
                 rules={[
                   {
                     required: true,
-                    message: "Xin hãy nhập vào tên loại file!",
+                    message: "Xin hãy nhập vào tên loại hợp đồng!",
                   },
                 ]}
               >
                 <Input />
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Form.Item
-                name="state"
-                label="Thuộc giai đoạn"
-                labelCol={{ span: 24 }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Xin hãy chọn giai đoạn!",
-                  },
-                ]}
-              >
-                <Select
-                  placeholder="Chọn giai đoạn"
-                  style={{
-                    width: 150,
-                  }}
-                  options={[
-                    {
-                      value: "0",
-                      label: "Sơ duyệt",
-                    },
-                    {
-                      value: "1",
-                      label: "Đầu kỳ",
-                    },
-                    {
-                      value: "2",
-                      label: "Giữa kỳ",
-                    },
-                    {
-                      value: "3",
-                      label: "Cuối kỳ",
-                    },
-                  ]}
-                />
               </Form.Item>
             </Col>
           </Row>
@@ -121,4 +83,4 @@ const FileModal = (props) => {
     </>
   );
 };
-export default FileModal;
+export default ContractModal;

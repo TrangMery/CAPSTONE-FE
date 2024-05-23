@@ -8,25 +8,19 @@ import {
   EyeOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import {
-  getAllUserWithoutCreator,
-  getMembersHasReview,
-} from "../../../services/api";
-import ModalPickTime from "./ModalPickTime";
-const AddMemberApprove = () => {
+import { getMemberReview } from "../../../services/api";
+import ModalTime from "./ModalChooseTime.jsx";
+const PickMember = (props) => {
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const [selectedUser, setSelectedUser] = useState([]);
   const [user, setUser] = useState([]);
-  const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(7);
   const [isLoading, setIsLoading] = useState(false);
   const [showFullData, setShowFullData] = useState({});
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [maxSelectedMembers, setMaxSelectedMembers] = useState();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [newData, setNewData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation();
   let checkPath = location.pathname.split("/");
   let topicID = checkPath[4];
@@ -183,6 +177,15 @@ const AddMemberApprove = () => {
       ),
     },
     {
+      title: "Giờ họp ",
+      dataIndex: "meetingShedules",
+      render: (_, record) => {
+        if (record.meetingShedules.length === 0) {
+          return <div>Trống</div>;
+        }
+      },
+    },
+    {
       title: "Hành động",
       key: "action",
       render: (text, record) => (
@@ -201,8 +204,9 @@ const AddMemberApprove = () => {
   ];
   const getUserAPI = async () => {
     try {
-      const res = await getAllUserWithoutCreator({
-        topicId: topicID,
+      const res = await getMemberReview({
+        TopicId: topicID,
+        MeetingDate: location.state.meetingDate,
       });
       setIsLoading(true);
       if (res && res?.data) {
@@ -220,9 +224,6 @@ const AddMemberApprove = () => {
   useEffect(() => {
     getUserAPI();
   }, []);
-  useEffect(() => {
-    if (current === 1 && newData.length > 1) setUser(newData);
-  }, [current]);
 
   const maskEmail = (accountEmail) => {
     const [username, domain] = accountEmail.split("@");
@@ -256,16 +257,9 @@ const AddMemberApprove = () => {
 
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      const newData = [...user];
-      // Move selected rows to the top
-      newData.sort((a, b) => {
-        if (selectedRowKeys.includes(a.key)) return -1;
-        if (selectedRowKeys.includes(b.key)) return 1;
-        return 0;
-      });
-      setNewData(newData);
       setSelectedKeys(selectedRowKeys); // id của thành viên hội đồng
       setSelectedUser(selectedRows);
+      props.setFirstMenber(selectedRows);
     },
     hideSelectAll: true,
     selectedKeys,
@@ -273,17 +267,7 @@ const AddMemberApprove = () => {
       disabled: isRowDisabled(record),
     }),
   };
-  const hasSelected = selectedUser.length > 0;
-  const onChange = (pagination, filters, sorter, extra) => {
-    if (pagination.current !== current) {
-      setCurrent(pagination.current);
-    }
-    if (pagination.pageSize !== pageSize) {
-      setPageSize(pagination.pageSize);
-      setCurrent(1);
-    }
-    console.log("parms: ", pagination, filters, sorter, extra);
-  };
+
   const renderFooter = () => (
     <div style={{ display: "flex", justifyContent: "flex-end" }}>
       <Button
@@ -303,19 +287,18 @@ const AddMemberApprove = () => {
         }}
       >
         {
-          (setMaxSelectedMembers(5),
+          (setMaxSelectedMembers(1),
           (
             <Button
-              disabled={
-                selectedUser.length < 2 || selectedUser.length % 2 === 0
-              }
+              disabled={selectedUser.length < 1}
               shape="round"
               type="primary"
               onClick={() => {
-                setModalVisible(true);
+                // props.next();
+                setIsModalOpen(true);
               }}
             >
-              Thêm thành viên phê duyệt
+              Chọn thời gian họp
             </Button>
           ))
         }
@@ -330,43 +313,12 @@ const AddMemberApprove = () => {
           <h2
             style={{ fontWeight: "bold", fontSize: "30px", color: "#303972" }}
           >
-            Danh sách nhà khoa học
+            Danh sách nhà khoa học đã tham gia sơ duyệt
           </h2>
           <p style={{ color: "red" }}>
-            Lưu ý khi chọn thành viên sơ duyệt là số lẻ vd 3, 5, 7
+            Lưu ý khi chọn 1 thành viên đã tham gia
           </p>
-          {hasSelected ? (
-            <div>
-              <Space direction="" size={"middle"}>
-                <p style={{ fontWeight: "bold" }}>
-                  Đã chọn {selectedUser.length} thành viên
-                </p>
-              </Space>
-            </div>
-          ) : (
-            ""
-          )}
         </div>
-        {hasSelected ? (
-          <div style={{ maxWidth: "400px" }}>
-            <List
-              grid={{
-                sm: 2,
-                md: 2,
-                column: 2,
-              }}
-              bordered
-              dataSource={selectedUser}
-              renderItem={(selectedUser) => (
-                <List.Item style={{ minWidth: "300px" }}>
-                  {selectedUser.fullName} - {selectedUser.position}
-                </List.Item>
-              )}
-            />
-          </div>
-        ) : (
-          ""
-        )}
       </div>
 
       <div>
@@ -378,37 +330,21 @@ const AddMemberApprove = () => {
           rowSelection={{
             ...rowSelection,
           }}
-          scroll={{
-            y: 340,
-          }}
           dataSource={showFullData ? user : maskedData}
           columns={columns}
-          onChange={onChange}
-          pagination={{
-            current: current,
-            pageSize: pageSize,
-            showSizeChanger: true,
-            pageSizeOptions: ["7", "10", "15"],
-            showTotal: (total, range) => {
-              return (
-                <div>
-                  {range[0]} - {range[1]} on {total} rows
-                </div>
-              );
-            },
-          }}
           loading={isLoading}
           footer={renderFooter}
         />
       </div>
-      {/* modal pick time for member approval */}
-      <ModalPickTime
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        dataUser={selectedUser}
+      <ModalTime
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        setTime={props.setTime}
+        next={props.next}
+        setMeetingDateDuration={props.setMeetingDateDuration}
       />
     </div>
   );
 };
 
-export default AddMemberApprove;
+export default PickMember;

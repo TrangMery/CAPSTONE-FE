@@ -30,7 +30,7 @@ export const getAllUser = (param) => {
 
 // get all user except dean
 export const getAllUserWithoutCreator = (param) => {
-  return axios.get(`/api/user/add-to-council?${qs.stringify(param)}`);
+  return axios.get(`api/user/user-to-add-member-review?${qs.stringify(param)}`);
 };
 
 // get all user for admin
@@ -124,6 +124,17 @@ export const getMembersHasReview = (param) => {
   return axios.get(
     `api/memberreview/member-review-of-topic?${qs.stringify(param)}`
   );
+};
+// get member review
+export const getMemberReview = (param) => {
+  return axios.get(
+    `/api/user/member-review-with-schedule?${qs.stringify(param)}`
+  );
+};
+
+//get member review availabe for schedule
+export const getMemberReviewAvailabe = (param) => {
+  return axios.get(`/api/user/available-user?${qs.stringify(param)}`)
 };
 
 // create council
@@ -467,4 +478,34 @@ export const updateContractType = (data) => {
 //admin delete contract type
 export const deleteContractType = (data) => {
   return axios.delete("/api/contracttype", { data });
+};
+
+// admin get all topic
+export const getAllTopics = () => {
+  return axios.get("/api/topic/all");
+};
+
+// admin get topic completely
+export const getTopicCompleted = () => {
+  return axios.get("/api/topic/completed");
+};
+
+// admin get topic incompletely
+export const getTopicInComplete = () => {
+  return axios.get("/api/topic/incompleted");
+};
+
+// admin get topic pending
+export const getTopicPending = () => {
+  return axios.get("/api/topic/pending");
+};
+
+// staff get topc has config conference
+export const getTopicHadConfig = () => {
+  return axios.get("/api/topic/all-topic-configured-conference");
+};
+
+// staff get topc hasn't config conference
+export const getTopicInCompletedConference = () => {
+  return axios.get("/api/topic/all-topic-waiting-configure-conference");
 };

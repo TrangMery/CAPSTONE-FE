@@ -230,7 +230,7 @@ const ProjectManagerFinalTerm = () => {
                 </Tooltip>
               )}
               {checkTab === "taohoidong" && (
-                <Tooltip placement="top" title={"Gửi hội đồng"}>
+                <Tooltip placement="top" title={"Tạo hội đồng"}>
                   <UsergroupAddOutlined
                     style={{
                       fontSize: "20px",
@@ -249,7 +249,7 @@ const ProjectManagerFinalTerm = () => {
                       );
                     }}
                   >
-                    Gửi hội đồng
+                    Tạo hội đồng
                   </UsergroupAddOutlined>
                 </Tooltip>
               )}

@@ -65,10 +65,9 @@ const UploadFileFinal = (props) => {
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
       listMember.forEach((list, index) => {
-        const rowIndex = index + 2; 
+        const rowIndex = index + 2;
         worksheet[`B${rowIndex}`] = { v: list.fullName }; // Cột B
-        worksheet[`C${rowIndex}`] = { v: list.role }; // Cột B
-
+        worksheet[`C${rowIndex}`] = { v: list.role }; // Cột C
       });
 
       // Lấy thông tin về kích thước cột và hàng từ file gốc
@@ -187,7 +186,7 @@ const UploadFileFinal = (props) => {
   };
   useEffect(() => {
     getAllMenber();
-  }, []);
+  }, [props.isModalOpen]);
   return (
     <>
       <Modal

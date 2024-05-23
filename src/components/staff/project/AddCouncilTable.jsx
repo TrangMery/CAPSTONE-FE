@@ -1,5 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, ConfigProvider, Input, List, Space, Table } from "antd";
+import {
+  Button,
+  ConfigProvider,
+  Input,
+  List,
+  Space,
+  Table,
+  message,
+} from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import Highlighter from "react-highlight-words";
 import "../../user/project/table.scss";
@@ -8,12 +16,12 @@ import {
   EyeOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
+import ModalPickTimeLeader from "./ModalPickTimeLeader";
 import {
   getAllUserWithoutCreator,
-  getMembersHasReview,
+  getMemberReviewAvailabe,
 } from "../../../services/api";
-import ModalPickTime from "./ModalPickTime";
-const AddMemberApprove = () => {
+const AddCouncilTable = (props) => {
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -22,15 +30,14 @@ const AddMemberApprove = () => {
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(7);
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFullData, setShowFullData] = useState({});
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [maxSelectedMembers, setMaxSelectedMembers] = useState();
-  const [modalVisible, setModalVisible] = useState(false);
   const [newData, setNewData] = useState([]);
   const location = useLocation();
   let checkPath = location.pathname.split("/");
   let topicID = checkPath[4];
-  const navigate = useNavigate();
   const isRowDisabled = (record) => {
     // Check if the row should be disabled based on the number of selected members
     return (
@@ -201,12 +208,16 @@ const AddMemberApprove = () => {
   ];
   const getUserAPI = async () => {
     try {
-      const res = await getAllUserWithoutCreator({
-        topicId: topicID,
+      const res = await getMemberReviewAvailabe({
+        TopicId: topicID,
+        MeetingStartTime: props.time.meetingStartTime,
+        MeetingEndTime: props.time.meetingEndTime,
       });
       setIsLoading(true);
+      const id = props.firstMember[0].id;
       if (res && res?.data) {
-        let dataKey = res.data.map((item) => ({
+        const newArray = res.data.filter((item) => item.id !== id);
+        let dataKey = newArray.map((item) => ({
           ...item,
           key: item.id,
         }));
@@ -220,10 +231,12 @@ const AddMemberApprove = () => {
   useEffect(() => {
     getUserAPI();
   }, []);
+
   useEffect(() => {
     if (current === 1 && newData.length > 1) setUser(newData);
   }, [current]);
 
+  // hide email and phone munber
   const maskEmail = (accountEmail) => {
     const [username, domain] = accountEmail.split("@");
     const maskedUsername = `${username.substring(0, 3)}****`;
@@ -282,15 +295,15 @@ const AddMemberApprove = () => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
-    console.log("parms: ", pagination, filters, sorter, extra);
   };
+
   const renderFooter = () => (
     <div style={{ display: "flex", justifyContent: "flex-end" }}>
       <Button
         shape="round"
         type="primary"
         danger
-        onClick={() => navigate(-1)}
+        onClick={() => props.prev()}
         style={{ margin: "0 10px" }}
       >
         Quay về
@@ -303,26 +316,26 @@ const AddMemberApprove = () => {
         }}
       >
         {
-          (setMaxSelectedMembers(5),
+          (setMaxSelectedMembers(6),
           (
             <Button
               disabled={
-                selectedUser.length < 2 || selectedUser.length % 2 === 0
+                selectedUser.length < 4 || selectedUser.length % 2 !== 0
               }
               shape="round"
               type="primary"
               onClick={() => {
-                setModalVisible(true);
+                setIsModalOpen(true);
+                selectedUser.push(props.firstMember[0]);
               }}
             >
-              Thêm thành viên phê duyệt
+              Thêm thành viên đánh giá
             </Button>
           ))
         }
       </ConfigProvider>
     </div>
   );
-
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -333,7 +346,7 @@ const AddMemberApprove = () => {
             Danh sách nhà khoa học
           </h2>
           <p style={{ color: "red" }}>
-            Lưu ý khi chọn thành viên sơ duyệt là số lẻ vd 3, 5, 7
+            Lưu ý khi chọn thành viên đánh giá là số lẻ vd 5, 7
           </p>
           {hasSelected ? (
             <div>
@@ -401,14 +414,17 @@ const AddMemberApprove = () => {
           footer={renderFooter}
         />
       </div>
-      {/* modal pick time for member approval */}
-      <ModalPickTime
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
+
+      {/* modal pick time and leader */}
+      <ModalPickTimeLeader
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
         dataUser={selectedUser}
+        meetingDuration={props.meetingDuration}
+        meetingTime = {props.time}
       />
     </div>
   );
 };
 
-export default AddMemberApprove;
+export default AddCouncilTable;

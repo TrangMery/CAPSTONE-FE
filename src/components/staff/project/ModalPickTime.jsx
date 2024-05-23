@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
+// check thử xem có lỗi ở đây không
 const ModalPickTime = ({ visible, onCancel, dataUser }) => {
   const [selectedTime, setSelectedTime] = useState(null);
   const [endDate, startEndDate] = useState();
@@ -51,7 +52,7 @@ const ModalPickTime = ({ visible, onCancel, dataUser }) => {
     const data = {
       topicId: topicId,
       memberReviewIds: userIDArray,
-      startDate: dayjs().local().format(),
+      startDate: dayjs(startDate).local().format(),
       endDate: dayjs(endDate).local().format(),
     };
     const result = createMemberApproval(data);

@@ -9,7 +9,6 @@ import {
   ConfigProvider,
 } from "antd";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import {
   getAllHoliday,
   makeDeadlineFinalSubmit,

@@ -29,6 +29,8 @@ import ManagerHoliday from "./components/admin/MangerHoliday.jsx";
 import ManagerDepartment from "./components/admin/ManagerDepart.jsx";
 import ManagerFileType from "./components/admin/ManagerFile.jsx";
 import ManagerContractType from "./components/admin/ManagerContract.jsx";
+import ExportFile from "./components/admin/exportFile.jsx";
+import AddCouncil from "./components/staff/project/AddCouncil.jsx";
 
 const Layout = () => {
   return <LoginPage />;
@@ -70,7 +72,7 @@ function App() {
             },
             {
               path: "add-council/:projectId",
-              element: <AddMemberApprove />,
+              element: <AddCouncil />,
             },
           ],
         },
@@ -84,7 +86,7 @@ function App() {
             },
             {
               path: "add-council/:projectId",
-              element: <AddMemberApprove />,
+              element: <AddCouncil />,
             },
           ],
         },
@@ -98,7 +100,7 @@ function App() {
             },
             {
               path: "add-council/:projectId",
-              element: <AddMemberApprove />,
+              element: <AddCouncil />,
             },
           ],
         },
@@ -211,7 +213,7 @@ function App() {
         },
         {
           path: "export-file",
-          element: <>Quản lý file</>,
+          element: <ExportFile/>,
         },
         {
           path: "file",

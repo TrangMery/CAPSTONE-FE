@@ -26,11 +26,11 @@ import { jwtDecode } from "jwt-decode";
 import ManagerFileType from "./ManagerFile";
 const { Header, Content, Sider } = Layout;
 const items = [
-  // {
-  //   label: <Link to="/admin">Bảng điều khiển</Link>,
-  //   key: "dashboard",
-  //   icon: <HomeOutlined />,
-  // },
+  {
+    label: <Link to="/admin">Bảng điều khiển</Link>,
+    key: "dashboard",
+    icon: <HomeOutlined />,
+  },
   {
     label: <Link to="/admin/accounts">Quản lý tài khoản</Link>,
     key: "accounts",

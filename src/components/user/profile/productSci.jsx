@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { Tabs } from "antd";
 import ScientificArticle from "./scientificArticle";
+import CompletedTopic from "./completeTopic";
 const ProductPage = () => {
   const items = [
     {
       key: "1",
       label: "Bài báo khoa học",
-      children: <ScientificArticle/>,
+      children: <ScientificArticle />,
     },
     {
       key: "2",
-      label: "Đề tài tham gia",
-      children: "Đề tài tham gia",
+      label: "Đề tài đã tham gia",
+      children: <CompletedTopic/>,
     },
   ];
   return (

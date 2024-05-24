@@ -3,17 +3,17 @@ import { AutoComplete, Modal, Select, Button, Form, Input, Space } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 const ModalAddMember = ({ open, onCancel, data, setAddMember }) => {
   const [form] = Form.useForm();
-  const [open1, setOpen] = useState(false);
   const options = data.map((user) => ({
     value: user.accountEmail,
     label: user.accountEmail, // Hiển thị tên người dùng
   }));
   const [searchText, setSearchText] = useState("");
-  const filteredOptions = searchText
-    ? options.filter((option) =>
-        option.value.toLowerCase().includes(searchText.toLowerCase())
-      )
-    : [];
+  const filteredOptions =
+    searchText.length >= 3
+      ? options.filter((option) =>
+          option.value.toLowerCase().includes(searchText.toLowerCase())
+        )
+      : [];
   const onOk = () => {
     form.submit();
   };
@@ -122,7 +122,9 @@ const ModalAddMember = ({ open, onCancel, data, setAddMember }) => {
                 <Button
                   disabled={fields.length >= 10}
                   type="dashed"
-                  onClick={() => add()}
+                  onClick={() => {
+                    add(), setSearchText("");
+                  }}
                   block
                   icon={<PlusOutlined />}
                 >

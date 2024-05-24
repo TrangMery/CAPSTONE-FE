@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Button, Space, Table, Tabs, Tag, Tooltip, message } from "antd";
-import { CloudDownloadOutlined, EditOutlined } from "@ant-design/icons";
-import {
-  assignDeanByAdmin,
-  getAllUserAdmin,
-} from "../../services/api";
-import UploadByFile from "./modalUploadUser";
+import { Table, Tooltip, Tag } from "antd";
+import { ExportOutlined } from "@ant-design/icons";
+import { getTopicCompleted } from "../../services/api";
 
-const ManagerAccount = () => {
+const ExportFile = () => {
   const [loading, setLoading] = useState(false);
-  const [listUser, setListUser] = useState();
-  const [isOpen, setIsOpen] = useState(false);
+  const [listTopic, setListTopic] = useState();
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
-  const getUser = async () => {
+  const getTopicComplete = async () => {
     try {
       setLoading(true);
-      const res = await getAllUserAdmin();
+      const res = await getTopicCompleted();
+      console.log(res);
       if (res && res.statusCode === 200) {
-        setListUser(res.data);
+        setListTopic(res.data.topics);
         setLoading(false);
       }
     } catch (error) {
@@ -30,16 +26,16 @@ const ManagerAccount = () => {
   };
 
   // edit working process
-  const handleEdit = async (email) => {
+  const handleExport = async (topicId) => {
     try {
       const data = {
-        email: email,
+        topicId: topicId,
       };
-      const res = await assignDeanByAdmin(data);
-      if (res && res.statusCode === 200) {
-        message.success("Chuyển vai trò thành công");
-        getUser();
-      }
+      // const res = await assignDeanByAdmin(data);
+      // if (res && res.statusCode === 200) {
+      //   message.success("Xuất file thành công");
+      //   getTopicComplete();
+      // }
     } catch (error) {
       console.log("====================================");
       console.log("Có lỗi tại đăng kí dean");
@@ -48,25 +44,21 @@ const ManagerAccount = () => {
   };
   const columns = [
     {
-      title: "Email",
-      dataIndex: "accountEmail",
+      title: "Mã đề tài",
+      dataIndex: "code",
     },
     {
-      title: "Khoa",
-      dataIndex: "departmentName",
+      title: "Tên đề tài",
+      dataIndex: "topicName",
     },
     {
-      title: "Họ và tên",
-      dataIndex: "fullName",
+      title: "Loại đề tài",
+      dataIndex: "categoryName",
     },
     {
-      title: "Số điện thoại",
-      dataIndex: "phoneNumber",
-    },
-    {
-      title: "Vai trò",
+      title: "Trạng thái",
       render: (text, record, index) => {
-        return <>{record.isDean ? "Dean" : "User"}</>;
+        return <Tag color="green">Đã hoàn thành</Tag>;
       },
     },
     {
@@ -80,9 +72,9 @@ const ManagerAccount = () => {
         };
         return (
           <div>
-            <Tooltip placement="top" title="Chỉnh sửa vai trò">
-              <EditOutlined
-                onClick={() => handleEdit(record.accountEmail)}
+            <Tooltip placement="top" title="Xuất file tổng kết">
+              <ExportOutlined
+                onClick={() => handleExport(record.topicId)}
                 style={style1}
               />
             </Tooltip>
@@ -103,23 +95,14 @@ const ManagerAccount = () => {
       >
         {" "}
         <h2 style={{ fontWeight: "bold", fontSize: "30px", color: "#303972" }}>
-          Danh sách tài khoản
+          Danh sách đề tài đã hoàn thành
         </h2>
-        <Button
-          type="primary"
-          icon={<CloudDownloadOutlined />}
-          onClick={() => {
-            setIsOpen(true);
-          }}
-        >
-          Nhập người dùng
-        </Button>
       </div>
     </div>
   );
 
   useEffect(() => {
-    getUser();
+    getTopicComplete();
   }, []);
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination.current !== current) {
@@ -136,7 +119,7 @@ const ManagerAccount = () => {
       <Table
         title={renderHeader}
         columns={columns}
-        dataSource={listUser}
+        dataSource={listTopic}
         loading={loading}
         onChange={onChange}
         pagination={{
@@ -153,8 +136,7 @@ const ManagerAccount = () => {
           },
         }}
       />
-      <UploadByFile isOpen={isOpen} setIsOpen={setIsOpen} getUser={getUser} />
     </div>
   );
 };
-export default ManagerAccount;
+export default ExportFile;

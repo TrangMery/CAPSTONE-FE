@@ -1,4 +1,4 @@
-import { Divider, List, Modal, Select, message } from "antd";
+import { DatePicker, Divider, List, Modal, Select, message } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getAllHoliday, memberReviewAPI } from "../../../services/api";
@@ -6,37 +6,34 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
+// check thử xem có lỗi ở đây không
 const ModalPickTime = ({ visible, onCancel, dataUser }) => {
-  const [selectedTime, setSelectedTime] = useState(1);
-  const [date, setDate] = useState(dayjs().add(1, "day"));
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [endDate, startEndDate] = useState();
   const [holiday, setholiday] = useState([]);
-  const today = dayjs().format(dateFormat);
+  const today = dayjs();
   const location = useLocation();
   const navigate = useNavigate();
   let topicId = location.pathname.split("/");
+  const [startDate, setStartDate] = useState(null);
   topicId = topicId[4];
-  const isHoliday = (startDate, endDate) => {
-    for (
-      let date = startDate;
-      date.isBefore(endDate);
-      date = date.add(1, "day")
-    ) {
-      if (holiday.some((holiday) => dayjs(date).isSame(holiday.date, "day"))) {
-        return true;
+  const addBusinessDays = (start, days) => {
+    let current = start;
+    let addedDays = 0;
+
+    while (addedDays < days) {
+      current = current.add(1, 'day');
+      // Nếu không phải là thứ 7 (6) hoặc Chủ Nhật (0), tăng addedDays
+      if (current.day() !== 6 && current.day() !== 0) {
+        addedDays += 1;
       }
     }
-    return false;
+
+    return current;
   };
-
   const handleTimeChange = (value) => {
-    let endDate = dayjs().add(value, "day");
-
-    if (endDate.day() === 6) {
-      endDate = endDate.add(1, "day");
-    } else if (endDate.day() === 0) {
-      endDate = endDate.add(2, "day");
-    }
-    setDate(endDate);
+    const endDate = addBusinessDays(startDate, value)
+    startEndDate(endDate);
     setSelectedTime(value);
   };
   const createMemberApproval = async (data) => {
@@ -55,8 +52,8 @@ const ModalPickTime = ({ visible, onCancel, dataUser }) => {
     const data = {
       topicId: topicId,
       memberReviewIds: userIDArray,
-      startDate: dayjs().local().format(),
-      endDate: dayjs(date).local().format(),
+      startDate: dayjs(startDate).local().format(),
+      endDate: dayjs(endDate).local().format(),
     };
     const result = createMemberApproval(data);
     if (result) {
@@ -78,9 +75,32 @@ const ModalPickTime = ({ visible, onCancel, dataUser }) => {
       console.log("====================================");
     }
   };
+  const handleDateChange = (date) => {
+    setStartDate(date);
+  };
+  let maxDate = dayjs().add(1, "day");
+  if (maxDate.day() === 6) {
+    maxDate = maxDate.add(1, "day");
+    if (maxDate.day() === 0) {
+      maxDate = maxDate.add(1, "day");
+    }
+  } else if (maxDate.day() === 0) {
+    maxDate = maxDate.add(2, "day");
+  }
+  maxDate = maxDate.add(7, "day").add(holiday.length, "day");
+  const disabledDate = (current) => {
+    if (current && (current.day() === 6 || current.day() === 0)) {
+      return true;
+    }
+    const formattedCurrent = current.format("YYYY-MM-DD");
+    return holiday.some(
+      (holiday) => formattedCurrent === dayjs(holiday.date).format("YYYY-MM-DD")
+    );
+  };
   useEffect(() => {
     getHoliday();
   }, []);
+  // cho chọn ngay bắt đầu
   return (
     <Modal
       title="Xác nhận thành viên và thời hạn phê duyệt"
@@ -91,6 +111,9 @@ const ModalPickTime = ({ visible, onCancel, dataUser }) => {
       onOk={submit}
       forceRender={false}
       maskClosable={false}
+      style={{
+        top: 30,
+      }}
     >
       <List
         header={<div>Danh sách thành viên phê duyệt</div>}
@@ -106,21 +129,49 @@ const ModalPickTime = ({ visible, onCancel, dataUser }) => {
       <p style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}>
         Thời hạn phê duyệt:
       </p>
-      <p>
-        Từ ngày: {today} - Đến ngày: {dayjs(date).format(dateFormat)}
-      </p>
-      <Select
-        placeholder="Thời hạn phê duyệt"
-        style={{ width: "100%" }}
-        onChange={handleTimeChange}
-        value={selectedTime}
+      <div
+        style={{
+          marginBottom: "20px",
+        }}
       >
-        {[1, 2, 3, 4, 5, 6, 7].map((time) => (
-          <Option key={time} value={time}>
-            {time} ngày
-          </Option>
-        ))}
-      </Select>
+        <p>Ngày bắt đầu:</p>
+        <DatePicker
+          format={dateFormat}
+          minDate={today}
+          maxDate={maxDate}
+          onChange={handleDateChange}
+          disabledDate={disabledDate}
+        />
+      </div>
+      <div
+        style={{
+          marginBottom: "20px",
+        }}
+      >
+        <p>Thời hạn kết thúc</p>
+        <Select
+          placeholder="Thời hạn phê duyệt"
+          style={{ width: "100%" }}
+          onChange={handleTimeChange}
+          value={selectedTime}
+          disabled={startDate !== null ? false : true}
+        >
+          {[1, 2, 3, 4, 5, 6, 7].map((time) => (
+            <Option key={time} value={time}>
+              {time} ngày
+            </Option>
+          ))}
+        </Select>
+      </div>
+      {selectedTime !== null && startDate !== null && (
+        <>
+          <p>
+            Từ ngày: {dayjs(startDate).format(dateFormat)} - Đến ngày:{" "}
+            {dayjs(endDate).format(dateFormat)}
+          </p>
+        </>
+      )}
+
       <Divider />
     </Modal>
   );

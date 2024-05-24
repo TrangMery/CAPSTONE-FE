@@ -21,9 +21,14 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
-import { getMidTermReport, getMidTermReportWait } from "../../../services/api";
+import {
+  getMidTermReport,
+  getMidTermReportWait,
+  topicMidTearmCreatedDeadline,
+} from "../../../services/api";
 import ModalMidTerm from "./ModalMidterm";
 import { useNavigate } from "react-router-dom";
+import ModalTimeCouncil from "./modalTimeCouncil";
 const ProjectManagerMidTerm = () => {
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -33,7 +38,7 @@ const ProjectManagerMidTerm = () => {
   const [dataPro, setDataPro] = useState({});
   const [isModalInforOpen, setIsModalInforOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
+  const [isModalCouncilOpen, setIsModalCouncilOpen] = useState(false);
   const items = [
     {
       key: "notyet",
@@ -140,9 +145,6 @@ const ProjectManagerMidTerm = () => {
         text
       ),
   });
-  console.log("====================================");
-  console.log(dataSource);
-  console.log("====================================");
   const columns = [
     {
       title: "Mã Đề Tài",
@@ -171,7 +173,10 @@ const ProjectManagerMidTerm = () => {
         }
         return (
           <div>
-            {dayjs(record.documentSupplementationDeadline).format(dateFormat)}
+            {dayjs(
+              record.documentSupplementationDeadline ||
+                record.supplementationDeadline
+            ).format(dateFormat)}
           </div>
         );
       },
@@ -214,7 +219,7 @@ const ProjectManagerMidTerm = () => {
                 </Tooltip>
               )}
               {checkTab === "taohoidong" && (
-                <Tooltip placement="top" title={"Gửi hội đồng"}>
+                <Tooltip placement="top" title={"Tạo hội đồng"}>
                   <UsergroupAddOutlined
                     style={{
                       fontSize: "20px",
@@ -223,10 +228,11 @@ const ProjectManagerMidTerm = () => {
                     }}
                     type="primary"
                     onClick={() => {
-                      navigate(`/staff/midterm/add-council/${record.topicId}`);
+                      setDataPro(record);
+                      setIsModalCouncilOpen(true);
                     }}
                   >
-                    Gửi hội đồng
+                    Tạo hội đồng
                   </UsergroupAddOutlined>
                 </Tooltip>
               )}
@@ -248,6 +254,17 @@ const ProjectManagerMidTerm = () => {
       }
     } catch (error) {
       console.log("có lỗi tại getTopicMidTerm: " + error);
+    }
+  };
+  const getTopicHadDeadline = async () => {
+    try {
+      const res = await topicMidTearmCreatedDeadline();
+      if (res && res?.data) {
+        setData(res.data);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicWaitCouncil: " + error);
     }
   };
   const getTopicWaitCouncil = async () => {
@@ -273,7 +290,8 @@ const ProjectManagerMidTerm = () => {
           setCheckTab(value);
           if (value === "notyet") {
             getTopicMidTerm();
-          } else if (value === "wait") {
+          } else if (value === "dabaocao") {
+            getTopicHadDeadline();
           } else {
             getTopicWaitCouncil();
           }
@@ -308,7 +326,7 @@ const ProjectManagerMidTerm = () => {
   return (
     <div>
       <h2 style={{ fontWeight: "bold", fontSize: "30px", color: "#303972" }}>
-        Danh sách đề tài giữa kì
+        Danh sách đề tài giữa kỳ
       </h2>
       <Table
         rowClassName={(record, index) =>
@@ -346,6 +364,11 @@ const ProjectManagerMidTerm = () => {
         data={dataPro}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+      />
+      <ModalTimeCouncil
+        data={dataPro}
+        isModalOpen={isModalCouncilOpen}
+        setIsModalOpen={setIsModalCouncilOpen}
       />
     </div>
   );

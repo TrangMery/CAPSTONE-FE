@@ -27,6 +27,7 @@ import {
   getTopicForMemberApproval,
   getTopicWaitingMember,
 } from "../../../services/api";
+import ModalTimeCouncil from "./modalTimeCouncil";
 const ProjectManager = () => {
   //staff ID để test
   const staffId = "2D5E2220-EEEF-4FDC-8C98-1B5C5012319C";
@@ -37,6 +38,7 @@ const ProjectManager = () => {
   const [dataSource, setData] = useState([]);
   const [dataPro, setDataPro] = useState({});
   const [isModalInforOpen, setIsModalInforOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const items = [
     {
@@ -211,7 +213,7 @@ const ProjectManager = () => {
                 </Tooltip>
               )}
               {checkTab === "chohoidong" && (
-                <Tooltip placement="top" title={"Gửi hội đồng"}>
+                <Tooltip placement="top" title={"Tạo hội đồng"}>
                   <UsergroupAddOutlined
                     style={{
                       fontSize: "20px",
@@ -220,12 +222,11 @@ const ProjectManager = () => {
                     }}
                     type="primary"
                     onClick={() => {
-                      navigate(
-                        `/staff/earlyterm/add-council/${record.topicId}`
-                      );
+                      setDataPro(record);
+                      setIsModalOpen(true);
                     }}
                   >
-                    Gửi hội đồng
+                    Tạo hội đồng
                   </UsergroupAddOutlined>
                 </Tooltip>
               )}
@@ -356,6 +357,11 @@ const ProjectManager = () => {
         data={dataPro}
         isModalOpen={isModalInforOpen}
         setIsModalOpen={setIsModalInforOpen}
+      />
+      <ModalTimeCouncil
+        data={dataPro}
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
       />
     </div>
   );

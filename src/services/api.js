@@ -3,7 +3,6 @@ import qs from "query-string";
 
 // gọi tất cả api ở đây
 
-
 // get user information
 export const getUserInformation = (params) => {
   return axios.get(`api/user/infor?${qs.stringify(params)}`);
@@ -31,7 +30,7 @@ export const getAllUser = (param) => {
 
 // get all user except dean
 export const getAllUserWithoutCreator = (param) => {
-  return axios.get(`/api/user/add-to-council?${qs.stringify(param)}`);
+  return axios.get(`api/user/user-to-add-member-review?${qs.stringify(param)}`);
 };
 
 // get all user for admin
@@ -126,6 +125,17 @@ export const getMembersHasReview = (param) => {
     `api/memberreview/member-review-of-topic?${qs.stringify(param)}`
   );
 };
+// get member review
+export const getMemberReview = (param) => {
+  return axios.get(
+    `/api/user/member-review-with-schedule?${qs.stringify(param)}`
+  );
+};
+
+//get member review availabe for schedule
+export const getMemberReviewAvailabe = (param) => {
+  return axios.get(`/api/user/available-user?${qs.stringify(param)}`)
+};
 
 // create council
 export const councilConfigEarly = (data) => {
@@ -148,10 +158,8 @@ export const getTopicUploadDoc = () => {
 };
 
 //get topic waiting for upload contract
-export const getTopicUploadContract = (param) => {
-  return axios.get(
-    `api/topic/early-topic-waiting-upload-contract?${qs.stringify(param)}`
-  );
+export const getTopicUploadContract = () => {
+  return axios.get("api/topic/early-topic-waiting-upload-contract");
 };
 
 // upload contract result for topic
@@ -282,6 +290,10 @@ export const getAllDepartment = () => {
 export const uploadInforUser = (data) => {
   return axios.post("api/user/register-user-infor", data);
 };
+// topic has created deadline
+export const topicMidTearmCreatedDeadline = () => {
+  return axios.get("api/topic/middle-topic-waiting-document-supplementation");
+};
 
 //move to final term
 export const moveToFinalTerm = (param) => {
@@ -317,6 +329,11 @@ export const councilConfigFinalterm = (data) => {
 // upload final-term contract
 export const uploadResultFinal = (data) => {
   return axios.post("/api/review/update-final-meeting-result", data);
+};
+
+// topic has created deadline
+export const topicFinalTearmCreatedDeadline = () => {
+  return axios.get("api/topic/final-topic-waiting-document-supplementation");
 };
 
 // resubmit final-term document
@@ -416,19 +433,84 @@ export const getNotifications = (param) => {
 // leader get all members
 export const getAllMembersByLeader = (param) => {
   return axios.get(`/api/topic/participant?${qs.stringify(param)}`);
-}
+};
 
-//user get all articles 
+//user get all articles
 export const getAllArticle = (param) => {
   return axios.get(`/api/article?${qs.stringify(param)}`);
-}
+};
 
-//user create a new article 
+//user create a new article
 export const createArticle = (data) => {
-  return axios.post("/api/article/create",data);
-}
+  return axios.post("/api/article/create", data);
+};
 
-//user update a article 
+//user update a article
 export const updateArticle = (data) => {
-  return axios.put("/api/article/update",data);
+  return axios.put("/api/article/update", data);
+};
+
+//admin update file type
+export const updateFileType = (data) => {
+  return axios.put("/api/filetype", data);
+};
+
+//admin add new fileType
+export const addFileType = (data) => {
+  return axios.post("/api/filetype", data);
+};
+
+//admin delete fileType
+export const deleteFileType = (data) => {
+  return axios.delete("/api/filetype", { data });
+};
+
+//admin add contract type
+export const addContractType = (data) => {
+  return axios.post("/api/contracttype", data);
+};
+
+//admin update contract type
+export const updateContractType = (data) => {
+  return axios.put("/api/contracttype", data);
+};
+
+//admin delete contract type
+export const deleteContractType = (data) => {
+  return axios.delete("/api/contracttype", { data });
+};
+
+// admin get all topic
+export const getAllTopics = () => {
+  return axios.get("/api/topic/all");
+};
+
+// admin get topic completely
+export const getTopicCompleted = () => {
+  return axios.get("/api/topic/completed");
+};
+
+// admin get topic incompletely
+export const getTopicInComplete = () => {
+  return axios.get("/api/topic/incompleted");
+};
+
+// admin get topic pending
+export const getTopicPending = () => {
+  return axios.get("/api/topic/pending");
+};
+
+// staff get topc has config conference
+export const getTopicHadConfig = () => {
+  return axios.get("/api/topic/all-topic-configured-conference");
+};
+
+// staff get topc hasn't config conference
+export const getTopicInCompletedConference = () => {
+  return axios.get("/api/topic/all-topic-waiting-configure-conference");
+};
+
+//user get all completed topics
+export const getAllCompletedTopics = (param) => {
+return axios.get(`/api/topic/my-completed-topic?${qs.stringify(param)}`);
 }

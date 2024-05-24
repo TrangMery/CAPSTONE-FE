@@ -15,8 +15,6 @@ import {
   message,
 } from "antd";
 import { DatePicker } from "antd";
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -25,21 +23,32 @@ import {
   councilConfigMidterm,
   getAllHoliday,
 } from "../../../services/api";
+import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
-dayjs.extend(customParseFormat);
-const dateFormat = "DD/MM/YYYY";
+dayjs.extend(timezone);
 const { TextArea } = Input;
+const styles = {
+  meetingInfo: {
+    marginBottom: "10px",
+  },
+  label: {
+    fontWeight: "bold",
+    marginRight: "10px",
+  },
+  value: {
+    color: "#555",
+  },
+};
 
 const ModalPickTimeLeader = (props) => {
   const isModalOpen = props.isModalOpen;
-  const today = dayjs().add(1, "day");
   const [selectedLeader, setSelectedLeader] = useState(null);
-  const [meetingDate, setMeetingDate] = useState(today);
+  const [meetingDate, setMeetingDate] = useState();
   const [meetingDetails, setMeetingDetails] = useState("");
   const [council, setCouncil] = useState([]);
-  const [holiday, setholiday] = useState([]);
   const location = useLocation();
   let path = location.pathname.split("/");
   let topicId = path[4];
@@ -53,29 +62,12 @@ const ModalPickTimeLeader = (props) => {
     setSelectedLeader(itemId);
     setCouncil(updatedDataUser);
   };
-  const handleDateChange = (date) => {
-    setMeetingDate(date);
-  };
 
   const handleDetailsChange = (e) => {
     setMeetingDetails(e.target.value);
   };
-  const maxDate = dayjs()
-  .add(1, "day")
-  .startOf("day")
-  .add(7, "day")
-  .add(holiday.length, "day")
-  .add(dayjs().day() === 6 ? 1 : 0, "day")
-  .add(dayjs().day() === 0 ? 1 : 0, "day");
-  const disabledDate = (current) => {
-    if (current && (current.day() === 6 || current.day() === 0)) {
-      return true;
-    }
-    const formattedCurrent = current.format("YYYY-MM-DD");
-    return holiday.some(
-      (holiday) => formattedCurrent === dayjs(holiday.date).format("YYYY-MM-DD")
-    );
-  };
+  const meetingStartTime = dayjs.utc(props.meetingTime.meetingStartTime);
+  const meetingEndTime = dayjs.utc(props.meetingTime.meetingEndTime);
   const steps = [
     {
       title: "Lựa chọn chủ tịch hội đồng",
@@ -104,24 +96,44 @@ const ModalPickTimeLeader = (props) => {
       icon: <FaUserTie />,
     },
     {
-      title: "Chọn thời gian",
+      title: "Phòng họp",
       content: (
         <>
           {" "}
           <div>
             <Divider />
-            <Row gutter={20}>
-              <Col>
-                <Form.Item name="date" label="Ngày họp" labelCol={{ span: 24 }}>
-                  <DatePicker
-                    format={dateFormat}
-                    defaultValue={today}
-                    minDate={today}
-                    maxDate={maxDate}
-                    onChange={handleDateChange}
-                    disabledDate={disabledDate}
-                  />
-                </Form.Item>
+            <Row gutter={[20, 20]} align={"middle"} style={{ padding: "20px" }}>
+              <Col span={8}>
+                <div className="meeting-info" style={styles.meetingInfo}>
+                  <p className="label" style={styles.label}>
+                    Ngày họp:
+                  </p>
+                  <p className="value" style={styles.value}>
+                    {dayjs(props.meetingTime.meetingStartTime).format(
+                      "DD/MM/YYYY"
+                    )}
+                  </p>
+                </div>
+              </Col>
+              <Col span={8}>
+                <div className="meeting-info" style={styles.meetingInfo}>
+                  <p className="label" style={styles.label}>
+                    Giờ họp:
+                  </p>
+                  <p className="value" style={styles.value}>
+                    {meetingStartTime.format("HH:mm")}
+                  </p>
+                </div>
+              </Col>
+              <Col span={8}>
+                <div className="meeting-info" style={styles.meetingInfo}>
+                  <p className="label" style={styles.label}>
+                    Giờ kết thúc:
+                  </p>
+                  <p className="value" style={styles.value}>
+                    {meetingEndTime.format("HH:mm")}
+                  </p>
+                </div>
               </Col>
               <Col span={24}>
                 <Form.Item
@@ -169,7 +181,11 @@ const ModalPickTimeLeader = (props) => {
             />
             <div style={{ marginTop: "8px" }}>
               <p style={{ fontSize: "18px", marginBottom: "8px" }}>
-                Ngày họp: {meetingDate && meetingDate.format(dateFormat)}
+                Ngày và giờ họp:{" "}
+                {dayjs(props.meetingTime.meetingStartTime).format("DD/MM/YYYY")}{" "}
+                {""}
+                {meetingStartTime.format("HH:mm")} -{" "}
+                {meetingEndTime.format("HH:mm")}
               </p>
 
               <p style={{ fontSize: "18px", marginBottom: "8px" }}>
@@ -211,9 +227,10 @@ const ModalPickTimeLeader = (props) => {
 
     const data = {
       topicId: topicId,
-      meetingTime: dayjs(meetingDate).local().format(),
+      meetingTime: props.meetingTime.meetingStartTime,
       councils: councilArray,
       meetingDetail: meetingDetails,
+      meetingDuration: props.meetingDuration,
     };
     let res;
     try {
@@ -246,21 +263,7 @@ const ModalPickTimeLeader = (props) => {
       console.log("Lỗi tại tạo hội đồng: ", error.message);
     }
   };
-  const getHoliday = async () => {
-    try {
-      const res = await getAllHoliday(today);
-      if (res && res.statusCode === 200) {
-        setholiday(res.data);
-      }
-    } catch (error) {
-      console.log("====================================");
-      console.log("Error: ", error);
-      console.log("====================================");
-    }
-  };
-  useEffect(() => {
-    getHoliday();
-  }, []);
+
   return (
     <>
       <Modal

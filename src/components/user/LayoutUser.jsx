@@ -102,13 +102,13 @@ const LayoutUser = () => {
       state: "EarlyTermReport",
       progress: "Completed",
       isReject: true,
-      message: "Hoàn thành giai đoạn đầu kì",
+      message: "Hoàn thành giai đoạn đầu kỳ",
     },
     {
       state: "MidtermReport",
       progress: "WaitingForMakeReviewSchedule",
       isReject: true,
-      message: "Đề tài chuyển sang giai đoạn giữa kì",
+      message: "Đề tài chuyển sang giai đoạn giữa kỳ",
     },
     {
       state: "MidtermReport",
@@ -126,7 +126,7 @@ const LayoutUser = () => {
       state: "MidtermReport",
       progress: "Completed",
       isReject: true,
-      message: "Hoàn thành giai đoạn giữa kì",
+      message: "Hoàn thành giai đoạn giữa kỳ",
     },
     {
       state: "FinaltermReport",
@@ -274,16 +274,20 @@ const LayoutUser = () => {
       ) : (
         <div className="popover-cart-content">
           {listNotify?.map((notifi, index) => {
-            const message = getMessage(notifi);
-            if (message) {
-              return (
-                <div key={`notifi-${index}`}>
-                  <div className="content">
-                    <p style={{ color: "blue" }}>Đề tài: {notifi?.topicName}</p>
-                    <p>{message}</p>
+            if (notifi.hasRead === false) {
+              const message = getMessage(notifi);
+              if (message) {
+                return (
+                  <div key={`notifi-${index}`}>
+                    <div className="content">
+                      <p style={{ color: "blue" }}>
+                        Đề tài: {notifi?.topicName}
+                      </p>
+                      <p>{message}</p>
+                    </div>
                   </div>
-                </div>
-              );
+                );
+              }
             }
           })}
         </div>
@@ -357,7 +361,7 @@ const LayoutUser = () => {
               rootClassName="popover-carts"
             >
               <Badge
-                count={listNotify?.length ?? 0}
+                count={listNotify?.unreadNotificationsNumber ?? 0}
                 showZero
                 size={"small"}
                 style={{ marginRight: "20px" }}

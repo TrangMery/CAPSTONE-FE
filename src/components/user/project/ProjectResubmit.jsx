@@ -161,8 +161,8 @@ const ProjectResubmit = () => {
             {record.state === "EarlytermReport"
               ? "Đăng kí đề tài"
               : record.state === "MidtermReport"
-              ? "Báo cáo giữa kì"
-              : "Báo cáo cuối kì"}
+              ? "Báo cáo giữa kỳ"
+              : "Báo cáo cuối kỳ"}
           </>
         );
       },

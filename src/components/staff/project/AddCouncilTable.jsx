@@ -17,15 +17,13 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import ModalPickTimeLeader from "./ModalPickTimeLeader";
-import {
-  getAllUserWithoutCreator,
-  getMemberReviewAvailabe,
-} from "../../../services/api";
+import { getMemberReviewAvailabe } from "../../../services/api";
 const AddCouncilTable = (props) => {
+  const firstMember = props.firstMember[0];
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
-  const [selectedUser, setSelectedUser] = useState([]);
+  const [selectedUser, setSelectedUser] = useState([firstMember]);
   const [user, setUser] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(7);
@@ -214,10 +212,8 @@ const AddCouncilTable = (props) => {
         MeetingEndTime: props.time.meetingEndTime,
       });
       setIsLoading(true);
-      const id = props.firstMember[0].id;
       if (res && res?.data) {
-        const newArray = res.data.filter((item) => item.id !== id);
-        let dataKey = newArray.map((item) => ({
+        let dataKey = res.data.map((item) => ({
           ...item,
           key: item.id,
         }));
@@ -231,7 +227,6 @@ const AddCouncilTable = (props) => {
   useEffect(() => {
     getUserAPI();
   }, []);
-
   useEffect(() => {
     if (current === 1 && newData.length > 1) setUser(newData);
   }, [current]);
@@ -278,7 +273,13 @@ const AddCouncilTable = (props) => {
       });
       setNewData(newData);
       setSelectedKeys(selectedRowKeys); // id của thành viên hội đồng
-      setSelectedUser(selectedRows);
+      const updatedSelection = selectedRows.includes(firstMember)
+        ? selectedRows
+        : [firstMember, ...selectedRows];
+
+      // Use a Set to ensure uniqueness
+      const newSelectedSet = new Set(updatedSelection);
+      setSelectedUser(Array.from(newSelectedSet));
     },
     hideSelectAll: true,
     selectedKeys,
@@ -320,7 +321,7 @@ const AddCouncilTable = (props) => {
           (
             <Button
               disabled={
-                selectedUser.length < 4 || selectedUser.length % 2 !== 0
+                selectedUser.length < 5 || selectedUser.length % 2 === 0
               }
               shape="round"
               type="primary"
@@ -361,7 +362,7 @@ const AddCouncilTable = (props) => {
           )}
         </div>
         {hasSelected ? (
-          <div style={{ maxWidth: "400px" }}>
+          <div style={{ maxWidth: "500px" }}>
             <List
               grid={{
                 sm: 2,
@@ -421,7 +422,7 @@ const AddCouncilTable = (props) => {
         setIsModalOpen={setIsModalOpen}
         dataUser={selectedUser}
         meetingDuration={props.meetingDuration}
-        meetingTime = {props.time}
+        meetingTime={props.time}
       />
     </div>
   );

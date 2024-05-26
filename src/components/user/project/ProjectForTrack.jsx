@@ -152,7 +152,7 @@ const ProjectForTrack = () => {
       key: "categoryName",
     },
     {
-      title: "Ngày tạo",
+      title: "Ngày nộp",
       render: (text, record, index) => {
         return <div>{dayjs(record.createdAt).format(dateFormat)}</div>;
       },

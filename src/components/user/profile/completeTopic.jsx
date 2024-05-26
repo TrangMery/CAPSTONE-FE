@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Button, Space, Table, Tabs, Tag, Tooltip, message } from "antd";
-import { CloudDownloadOutlined } from "@ant-design/icons";
+import { Button, Empty, Space, Table, Tabs, Tag, Tooltip, message } from "antd";
+import { BulbOutlined, CloudDownloadOutlined } from "@ant-design/icons";
 
 import { getAllCompletedTopics } from "../../../services/api";
 import dayjs from "dayjs-ext";
+import ViewDetailTopic from "./viewDetailTopic";
 
 const CompletedTopic = () => {
   const [loading, setLoading] = useState(false);
-  const [listTopic, setListTopic] = useState();
+  const [listTopic, setListTopic] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [topicId, setTopicId] = useState();
   const userId = localStorage.getItem("userId");
   const getTopic = async () => {
     try {
@@ -18,9 +20,6 @@ const CompletedTopic = () => {
       const res = await getAllCompletedTopics({
         userId: userId,
       });
-      console.log("====================================");
-      console.log(res);
-      console.log("====================================");
       if (res && res.statusCode === 200) {
         setListTopic(res.data);
         setLoading(false);
@@ -49,6 +48,22 @@ const CompletedTopic = () => {
       title: "Ngày hoàn thành",
       render: (text, record, index) => {
         return <>{dayjs(record.completedDate).format("DD/MM/YYYY")}</>;
+      },
+    },
+    {
+      title: "Hành động",
+      render: (_, record) => {
+        return (
+          <>
+            <Tooltip title="Xem chi tiết">
+              <BulbOutlined
+                onClick={() => {
+                  setIsOpen(true), setTopicId(record.topicId);
+                }}
+              />
+            </Tooltip>
+          </>
+        );
       },
     },
   ];
@@ -84,26 +99,34 @@ const CompletedTopic = () => {
   };
   return (
     <div>
-      <Table
-        title={renderHeader}
-        columns={columns}
-        dataSource={listTopic}
-        loading={loading}
-        onChange={onChange}
-        pagination={{
-          current: current,
-          pageSize: pageSize,
-          showSizeChanger: true,
-          pageSizeOptions: ["7", "10", "15"],
-          showTotal: (total, range) => {
-            return (
-              <div>
-                {range[0]} - {range[1]} on {total} rows
-              </div>
-            );
-          },
-        }}
-      />{" "}
+      {listTopic.length === 0 ? (
+        <Empty
+          style={{ marginTop: 100 }}
+          description={<span>Chưa hoàn thành đề tài nào</span>}
+        />
+      ) : (
+        <Table
+          title={renderHeader}
+          columns={columns}
+          dataSource={listTopic}
+          loading={loading}
+          onChange={onChange}
+          pagination={{
+            current: current,
+            pageSize: pageSize,
+            showSizeChanger: true,
+            pageSizeOptions: ["7", "10", "15"],
+            showTotal: (total, range) => {
+              return (
+                <div>
+                  {range[0]} - {range[1]} on {total} rows
+                </div>
+              );
+            },
+          }}
+        />
+      )}
+      <ViewDetailTopic open={isOpen} setOpen={setIsOpen} topicId={topicId} />
     </div>
   );
 };

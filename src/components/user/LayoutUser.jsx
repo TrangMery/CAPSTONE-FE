@@ -30,7 +30,7 @@ import "./global.scss";
 import logo from "../../assets/logoBV.png";
 import { jwtDecode } from "jwt-decode";
 import ChangePassword from "./modalChangePass";
-import { getNotifications } from "../../services/api";
+import { getNotifications, readNotifications } from "../../services/api";
 const { Header, Content, Sider } = Layout;
 
 const LayoutUser = () => {
@@ -61,6 +61,12 @@ const LayoutUser = () => {
       progress: "WaitingForDean",
       isReject: false,
       message: "Đề tài không được phê duyệt",
+    },
+    {
+      state: "PreliminaryReview",
+      progress: "WaitingForCouncilDecision",
+      isReject: true,
+      message: "Đề tài đã được thông qua",
     },
     {
       state: "EarlyTermReport",
@@ -183,8 +189,9 @@ const LayoutUser = () => {
       const res = await getNotifications({
         UserId: userId,
       });
+      console.log(res);
       if (res && res.statusCode === 200) {
-        setListNotify(res.data.notifies);
+        setListNotify(res.data);
       }
     } catch (error) {
       console.log("====================================");
@@ -211,14 +218,14 @@ const LayoutUser = () => {
       hidden: role !== "Dean",
     },
     {
-      label: <Link to="/user/track">Theo dõi tiến độ</Link>,
-      key: "track",
-      icon: <FileDoneOutlined />,
-    },
-    {
       label: <Link to="/user/review">Xem đề tài</Link>,
       key: "review",
       icon: <FileSyncOutlined />,
+    },
+    {
+      label: <Link to="/user/track">Theo dõi tiến độ</Link>,
+      key: "track",
+      icon: <FileDoneOutlined />,
     },
     {
       label: <Link to="/user/profile">Hồ sơ cá nhân</Link>,
@@ -253,7 +260,7 @@ const LayoutUser = () => {
   const url =
     "https://cdn1.vectorstock.com/i/1000x1000/14/80/doctor-web-icon-therapist-avatar-vector-18531480.jpg";
 
-  const notifyIsEmpty = listNotify.length === 0;
+   const notifyIsEmpty = listNotify.unreadNotificationsNumber === 0 ? true : false;
   const getMessage = (notifi) => {
     for (const condition of conditions) {
       if (
@@ -265,30 +272,54 @@ const LayoutUser = () => {
       }
     }
   };
+  const markAsRead = async (notifiId) => {
+    try {
+      const res = await readNotifications({
+        NotifyId: notifiId,
+      });
+      if (res && res.statusCode === 200) {
+        getNotify();
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("Có lỗi tại đọc thông báo: ", error);
+      console.log("====================================");
+    }
+  };
   const content = (
     <div className="popover-cart-body">
       {notifyIsEmpty ? (
         <div className="image-cart">
-          <p>Hiện chưa có thông báo </p>
+          <p>Hiện chưa có thông báo</p>
         </div>
       ) : (
         <div className="popover-cart-content">
-          {listNotify?.map((notifi, index) => {
+          {listNotify?.notifies?.map((notifi, index) => {
+            const message = getMessage(notifi);
             if (notifi.hasRead === false) {
-              const message = getMessage(notifi);
               if (message) {
                 return (
-                  <div key={`notifi-${index}`}>
+                  <div
+                    key={`notifi-${index}`}
+                    className={`notification-item ${
+                      !notifi.hasRead ? "unread" : ""
+                    }`}
+                    onClick={() => markAsRead(notifi.id)}
+                    role="button"
+                    aria-pressed="false"
+                    tabIndex="0"
+                  >
                     <div className="content">
-                      <p style={{ color: "blue" }}>
+                      <p className="notification-topic">
                         Đề tài: {notifi?.topicName}
                       </p>
-                      <p>{message}</p>
+                      <p className="notification-message">{message}</p>
                     </div>
                   </div>
                 );
               }
             }
+            return null;
           })}
         </div>
       )}
@@ -302,6 +333,7 @@ const LayoutUser = () => {
   useEffect(() => {
     getNotify();
   }, []);
+
   return (
     <Layout className="layout-staff">
       <ConfigProvider
@@ -361,7 +393,7 @@ const LayoutUser = () => {
               rootClassName="popover-carts"
             >
               <Badge
-                count={listNotify?.unreadNotificationsNumber ?? 0}
+                count={listNotify.unreadNotificationsNumber}
                 showZero
                 size={"small"}
                 style={{ marginRight: "20px" }}
@@ -369,7 +401,6 @@ const LayoutUser = () => {
                 <BellOutlined
                   className="icon-cart"
                   style={{ fontSize: "18px", marginRight: "20px" }}
-                  onClick={() => {}}
                 />
               </Badge>
             </Popover>

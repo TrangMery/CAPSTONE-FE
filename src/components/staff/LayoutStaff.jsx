@@ -59,16 +59,6 @@ const items = [
     key: "upload-document",
     icon: <UploadOutlined />,
   },
-  {
-    label: <Link to="/staff/track">Theo dõi tiến độ</Link>,
-    key: "track",
-    icon: <FileDoneOutlined />,
-  },
-  {
-    label: <Link to="/staff/profile">Hồ sơ cá nhân</Link>,
-    key: "profile",
-    icon: <UserOutlined />,
-  },
 ];
 
 const LayoutStaff = () => {

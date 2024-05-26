@@ -1,26 +1,50 @@
-.popover-carts {
-  .popover-cart-body {
-    overflow-y: scroll;
-    .popover-cart-content {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      min-width: 300px;
-      max-height: 400px;
-      .content {
-        display: block;
-        background-color: rgb(240, 243, 245);
-        p {
-          font-size: large;
-        }
-      }
-     
-    }
-    .popover-cart-footer {
-      .header1 {
-        font-size: large;
-      }
-    }
-  }
-  
+.popover-cart-body {
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.image-cart p {
+  text-align: center;
+  font-size: 16px;
+  color: #888;
+}
+
+.popover-cart-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-item {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+  cursor: pointer;
+}
+
+.notification-item.unread {
+  background-color: #f0f8ff;
+}
+
+.notification-item:hover {
+  background-color: #e6f7ff;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-topic {
+  font-weight: bold;
+  color: #333;
+}
+
+.notification-message {
+  color: #555;
 }

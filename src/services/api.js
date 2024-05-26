@@ -134,7 +134,7 @@ export const getMemberReview = (param) => {
 
 //get member review availabe for schedule
 export const getMemberReviewAvailabe = (param) => {
-  return axios.get(`/api/user/available-user?${qs.stringify(param)}`)
+  return axios.get(`/api/user/available-user?${qs.stringify(param)}`);
 };
 
 // create council
@@ -430,6 +430,11 @@ export const getNotifications = (param) => {
   return axios.get(`/api/notify?${qs.stringify(param)}`);
 };
 
+// leader read notifications
+export const readNotifications = (param) => {
+  return axios.put(`/api/notify?${qs.stringify(param)}`);
+};
+
 // leader get all members
 export const getAllMembersByLeader = (param) => {
   return axios.get(`/api/topic/participant?${qs.stringify(param)}`);
@@ -512,5 +517,5 @@ export const getTopicInCompletedConference = () => {
 
 //user get all completed topics
 export const getAllCompletedTopics = (param) => {
-return axios.get(`/api/topic/my-completed-topic?${qs.stringify(param)}`);
-}
+  return axios.get(`/api/topic/my-completed-topic?${qs.stringify(param)}`);
+};

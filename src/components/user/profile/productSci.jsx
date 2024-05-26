@@ -11,8 +11,13 @@ const ProductPage = () => {
     },
     {
       key: "2",
-      label: "Đề tài đã tham gia",
-      children: <CompletedTopic/>,
+      label: "Đề tài đã hoàn thành",
+      children: <CompletedTopic />,
+    },
+    {
+      key: "3",
+      label: "Đề tài đang thực hiện",
+      children: <CompletedTopic />,
     },
   ];
   return (

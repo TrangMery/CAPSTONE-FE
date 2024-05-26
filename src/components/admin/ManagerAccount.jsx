@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Space, Table, Tabs, Tag, Tooltip, message } from "antd";
 import { CloudDownloadOutlined, EditOutlined } from "@ant-design/icons";
-import {
-  assignDeanByAdmin,
-  getAllUserAdmin,
-} from "../../services/api";
+import { assignDeanByAdmin, getAllUserAdmin } from "../../services/api";
 import UploadByFile from "./modalUploadUser";
 
 const ManagerAccount = () => {
@@ -51,10 +48,7 @@ const ManagerAccount = () => {
       title: "Email",
       dataIndex: "accountEmail",
     },
-    {
-      title: "Khoa",
-      dataIndex: "departmentName",
-    },
+
     {
       title: "Họ và tên",
       dataIndex: "fullName",
@@ -62,6 +56,10 @@ const ManagerAccount = () => {
     {
       title: "Số điện thoại",
       dataIndex: "phoneNumber",
+    },
+    {
+      title: "Khoa",
+      dataIndex: "departmentName",
     },
     {
       title: "Vai trò",

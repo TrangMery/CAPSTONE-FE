@@ -11,10 +11,7 @@ import {
   Typography,
   Popconfirm,
 } from "antd";
-import {
-  createAccountAdmin,
-  uploadFileAdmin,
-} from "../../services/api";
+import { createAccountAdmin, uploadFileAdmin } from "../../services/api";
 const { Dragger } = Upload;
 import "./department.scss";
 const EditableCell = ({
@@ -60,13 +57,15 @@ const UploadByFile = (props) => {
   const [listAccounts, setAccountList] = useState([]);
   const [loading, setLoading] = useState(false);
 
-
   const handleSubmit = async () => {
     try {
       const data = {
         users: listAccounts,
       };
       const res = await createAccountAdmin(data);
+      console.log("====================================");
+      console.log(res);
+      console.log("====================================");
       if (res && res.statusCode === 200) {
         setLoading(false);
         notification.success({
@@ -243,8 +242,8 @@ const UploadByFile = (props) => {
             Nhấn hoặc kéo tệp vào khu vực này để tải lên
           </p>
           <p className="ant-upload-hint">
-            Hỗ trợ cho một tập tin duy nhất. Chỉ chấp nhận .csv, .xls, .xlsx
-            hoặc &nbsp;
+            Hỗ trợ cho một tập tin duy nhất và không được trùng dữ liệu cũ. Chỉ
+            chấp nhận .csv, .xls, .xlsx hoặc &nbsp;
             <a onClick={(e) => e.stopPropagation()} href={url} download>
               Tải tập tin mẫu
             </a>

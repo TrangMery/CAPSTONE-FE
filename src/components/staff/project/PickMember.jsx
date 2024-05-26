@@ -202,7 +202,6 @@ const PickMember = (props) => {
       ),
     },
   ];
-  console.log(location.state.meetingDate);
 
   const getUserAPI = async () => {
     try {

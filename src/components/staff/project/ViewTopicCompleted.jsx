@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tooltip, Tag, DatePicker } from "antd";
-import { ExportOutlined } from "@ant-design/icons";
-import { getTopicCompleted } from "../../services/api";
+import { Table, Tag, DatePicker } from "antd";
+import { getTopicCompleted } from "../../../services/api";
 import dayjs from "dayjs";
-const ExportFile = () => {
+const ViewTopic = () => {
   const [loading, setLoading] = useState(false);
   const [listTopic, setListTopic] = useState();
   const [current, setCurrent] = useState(1);
@@ -35,23 +34,6 @@ const ExportFile = () => {
     // Không cho phép chọn năm sau năm hiện tại
     return current && current > dayjs().endOf("year");
   };
-  // edit working process
-  const handleExport = async (topicId) => {
-    try {
-      const data = {
-        topicId: topicId,
-      };
-      // const res = await assignDeanByAdmin(data);
-      // if (res && res.statusCode === 200) {
-      //   message.success("Xuất file thành công");
-      //   getTopicComplete();
-      // }
-    } catch (error) {
-      console.log("====================================");
-      console.log("Có lỗi tại đăng kí dean");
-      console.log("====================================");
-    }
-  };
   const columns = [
     {
       title: "Mã đề tài",
@@ -70,29 +52,7 @@ const ExportFile = () => {
       render: (text, record, index) => {
         return <Tag color="green">Đã hoàn thành</Tag>;
       },
-    },
-    {
-      title: "Hành động",
-      render: (text, record, index) => {
-        const style1 = {
-          color: "blue",
-          fontSize: "18px",
-          cursor: "pointer",
-          paddingTop: "2px",
-        };
-        return (
-          <div>
-            <Tooltip placement="top" title="Xuất file tổng kết">
-              <ExportOutlined
-                onClick={() => handleExport(record.topicId)}
-                style={style1}
-              />
-            </Tooltip>
-          </div>
-        );
-      },
-      align: "center",
-    },
+    }
   ];
   const renderHeader = () => (
     <div>
@@ -155,4 +115,4 @@ const ExportFile = () => {
     </div>
   );
 };
-export default ExportFile;
+export default ViewTopic;

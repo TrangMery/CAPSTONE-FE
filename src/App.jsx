@@ -31,6 +31,7 @@ import ManagerFileType from "./components/admin/ManagerFile.jsx";
 import ManagerContractType from "./components/admin/ManagerContract.jsx";
 import ExportFile from "./components/admin/exportFile.jsx";
 import AddCouncil from "./components/staff/project/AddCouncil.jsx";
+import ViewTopic from "./components/staff/project/ViewTopicCompleted.jsx";
 
 const Layout = () => {
   return <LoginPage />;
@@ -109,22 +110,8 @@ function App() {
           element: <UploadDoc />,
         },
         {
-          path: "track",
-          element: <Outlet />,
-          children: [
-            {
-              index: true,
-              element: <ProjectForTrackStaff />,
-            },
-            {
-              path: "track-topic/:projectId",
-              element: <TrackProjectStaff />,
-            },
-          ],
-        },
-        {
-          path: "profile",
-          element: <>Thông tin cá nhân</>,
+          path: "view-topic",
+          element: <ViewTopic />,
         },
       ],
     },

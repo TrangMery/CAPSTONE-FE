@@ -491,8 +491,8 @@ export const getAllTopics = () => {
 };
 
 // admin get topic completely
-export const getTopicCompleted = () => {
-  return axios.get("/api/topic/completed");
+export const getTopicCompleted = (param) => {
+  return axios.get(`/api/topic/completed?${qs.stringify(param)}`);
 };
 
 // admin get topic incompletely
@@ -518,4 +518,12 @@ export const getTopicInCompletedConference = () => {
 //user get all completed topics
 export const getAllCompletedTopics = (param) => {
   return axios.get(`/api/topic/my-completed-topic?${qs.stringify(param)}`);
+};
+
+//user get detail
+export const getUserTopic = (param) => {
+  return axios.get(`/api/participant?${qs.stringify(param)}`);
+};
+export const getContractDone = (data) => {
+  return axios.post("/api/contract/final-contract", data);
 };

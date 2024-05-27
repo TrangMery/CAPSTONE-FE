@@ -4,6 +4,7 @@ import {
   DownOutlined,
   FileDoneOutlined,
   FlagOutlined,
+  FolderViewOutlined,
   HomeOutlined,
   HourglassOutlined,
   UnorderedListOutlined,
@@ -58,6 +59,11 @@ const items = [
     label: <Link to="/staff/upload-document">Tải tài liệu lên </Link>,
     key: "upload-document",
     icon: <UploadOutlined />,
+  },
+  {
+    label: <Link to="/staff/view-topic"> Xem đề tài </Link>,
+    key: "view-topic",
+    icon: <FolderViewOutlined />,
   },
 ];
 

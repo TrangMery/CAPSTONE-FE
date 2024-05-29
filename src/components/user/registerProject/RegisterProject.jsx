@@ -123,6 +123,14 @@ const RegisterProject = () => {
     onDrop(e) {
       console.log("Dropped files", e.dataTransfer.files);
     },
+    progress: {
+      strokeColor: {
+        "0%": "#108ee9",
+        "100%": "#87d068",
+      },
+      strokeWidth: 3,
+      format: (percent) => percent && `${parseFloat(percent.toFixed(2))}%`,
+    },
   };
   const getCategory = async () => {
     const res = await getAllCategory();
@@ -315,7 +323,7 @@ const RegisterProject = () => {
               />
             </Form.Item>
           </Col>
-          <Col span={24}>
+          <Col span={12}>
             <Form.List name="user">
               {(fields, { add, remove }) => (
                 <>
@@ -387,6 +395,19 @@ const RegisterProject = () => {
                 </>
               )}
             </Form.List>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Đính kèm tài cv cá nhân: "
+            >
+              <Upload
+                {...props}
+                listType="picture"
+              >
+                <Button icon={<InboxOutlined />}>Tải CV lên</Button>
+              </Upload>
+              {error && <p style={{ color: "red" }}>{error}</p>}
+            </Form.Item>
           </Col>
           <Col span={24}>
             <h3>Đính kèm tài liệu liên quan</h3>

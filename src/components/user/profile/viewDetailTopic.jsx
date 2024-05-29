@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Drawer, List } from "antd";
 import { getContractDone, getUserTopic } from "../../../services/api";
+import TimelineComponent from "./Timeline";
 const ViewDetailTopic = (props) => {
   const [listUser, setListUser] = useState([]);
   const [file, setFile] = useState([]);
@@ -16,9 +17,6 @@ const ViewDetailTopic = (props) => {
       const res = await getUserTopic({
         TopicId: props.topicId,
       });
-      console.log('====================================');
-      console.log(res);
-      console.log('====================================');
       const getFile = await getContractDone(data);
       if (getFile.statusCode === 200 && res.statusCode === 200) {
         setListUser(res.data);
@@ -32,21 +30,19 @@ const ViewDetailTopic = (props) => {
     }
   };
   useEffect(() => {
-
-      getTopicDetail();
-    
-  }, []);
+    getTopicDetail();
+  }, [props.open === true]);
 
   return (
     <>
       <Drawer
         title="Xem thông tin chi tiết đề tài"
         placement="right"
-        width={400}
+        width={500}
         onClose={onClose}
         open={props.open}
       >
-        <List
+        {/* <List
           header={<div>Danh sách thành viên</div>}
           bordered
           dataSource={listUser}
@@ -77,7 +73,8 @@ const ViewDetailTopic = (props) => {
           >
             {file.contractName}
           </a>
-        </span>
+        </span> */}
+        <TimelineComponent/>
       </Drawer>
     </>
   );

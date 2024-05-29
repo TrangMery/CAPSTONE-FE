@@ -195,7 +195,7 @@ const LayoutUser = () => {
       const res = await getNotifications({
         UserId: userId,
       });
-      console.log(res);
+      // console.log("check notification: ", res);
       if (res && res.statusCode === 200) {
         setListNotify(res.data);
       }

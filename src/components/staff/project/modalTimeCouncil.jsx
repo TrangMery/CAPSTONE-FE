@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Calendar, theme, ConfigProvider, message } from "antd";
 import dayjs from "dayjs";
 import { getAllHoliday } from "../../../services/api";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import locale from "antd/locale/vi_VN";
 
 const ModalTimeCouncil = (props) => {
@@ -10,6 +10,10 @@ const ModalTimeCouncil = (props) => {
   const { token } = theme.useToken();
   const [selectedTime, setSelectedTime] = useState(null);
   const [holidays, setholiday] = useState([]);
+  const location = useLocation();
+  const path = location.pathname.split("/");
+  const check = path[2];
+
   const navigate = useNavigate();
   const reviewEndDate = props.data.reviewEndDate;
   const closeModal = () => {
@@ -28,9 +32,19 @@ const ModalTimeCouncil = (props) => {
       message.error("Vui lòng chọn ngày họp");
     } else {
       const topicId = props.data.topicId;
-      navigate(`/staff/earlyterm/add-council/${topicId}`, {
-        state: { meetingDate: dayjs(selectedTime).local().format() },
-      });
+      if (check === "earlyterm") {
+        navigate(`/staff/earlyterm/add-council/${topicId}`, {
+          state: { meetingDate: dayjs(selectedTime).local().format() },
+        });
+      } else if (check === "midterm") {
+        navigate(`/staff/midterm/add-council/${topicId}`, {
+          state: { meetingDate: dayjs(selectedTime).local().format() },
+        });
+      } else if (check === "finalterm") {
+        navigate(`/staff/finalterm/add-council/${topicId}`, {
+          state: { meetingDate: dayjs(selectedTime).local().format() },
+        });
+      }
     }
   };
   const getHoliday = async () => {

@@ -31,6 +31,7 @@ import {
 import ModalMidTerm from "./ModalMidterm";
 import { useNavigate } from "react-router-dom";
 import ModalFinal from "./modalFinal";
+import ModalTimeCouncil from "./modalTimeCouncil";
 const ProjectManagerFinalTerm = () => {
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -41,6 +42,8 @@ const ProjectManagerFinalTerm = () => {
   const [isModalInforOpen, setIsModalInforOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalFinalOpen, setIsModalFinalOpen] = useState(false);
+  const [isModalCouncilOpen, setIsModalCouncilOpen] = useState(false);
+
   const navigate = useNavigate();
   const items = [
     {
@@ -239,14 +242,8 @@ const ProjectManagerFinalTerm = () => {
                     }}
                     type="primary"
                     onClick={() => {
-                      navigate(
-                        `/staff/finalterm/add-council/${record.topicId}`,
-                        {
-                          state: {
-                            maxDate: record.documentSupplementationDeadline,
-                          },
-                        }
-                      );
+                      setDataPro(record);
+                      setIsModalCouncilOpen(true);
                     }}
                   >
                     Tạo hội đồng
@@ -418,6 +415,11 @@ const ProjectManagerFinalTerm = () => {
         isModalOpen={isModalFinalOpen}
         setIsModalOpen={setIsModalFinalOpen}
         getTopicSumarizeTerm={getTopicSumarizeTerm}
+      />
+      <ModalTimeCouncil
+        data={dataPro}
+        isModalOpen={isModalCouncilOpen}
+        setIsModalOpen={setIsModalCouncilOpen}
       />
     </div>
   );

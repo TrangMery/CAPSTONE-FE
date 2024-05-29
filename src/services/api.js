@@ -509,3 +509,8 @@ export const getTopicHadConfig = () => {
 export const getTopicInCompletedConference = () => {
   return axios.get("/api/topic/all-topic-waiting-configure-conference");
 };
+
+//user get all completed topics
+export const getAllCompletedTopics = (param) => {
+return axios.get(`/api/topic/my-completed-topic?${qs.stringify(param)}`);
+}

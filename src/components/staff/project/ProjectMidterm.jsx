@@ -28,6 +28,7 @@ import {
 } from "../../../services/api";
 import ModalMidTerm from "./ModalMidterm";
 import { useNavigate } from "react-router-dom";
+import ModalTimeCouncil from "./modalTimeCouncil";
 const ProjectManagerMidTerm = () => {
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -37,7 +38,7 @@ const ProjectManagerMidTerm = () => {
   const [dataPro, setDataPro] = useState({});
   const [isModalInforOpen, setIsModalInforOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
+  const [isModalCouncilOpen, setIsModalCouncilOpen] = useState(false);
   const items = [
     {
       key: "notyet",
@@ -227,11 +228,8 @@ const ProjectManagerMidTerm = () => {
                     }}
                     type="primary"
                     onClick={() => {
-                      navigate(`/staff/midterm/add-council/${record.topicId}`, {
-                        state: {
-                          maxDate: record.documentSupplementationDeadline,
-                        },
-                      });
+                      setDataPro(record);
+                      setIsModalCouncilOpen(true);
                     }}
                   >
                     Tạo hội đồng
@@ -366,6 +364,11 @@ const ProjectManagerMidTerm = () => {
         data={dataPro}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+      />
+      <ModalTimeCouncil
+        data={dataPro}
+        isModalOpen={isModalCouncilOpen}
+        setIsModalOpen={setIsModalCouncilOpen}
       />
     </div>
   );

@@ -24,7 +24,7 @@ const Dashboard = ({ totalProjects, runningProjects, completedProjects, rejected
           <Col span={6}>
             <Card>
               <Statistic
-                title="Đề tài đang chạy"
+                title="Đề tài đang tiến hành"
                 value={runningProjects}
                 valueStyle={{ color: '#1890ff' }}
                 prefix={<PlayCircleOutlined />}

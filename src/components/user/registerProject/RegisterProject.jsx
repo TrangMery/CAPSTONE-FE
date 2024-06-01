@@ -42,7 +42,9 @@ const RegisterProject = () => {
   const [newTopicFiles, setFileList] = useState({});
   const [addMember, setAddMember] = useState([]);
   const [data, setData] = useState({});
+  const [cvLink, setCvLink] = useState([]);
   const [error, setError] = useState(null);
+  const [uploadType, setUploadType] = useState("");
   const userId = localStorage.getItem("userId");
   const showUserModal = () => {
     setOpen(true);
@@ -84,14 +86,22 @@ const RegisterProject = () => {
       try {
         // Thực hiện tải lên file thông qua API của bạn
         const isCompressedFile =
-          file.type === "application/x-rar-compressed" ||
-          file.type === "application/x-zip-compressed" ||
-          file.type === "application/x-compressed";
+          uploadType === "document"
+            ? file.type === "application/x-rar-compressed" ||
+              file.type === "application/x-zip-compressed" ||
+              file.type === "application/x-compressed"
+            : file.type === "application/pdf";
         if (!isCompressedFile) {
           message.error(
-            "Chỉ được phép tải lên các file đã nén (zip hoặc rar)!"
+            uploadType === "document"
+              ? "Chỉ được phép tải lên các file đã nén (zip hoặc rar)!"
+              : "Vui lòng upload vc bằng file pdf!"
           );
-          setError("Chỉ được phép tải lên các file đã nén (zip hoặc rar)!");
+          setError(
+            uploadType === "document"
+              ? "Chỉ được phép tải lên các file đã nén (zip hoặc rar)!"
+              : "Vui lòng upload vc bằng file pdf!"
+          );
           onError(file);
           return;
         }
@@ -100,10 +110,14 @@ const RegisterProject = () => {
           onError(response, file);
           message.error(`${file.name} không tải lên thành công.`);
         } else {
-          setFileList({
-            fileName: response.data.fileName,
-            fileLink: response.data.fileLink,
-          });
+          if (uploadType === "document") {
+            setFileList({
+              fileName: response.data.fileName,
+              fileLink: response.data.fileLink,
+            });
+          } else if (uploadType === "cv") {
+            setCvLink(response.data.fileLink);
+          }
           // Gọi onSuccess để xác nhận rằng tải lên đã thành công
           onSuccess(response, file);
           // Hiển thị thông báo thành công
@@ -117,7 +131,11 @@ const RegisterProject = () => {
       }
     },
     onRemove: (file) => {
-      setFileList([]);
+      if (uploadType === "document") {
+        setFileList([]);
+      } else {
+        setCvLink("");
+      }
       setError(null);
     },
     onDrop(e) {
@@ -165,7 +183,7 @@ const RegisterProject = () => {
       return newItem;
     });
     const creatorId = userId;
-    if (Object.values(newTopicFiles).length === 0) {
+    if (Object.values(newTopicFiles).length === 0 || cvLink === "") {
       message.error("Xin hãy tải các tài liệu liên quan lên");
       return;
     }
@@ -180,6 +198,7 @@ const RegisterProject = () => {
       topicFileName: newTopicFiles.fileName,
       topicFileLink: newTopicFiles.fileLink,
       startTime: dayjs(startTime).local().format(),
+      cvLink: cvLink,
     };
     if (data !== null) {
       setOpenConfirm(true);
@@ -397,16 +416,20 @@ const RegisterProject = () => {
             </Form.List>
           </Col>
           <Col span={12}>
-            <Form.Item
-              label="Đính kèm tài cv cá nhân: "
-            >
-              <Upload
-                {...props}
-                listType="picture"
-              >
-                <Button icon={<InboxOutlined />}>Tải CV lên</Button>
-              </Upload>
-              {error && <p style={{ color: "red" }}>{error}</p>}
+            <Form.Item label="Đính kèm tài cv cá nhân: ">
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Upload {...props} listType="picture">
+                  <Button
+                    onClick={() => setUploadType("cv")}
+                    icon={<InboxOutlined />}
+                  >
+                    Tải CV lên
+                  </Button>
+                </Upload>
+              </div>
+              {error && (
+                <p style={{ color: "red", marginLeft: "10px" }}>{error}</p>
+              )}
             </Form.Item>
           </Col>
           <Col span={24}>
@@ -422,7 +445,12 @@ const RegisterProject = () => {
                 listType="picture"
                 className="upload-list-inline"
               >
-                <Button icon={<InboxOutlined />}>Tải tài liệu lên</Button>
+                <Button
+                  onClick={() => setUploadType("document")}
+                  icon={<InboxOutlined />}
+                >
+                  Tải tài liệu lên
+                </Button>
               </Upload>
               {error && <p style={{ color: "red" }}>{error}</p>}
             </Form.Item>

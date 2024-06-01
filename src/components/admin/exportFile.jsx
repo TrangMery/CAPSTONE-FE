@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table, Tooltip, Tag, DatePicker } from "antd";
 import { ExportOutlined } from "@ant-design/icons";
-import { getTopicCompleted } from "../../services/api";
+import { exportFileAmdin, getTopicCompleted } from "../../services/api";
 import dayjs from "dayjs";
 const ExportFile = () => {
   const [loading, setLoading] = useState(false);
@@ -15,9 +15,6 @@ const ExportFile = () => {
       const res = await getTopicCompleted({
         CompleteYear: year,
       });
-      console.log("====================================");
-      console.log(res);
-      console.log("====================================");
       if (res && res.statusCode === 200) {
         setListTopic(res.data.topics);
         setLoading(false);
@@ -28,6 +25,7 @@ const ExportFile = () => {
       console.log("====================================");
     }
   };
+
   const onChangeYear = (date, dateString) => {
     setYear(dayjs(date).format("YYYY"));
   };
@@ -37,19 +35,23 @@ const ExportFile = () => {
   };
   // edit working process
   const handleExport = async (topicId) => {
+    setLoading(true);
     try {
-      const data = {
+      const res = await exportFileAmdin({
         topicId: topicId,
-      };
-      // const res = await assignDeanByAdmin(data);
-      // if (res && res.statusCode === 200) {
-      //   message.success("Xuất file thành công");
-      //   getTopicComplete();
-      // }
+      });
+      if (res && res.statusCode === 200) {
+        setLoading(false);
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "tongket.zip"); // Đặt tên file muốn tải về
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+      }
     } catch (error) {
-      console.log("====================================");
-      console.log("Có lỗi tại đăng kí dean");
-      console.log("====================================");
+      console.log("Error tại xuất file admin: ", error);
     }
   };
   const columns = [

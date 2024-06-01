@@ -527,3 +527,12 @@ export const getUserTopic = (param) => {
 export const getContractDone = (data) => {
   return axios.post("/api/contract/final-contract", data);
 };
+
+//user get history project done 
+export const getHistoryProject = (param) => {
+  return axios.get(`/api/topic/history?${qs.stringify(param)}`);
+}
+//admin export file 
+export const exportFileAmdin = (param) => {
+  return axios.get(`/api/topic/report?${qs.stringify(param)}`);
+}

@@ -195,13 +195,27 @@ const LayoutUser = () => {
       const res = await getNotifications({
         UserId: userId,
       });
-      // console.log("check notification: ", res);
+      console.log("check notification: ", res);
       if (res && res.statusCode === 200) {
         setListNotify(res.data);
       }
     } catch (error) {
       console.log("====================================");
       console.log("Có lối tại getNotify: ", error);
+      console.log("====================================");
+    }
+  };
+  const markAsRead = async (notifiId) => {
+    try {
+      const res = await readNotifications({
+        NotifyId: notifiId,
+      });
+      if (res && res.statusCode === 200) {
+        getNotify();
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("Có lỗi tại đọc thông báo: ", error);
       console.log("====================================");
     }
   };
@@ -278,20 +292,7 @@ const LayoutUser = () => {
       }
     }
   };
-  const markAsRead = async (notifiId) => {
-    try {
-      const res = await readNotifications({
-        NotifyId: notifiId,
-      });
-      if (res && res.statusCode === 200) {
-        getNotify();
-      }
-    } catch (error) {
-      console.log("====================================");
-      console.log("Có lỗi tại đọc thông báo: ", error);
-      console.log("====================================");
-    }
-  };
+
   const content = (
     <div className="popover-cart-body">
       {notifyIsEmpty ? (
@@ -310,7 +311,7 @@ const LayoutUser = () => {
                     className={`notification-item ${
                       !notifi.hasRead ? "unread" : ""
                     }`}
-                    onClick={() => markAsRead(notifi.id)}
+                    onClick={() => markAsRead(notifi.notifyId)}
                     role="button"
                     aria-pressed="false"
                     tabIndex="0"

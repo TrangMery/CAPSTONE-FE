@@ -49,14 +49,22 @@ const CompletedTopic = () => {
       render: (text, record, index) => {
         return <>{dayjs(record.completedDate).format("DD/MM/YYYY")}</>;
       },
+      align: "center",
     },
     {
       title: "Hành động",
       render: (_, record) => {
+        const style1 = {
+          color: "blue",
+          fontSize: "18px",
+          cursor: "pointer",
+          paddingTop: "2px",
+        };
         return (
           <>
             <Tooltip title="Xem chi tiết">
               <BulbOutlined
+                style={style1}
                 onClick={() => {
                   setIsOpen(true);
                   setTopicId(record.topicId);
@@ -66,6 +74,7 @@ const CompletedTopic = () => {
           </>
         );
       },
+      align: "center",
     },
   ];
   const renderHeader = () => (

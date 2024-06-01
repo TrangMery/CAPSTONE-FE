@@ -309,7 +309,7 @@ const AddCouncilTable = (props) => {
     >
       {selectedUser.length < 5 || selectedUser.length % 2 === 0 ? (
         <p style={{ color: "red", marginTop: "10px" }}>
-          Vui lòng chọn số thành viên phù hợp
+          Vui lòng chọn số thành viên là số lẻ
         </p>
       ) : null}
       <div style={{ display: "flex", marginBottom: "10px" }}>

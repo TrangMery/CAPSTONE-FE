@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Drawer, List } from "antd";
-import { getContractDone, getUserTopic } from "../../../services/api";
+import {
+  getContractDone,
+  getHistoryProject,
+  getUserTopic,
+} from "../../../services/api";
 import TimelineComponent from "./Timeline";
 const ViewDetailTopic = (props) => {
   const [listUser, setListUser] = useState([]);
   const [file, setFile] = useState([]);
+  const [process, setProcess] = useState([]);
   const onClose = () => {
     props.setOpen(false);
   };
@@ -29,14 +34,29 @@ const ViewDetailTopic = (props) => {
       console.log("====================================");
     }
   };
+  const getHistoryTopic = async () => {
+    try {
+      const res = await getHistoryProject({
+        TopicId: props.topicId,
+      });
+      if (res && res.statusCode === 200) {
+        setProcess(res.data.reportHistories);
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("Có lỗi tại getHistoryTopic: ", error);
+      console.log("====================================");
+    }
+  };
   useEffect(() => {
-    getTopicDetail();
+    // getTopicDetail();
+    getHistoryTopic();
   }, [props.open === true]);
 
   return (
     <>
       <Drawer
-        title="Xem thông tin chi tiết đề tài"
+        title="Xem lịch sử đề tài"
         placement="right"
         width={500}
         onClose={onClose}
@@ -74,7 +94,7 @@ const ViewDetailTopic = (props) => {
             {file.contractName}
           </a>
         </span> */}
-        <TimelineComponent/>
+        <TimelineComponent process={process} />
       </Drawer>
     </>
   );

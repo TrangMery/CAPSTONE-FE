@@ -76,6 +76,12 @@ const LayoutUser = () => {
     },
     {
       state: "EarlyTermReport",
+      progress: "WaitingForMeeting",
+      isReject: true,
+      message: "Tham gia cuộc họp",
+    },
+    {
+      state: "EarlyTermReport",
       progress: "WaitingForCouncilDecision",
       isReject: false,
       message: "Không được các thành viên thông qua",
@@ -108,7 +114,7 @@ const LayoutUser = () => {
       state: "EarlyTermReport",
       progress: "Completed",
       isReject: true,
-      message: "Hoàn thành giai đoạn đầu kỳ",
+      message: "Hoàn thành giai đoạn đề cương",
     },
     {
       state: "MidtermReport",

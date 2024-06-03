@@ -46,7 +46,6 @@ const styles = {
 const ModalPickTimeLeader = (props) => {
   const isModalOpen = props.isModalOpen;
   const [selectedLeader, setSelectedLeader] = useState(null);
-  const [meetingDate, setMeetingDate] = useState();
   const [meetingDetails, setMeetingDetails] = useState("");
   const [council, setCouncil] = useState([]);
   const location = useLocation();
@@ -232,6 +231,7 @@ const ModalPickTimeLeader = (props) => {
       meetingDetail: meetingDetails,
       meetingDuration: props.meetingDuration,
     };
+    console.log(data);
     let res;
     try {
       if (checkTerm === "earlyterm") {

@@ -33,6 +33,7 @@ const AddCouncilTable = (props) => {
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [maxSelectedMembers, setMaxSelectedMembers] = useState();
   const [newData, setNewData] = useState([]);
+  const [error, setError] = useState();
   const location = useLocation();
   let checkPath = location.pathname.split("/");
   let topicID = checkPath[4];
@@ -272,7 +273,7 @@ const AddCouncilTable = (props) => {
         return 0;
       });
       setNewData(newData);
-      setSelectedKeys(selectedRowKeys); // id của thành viên hội đồng
+      setSelectedKeys(selectedRowKeys);
       const updatedSelection = selectedRows.includes(firstMember)
         ? selectedRows
         : [firstMember, ...selectedRows];
@@ -299,42 +300,54 @@ const AddCouncilTable = (props) => {
   };
 
   const renderFooter = () => (
-    <div style={{ display: "flex", justifyContent: "flex-end" }}>
-      <Button
-        shape="round"
-        type="primary"
-        danger
-        onClick={() => props.prev()}
-        style={{ margin: "0 10px" }}
-      >
-        Quay về
-      </Button>
-      <ConfigProvider
-        theme={{
-          token: {
-            colorPrimary: "#55E6A0",
-          },
-        }}
-      >
-        {
-          (setMaxSelectedMembers(6),
-          (
-            <Button
-              disabled={
-                selectedUser.length < 5 || selectedUser.length % 2 === 0
-              }
-              shape="round"
-              type="primary"
-              onClick={() => {
-                setIsModalOpen(true);
-                selectedUser.push(props.firstMember[0]);
-              }}
-            >
-              Thêm thành viên đánh giá
-            </Button>
-          ))
-        }
-      </ConfigProvider>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+      }}
+    >
+      {selectedUser.length < 5 || selectedUser.length % 2 === 0 ? (
+        <p style={{ color: "red", marginTop: "10px" }}>
+          Vui lòng chọn số thành viên phù hợp
+        </p>
+      ) : null}
+      <div style={{ display: "flex", marginBottom: "10px" }}>
+        <Button
+          shape="round"
+          type="primary"
+          danger
+          onClick={() => props.prev()}
+          style={{ margin: "0 10px" }}
+        >
+          Quay về
+        </Button>
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: "#55E6A0",
+            },
+          }}
+        >
+          {
+            (setMaxSelectedMembers(6),
+            (
+              <Button
+                disabled={
+                  selectedUser.length < 5 || selectedUser.length % 2 === 0
+                }
+                shape="round"
+                type="primary"
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
+              >
+                Thêm thành viên đánh giá
+              </Button>
+            ))
+          }
+        </ConfigProvider>
+      </div>
     </div>
   );
   return (

@@ -39,7 +39,7 @@ const items = [
     icon: <UnorderedListOutlined />,
     children: [
       {
-        label: <Link to="/staff/earlyterm">Đầu kỳ</Link>,
+        label: <Link to="/staff/earlyterm">Đề cương</Link>,
         key: "earlyterm",
         icon: <CalendarOutlined />,
       },

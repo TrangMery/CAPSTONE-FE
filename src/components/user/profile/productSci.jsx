@@ -14,11 +14,6 @@ const ProductPage = () => {
       label: "Đề tài đã hoàn thành",
       children: <CompletedTopic />,
     },
-    {
-      key: "3",
-      label: "Đề tài đang thực hiện",
-      children: <CompletedTopic />,
-    },
   ];
   return (
     <div>

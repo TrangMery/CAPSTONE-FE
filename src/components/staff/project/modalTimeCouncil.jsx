@@ -15,7 +15,7 @@ const ModalTimeCouncil = (props) => {
   const check = path[2];
 
   const navigate = useNavigate();
-  const reviewEndDate = props.data.reviewEndDate;
+  const reviewEndDate = props.data.documentSupplementationDeadline;
   const closeModal = () => {
     props.setIsModalOpen(false);
   };
@@ -47,6 +47,7 @@ const ModalTimeCouncil = (props) => {
       }
     }
   };
+  
   const getHoliday = async () => {
     try {
       const res = await getAllHoliday(today);
@@ -68,7 +69,9 @@ const ModalTimeCouncil = (props) => {
     }
     // Get today's date
     const mindate = dayjs(reviewEndDate).add(1, "day");
-
+    console.log('====================================');
+    console.log(props);
+    console.log('====================================');
     // Disable dates before today
     if (current.isBefore(mindate, "day")) {
       return true;

@@ -201,7 +201,7 @@ const ManagerFileType = () => {
     },
     {
       key: "1",
-      label: `Đầu kỳ`,
+      label: `Đề cương`,
       children: <></>,
     },
     {

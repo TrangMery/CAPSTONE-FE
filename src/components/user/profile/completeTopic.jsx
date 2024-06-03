@@ -58,7 +58,8 @@ const CompletedTopic = () => {
             <Tooltip title="Xem chi tiết">
               <BulbOutlined
                 onClick={() => {
-                  setIsOpen(true), setTopicId(record.topicId);
+                  setIsOpen(true);
+                  setTopicId(record.topicId);
                 }}
               />
             </Tooltip>

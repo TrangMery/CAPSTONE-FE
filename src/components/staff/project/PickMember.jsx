@@ -179,9 +179,23 @@ const PickMember = (props) => {
     {
       title: "Giờ họp ",
       dataIndex: "meetingShedules",
-      render: (_, record) => {
+      render: (text, record) => {
         if (record.meetingShedules.length === 0) {
           return <div>Trống</div>;
+        } else {
+          return (
+            <div>
+              {record.meetingShedules.map((element, index) => {
+                const fromTime = dayjs(element.from).format("HH:mm");
+                const toTime = dayjs(element.to).format("HH:mm");
+                return (
+                  <div key={index}>
+                    {fromTime} - {toTime}
+                  </div>
+                );
+              })}
+            </div>
+          );
         }
       },
     },

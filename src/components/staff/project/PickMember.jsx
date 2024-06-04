@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { getMemberReview } from "../../../services/api";
 import ModalTime from "./ModalChooseTime.jsx";
+import dayjs from "dayjs";
 const PickMember = (props) => {
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState("");
@@ -21,6 +22,7 @@ const PickMember = (props) => {
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [maxSelectedMembers, setMaxSelectedMembers] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [timeMeeting, setTimeMeeting] = useState([]);
   const location = useLocation();
   let checkPath = location.pathname.split("/");
   let topicID = checkPath[4];
@@ -181,7 +183,7 @@ const PickMember = (props) => {
       dataIndex: "meetingShedules",
       render: (text, record) => {
         if (record.meetingShedules.length === 0) {
-          return <div>Trống</div>;
+          return <div>Trống lịch</div>;
         } else {
           return (
             <div>
@@ -190,7 +192,7 @@ const PickMember = (props) => {
                 const toTime = dayjs(element.to).format("HH:mm");
                 return (
                   <div key={index}>
-                    {fromTime} - {toTime}
+                    {fromTime} - {toTime} <br />
                   </div>
                 );
               })}
@@ -200,7 +202,7 @@ const PickMember = (props) => {
       },
     },
     {
-      title: "Hành động",
+      title: "Xem thông tin",
       key: "action",
       render: (text, record) => (
         <Button
@@ -274,6 +276,7 @@ const PickMember = (props) => {
     onChange: (selectedRowKeys, selectedRows) => {
       setSelectedKeys(selectedRowKeys); // id của thành viên hội đồng
       setSelectedUser(selectedRows);
+      setTimeMeeting(selectedRows[0].meetingShedules);
       props.setFirstMenber(selectedRows);
     },
     hideSelectAll: true,
@@ -309,7 +312,6 @@ const PickMember = (props) => {
               shape="round"
               type="primary"
               onClick={() => {
-                // props.next();
                 setIsModalOpen(true);
               }}
             >
@@ -356,6 +358,7 @@ const PickMember = (props) => {
         setIsModalOpen={setIsModalOpen}
         setTime={props.setTime}
         next={props.next}
+        timeMeeting={timeMeeting}
         setMeetingDateDuration={props.setMeetingDateDuration}
       />
     </div>

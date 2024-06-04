@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tooltip, Tag, DatePicker } from "antd";
+import { Table, Tooltip, Tag, DatePicker, message } from "antd";
 import { ExportOutlined } from "@ant-design/icons";
 import { exportFileAmdin, getTopicCompleted } from "../../services/api";
 import dayjs from "dayjs";
@@ -40,15 +40,20 @@ const ExportFile = () => {
       const res = await exportFileAmdin({
         topicId: topicId,
       });
+      console.log("====================================");
+      console.log("check data: ", res);
+      console.log("====================================");
       if (res && res.statusCode === 200) {
         setLoading(false);
-        const url = window.URL.createObjectURL(new Blob([res.data]));
         const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "tongket.zip"); // Đặt tên file muốn tải về
+        link.href = res.data;
+        link.setAttribute("download", "");
         document.body.appendChild(link);
         link.click();
-        link.parentNode.removeChild(link);
+        link.remove();
+      } else {
+        setLoading(false);
+        message.error("Vui lòng thử lại sau");
       }
     } catch (error) {
       console.log("Error tại xuất file admin: ", error);

@@ -4,7 +4,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
-import { useState } from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const format = "HH:mm";
@@ -30,6 +30,7 @@ const ModalTime = (props) => {
     // Danh sách cuộc họp đã được đặt, ví dụ:
     // { start: dayjs().set('hour', 10).set('minute', 0), end: dayjs().set('hour', 11).set('minute', 30) }
   ]);
+  console.log("check time meeting:", props.timeMeeting);
   const location = useLocation();
   const meetingDate = dayjs(location.state.meetingDate).format("DD/MM/YYYY");
   const handleDurationChange = (data) => {
@@ -60,7 +61,7 @@ const ModalTime = (props) => {
     const endDate = dayjs(dateEndString, "DD/MM/YYYY HH:mm").format(
       "YYYY-MM-DDTHH:mm:ss.SSS"
     );
-    props.setMeetingDateDuration(meetingDuration)
+    props.setMeetingDateDuration(meetingDuration);
     const newMeeting = {
       start: meetingStartTime,
       end: dayjs(meetingStartTime)
@@ -226,4 +227,4 @@ const ModalTime = (props) => {
   );
 };
 
-export default ModalTime;
+export default React.memo(ModalTime);

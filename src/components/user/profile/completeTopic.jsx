@@ -149,18 +149,22 @@ const CompletedTopic = () => {
       </div>
     </div>
   );
-  console.log("====================================");
-  console.log(userProfile);
-  console.log("====================================");
   const handleExportFile = () => {
     const doc = new jsPDF("p", "mm", "a4");
     doc.setFont("Roboto");
 
     // Header
     doc.setFontSize(16);
-    doc.text("Lý lịch khoa học", 105, 15, { align: "center" });
+    doc.text("Cộng Hòa Xã Hội Chủ Nghĩa Việt Nam", 105, 5, {
+      align: "center",
+    });
+    doc.text("--------------------------------", 105, 14, {align: "center",})
+    doc.text("Lý lịch khoa học", 105, 20, { align: "center" });
     doc.addImage(logo, "png", 0, 0, 30, 20);
-
+    doc.setFontSize(12);
+    doc.text("Độc lập - Tự do - Hạnh phúc", 105, 10, {
+      align: "center",
+    });
     // Personal Information
     doc.setFontSize(14);
     doc.text("I. LÝ LỊCH SƠ LƯỢC", 10, 40);

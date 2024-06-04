@@ -69,11 +69,8 @@ const ModalTimeCouncil = (props) => {
     }
     // Get today's date
     const mindate = dayjs(reviewEndDate).add(1, "day");
-    console.log('====================================');
-    console.log(props);
-    console.log('====================================');
     // Disable dates before today
-    if (current.isBefore(mindate, "day")) {
+    if (current.isBefore(mindate, "day") || current.isSame(mindate, "day")) {
       return true;
     }
     // Disable holidays

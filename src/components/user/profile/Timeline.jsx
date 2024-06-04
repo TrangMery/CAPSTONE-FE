@@ -33,7 +33,7 @@ const TimelineComponent = ({ process }) => {
     // Logic để tải file
     const link = document.createElement("a");
     link.href = fileUrl;
-    link.setAttribute("download", "");
+    link.setAttribute("download", "tongket");
     document.body.appendChild(link);
     link.click();
     link.remove();

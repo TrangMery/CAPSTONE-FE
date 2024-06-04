@@ -1,23 +1,17 @@
-import { Col, Divider, Form, Input, Row } from "antd";
+import { Button, Col, Divider, Form, Input, Row } from "antd";
 import React, { useEffect, useState } from "react";
 import "./basicProfile.scss";
-import { EditOutlined } from "@ant-design/icons";
-import {
-  getAllDepartment,
-  getUserInformation,
-} from "../../../services/api";
+import { getAllDepartment, getUserInformation } from "../../../services/api";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
-import { useNavigate } from "react-router-dom";
 
 const BasicProfile = () => {
   const { TextArea } = Input;
   const [form] = Form.useForm();
   const [departMent, setDepartMent] = useState([]);
   const userId = localStorage.getItem("userId");
-  const navigate = useNavigate();
   const getDepartment = async () => {
     try {
       const res = await getAllDepartment();
@@ -48,7 +42,9 @@ const BasicProfile = () => {
           birthday: dayjs(res.data.birthday).format(dateFormat),
           issue: dayjs(res.data.issue).format(dateFormat),
           departmentId: departmentName,
+          sex: res.data.sex === "Male" ? "Nam" : "Nữ",
         };
+
         form.setFieldsValue(customData);
       }
     } catch (error) {
@@ -57,7 +53,6 @@ const BasicProfile = () => {
       console.log("====================================");
     }
   };
-
   useEffect(() => {
     getDepartment();
   }, []);
@@ -71,7 +66,7 @@ const BasicProfile = () => {
         style={{
           display: "flex",
           justifyContent: "center",
-          textAlign: "center",
+          alignItems: "center",
         }}
       >
         <h3>Thông tin cá nhân</h3>

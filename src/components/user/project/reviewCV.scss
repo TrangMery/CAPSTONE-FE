@@ -1,0 +1,49 @@
+.page-controls {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  background: whitesmoke ;
+  opacity: 0;
+  transform: translate(-50%);
+  transition: opacity ease-in-out 0.2s;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.page-controls span {
+  font: inherit;
+  font-size: 0.8em;
+  padding: 0 0.5em;
+}
+
+.page-controls button {
+  width: 44px;
+  height: 44px;
+  background:whitesmoke;
+  border: 0;
+  font: inherit;
+  font-size: 0.8em;
+  border-radius: 4px;
+}
+
+.page-controls button:enabled:hover {
+  cursor: pointer;
+}
+
+.page-controls button:enabled:hover,
+.page-controls button:enabled:focus {
+  background-color: #bebaba;
+}
+
+.page-controls button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.page-controls button:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.react-pdf__Document:hover .page-controls {
+  opacity: 1;
+}

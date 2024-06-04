@@ -1,13 +1,9 @@
 import React, { useMemo, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { Drawer, message } from "antd";
+import { Button, Drawer, message } from "antd";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
-
-// pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-//   'pdfjs-dist/build/pdf.worker.min.mjs',
-//   import.meta.url,
-// ).toString();
+import "./reviewCV.scss";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const ReviewCvFile = ({ url, setOpen, open }) => {
@@ -44,6 +40,7 @@ const ReviewCvFile = ({ url, setOpen, open }) => {
         width={700}
         onClose={onClose}
         open={open}
+        className="react-pdf__Document"
       >
         <Document
           file={fileUrl}
@@ -53,11 +50,29 @@ const ReviewCvFile = ({ url, setOpen, open }) => {
         >
           <Page pageNumber={pageNumber} />
         </Document>
-        {/* {numPages && (
-          <p>
-            Trang {pageNumber} của {numPages}
-          </p>
-        )} */}
+        <div className="page-controls">
+          <button
+            disabled={pageNumber === 1}
+            onClick={() => {
+              setPageNumber(pageNumber - 1);
+            }}
+          >
+            {" "}
+            {"<"}{" "}
+          </button>
+          <span>
+            {pageNumber} trên {numPages}
+          </span>
+          <button
+            disabled={pageNumber === numPages}
+            onClick={() => {
+              setPageNumber(pageNumber + 1);
+            }}
+          >
+            {" "}
+            {">"}{" "}
+          </button>
+        </div>
       </Drawer>
     </div>
   );

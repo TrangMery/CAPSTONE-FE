@@ -2,9 +2,11 @@ import { Button, Col, Divider, Modal, Row, Select, TimePicker } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import isBetween from "dayjs/plugin/isBetween";
 dayjs.extend(utc);
 dayjs.extend(timezone);
-import React, { useState } from "react";
+dayjs.extend(isBetween);
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const format = "HH:mm";
@@ -26,13 +28,23 @@ const ModalTime = (props) => {
   const [meetingStartTime, setMeetingStartTime] = useState(null);
   const [meetingEndTime, setMeetingEndTime] = useState(null);
   const [availableStartTimes, setAvailableStartTimes] = useState([]);
-  const [meetings, setMeetings] = useState([
-    // Danh sách cuộc họp đã được đặt, ví dụ:
-    // { start: dayjs().set('hour', 10).set('minute', 0), end: dayjs().set('hour', 11).set('minute', 30) }
-  ]);
-  console.log("check time meeting:", props.timeMeeting);
+  const [meetings, setMeetings] = useState([]);
+
   const location = useLocation();
   const meetingDate = dayjs(location.state.meetingDate).format("DD/MM/YYYY");
+
+  useEffect(() => {
+    const formattedMeetings = props.timeMeeting.map((meeting) => ({
+      start: dayjs()
+        .set("hour", dayjs(meeting.from).hour())
+        .set("minute", dayjs(meeting.from).minute()),
+      end: dayjs()
+        .set("hour", dayjs(meeting.to).hour())
+        .set("minute", dayjs(meeting.to).minute()),
+    }));
+    setMeetings(formattedMeetings);
+  }, [props.timeMeeting]);
+
   const handleDurationChange = (data) => {
     setMeetingDuration(data.value);
     const times = getAvailableTimes(data.value);
@@ -48,6 +60,10 @@ const ModalTime = (props) => {
 
   const handleCancel = () => {
     props.setIsModalOpen(false);
+    setMeetingDuration(null);
+    setMeetingStartTime(null);
+    setMeetingEndTime(null);
+    setAvailableStartTimes([]);
   };
 
   const handleSubmit = () => {
@@ -89,14 +105,16 @@ const ModalTime = (props) => {
   };
 
   const getAvailableTimes = (duration) => {
-    const excludeHour = duration === 90 ? 16 : null;
     const availableTimes = [];
+    const excludeHour = duration === 90 ? 16 : null;
+
     for (let i = 0; i < 24 * 60; i += 15) {
       const time = dayjs().startOf("day").add(i, "minute");
       const proposedMeeting = {
         start: time,
         end: time.clone().add(duration, "minute").add(15, "minute"),
       };
+
       if (
         !isOverlapping(proposedMeeting) &&
         !isOutsideWorkingHours(time) &&
@@ -148,6 +166,7 @@ const ModalTime = (props) => {
           <Select
             labelInValue
             style={{ width: 120 }}
+            value={meetingDuration ? { value: meetingDuration } : undefined}
             onChange={handleDurationChange}
             options={options}
           />
@@ -156,6 +175,7 @@ const ModalTime = (props) => {
           <p>Thời gian bắt đầu</p>
           <TimePicker
             format={format}
+            value={meetingStartTime ? dayjs(meetingStartTime) : null}
             minuteStep={15}
             hideDisabledOptions
             disabled={!meetingDuration}
@@ -227,4 +247,4 @@ const ModalTime = (props) => {
   );
 };
 
-export default React.memo(ModalTime);
+export default ModalTime;

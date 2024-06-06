@@ -33,6 +33,7 @@ const CompletedTopic = () => {
   const [pageSize, setPageSize] = useState(5);
   const [topicId, setTopicId] = useState();
   const [userProfile, setUserProfile] = useState();
+  const [isOwner, setIsOwner] = useState(false);
   const userId = localStorage.getItem("userId");
   const getTopic = async () => {
     try {
@@ -108,6 +109,7 @@ const CompletedTopic = () => {
                 onClick={() => {
                   setIsOpen(true);
                   setTopicId(record.topicId);
+                  setIsOwner(record.isOwner);
                 }}
               />
             </Tooltip>
@@ -298,7 +300,7 @@ const CompletedTopic = () => {
           }}
         />
       )}
-      <ViewDetailTopic open={isOpen} setOpen={setIsOpen} topicId={topicId} />
+      <ViewDetailTopic open={isOpen} setOpen={setIsOpen} topicId={topicId} isOwner = {isOwner}/>
     </div>
   );
 };

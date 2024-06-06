@@ -186,7 +186,11 @@ const RegisterProject = () => {
     if (Object.values(newTopicFiles).length === 0 || cvLink === "") {
       message.error("Xin hãy tải các tài liệu liên quan lên");
       return;
+    } else if (newData.length === 0) {
+      message.error("Xin hãy chọn thành viên thực hiện đề tài");
+      return;
     }
+
     const { categoryId, topicName, description, budget, startTime } = values;
     const data = {
       categoryId: categoryId,

@@ -21,7 +21,6 @@ import ProjectForTrackStaff from "./components/staff/project/ProjectForTrackStaf
 import MidtermProject from "./pages/projectMangerStaff/midterm.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/index.jsx";
 import FinaltermProject from "./pages/projectMangerStaff/finalterm.jsx";
-import UserProfile from "./components/user/profile/userProfile.jsx";
 import LayoutAdmin from "./components/admin/LayoutAdmin.jsx";
 import AdminPage from "./pages/admin/index.jsx";
 import ManagerAccount from "./components/admin/ManagerAccount.jsx";
@@ -32,6 +31,7 @@ import ManagerContractType from "./components/admin/ManagerContract.jsx";
 import ExportFile from "./components/admin/exportFile.jsx";
 import AddCouncil from "./components/staff/project/AddCouncil.jsx";
 import ViewTopic from "./components/staff/project/ViewTopicCompleted.jsx";
+import RegisterProject from "./components/user/registerProject/RegisterProject";
 
 const Layout = () => {
   return <LoginPage />;
@@ -177,8 +177,8 @@ function App() {
           ],
         },
         {
-          path: "profile",
-          element: <UserProfile />,
+          path: "register",
+          element: <RegisterProject />,
         },
       ],
     },
@@ -200,24 +200,24 @@ function App() {
         },
         {
           path: "export-file",
-          element: <ExportFile/>,
+          element: <ExportFile />,
         },
         {
           path: "file",
-          element: <ManagerFileType/>,
+          element: <ManagerFileType />,
         },
         {
           path: "contract",
-          element: <ManagerContractType/>,
+          element: <ManagerContractType />,
         },
         {
           path: "add-holiday",
-          element: <ManagerHoliday/>,
+          element: <ManagerHoliday />,
         },
         {
           path: "add-department",
-          element: <ManagerDepartment/>
-        }
+          element: <ManagerDepartment />,
+        },
       ],
     },
   ]);

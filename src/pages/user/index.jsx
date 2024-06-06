@@ -1,7 +1,7 @@
-import RegisterProject from "../../components/user/registerProject/RegisterProject";
+import UserProfile from "../../components/user/profile/userProfile";
 
 const UserPage = () => {
-  return <RegisterProject />;
+  return <UserProfile />;
 };
 
 export default UserPage;

@@ -251,7 +251,7 @@ const ModalPickTimeLeader = (props) => {
         });
       }
       if (res && res.statusCode === 200) {
-        message.success("Tạo hội đồng đánh giá thành công");
+        message.success("Lập hội đồng đánh giá thành công");
         navigate("/staff/upload-document");
       } else {
         console.log("====================================");

@@ -7,7 +7,10 @@ import {
 } from "../../../services/api";
 import TimelineComponent from "./Timeline";
 const ViewDetailTopic = (props) => {
+  const [listUser, setListUser] = useState([]);
+  const [file, setFile] = useState({});
   const [process, setProcess] = useState([]);
+  let checkEnd;
   const onClose = () => {
     props.setOpen(false);
   };
@@ -16,9 +19,6 @@ const ViewDetailTopic = (props) => {
       const res = await getHistoryProject({
         TopicId: props.topicId,
       });
-      console.log('====================================');
-      console.log(res);
-      console.log('====================================');
       if (res && res.statusCode === 200) {
         setProcess(res.data.reportHistories);
       }
@@ -28,8 +28,30 @@ const ViewDetailTopic = (props) => {
       console.log("====================================");
     }
   };
+  const getTopicDetail = async () => {
+    const data = {
+      topicId: props.topicId,
+    };
+    try {
+      const res = await getUserTopic({
+        TopicId: props.topicId,
+      });
+      const getFile = await getContractDone(data);
+      if (res.statusCode === 200 || getFile.status === 200) {
+        setListUser(res.data);
+        setFile(getFile.data);
+        checkEnd = getFile.data.contractLink.endsWith(".docx");
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("Có lỗi tại get topic detail", error);
+      console.log("====================================");
+    }
+  };
   useEffect(() => {
-    // getTopicDetail();
+    if (props.isOwner === true) {
+      getTopicDetail();
+    }
     getHistoryTopic();
   }, [props.open === true]);
 
@@ -42,39 +64,47 @@ const ViewDetailTopic = (props) => {
         onClose={onClose}
         open={props.open}
       >
-        {/* <List
-          header={<div>Danh sách thành viên</div>}
-          bordered
-          dataSource={listUser}
-          renderItem={(item) => (
-            <List.Item key={item.email}>
-              <List.Item.Meta title={item.fullName} description={item.email} />
-              <div>
-                {item.taskDescription === null
-                  ? "Trưởng nhóm"
-                  : item.taskDescription}
-              </div>
-            </List.Item>
-          )}
-        />
-        <p style={{ marginTop: "20px", fontWeight: "bold" }}>
-          Tài liệu liên quan
-        </p>
-        <span>
-          <a
-            href={
-              checkEnd
-                ? `https://view.officeapps.live.com/op/view.aspx?src=` +
-                  file.contractLink
-                : file.contractLink
-            }
-            target="_blank"
-            rel={file.contractName}
-          >
-            {file.contractName}
-          </a>
-        </span> */}
-        <TimelineComponent process={process} />
+        {props.isOwner !== true ? (
+          <>
+            <List
+              header={<div>Danh sách thành viên</div>}
+              bordered
+              dataSource={listUser}
+              renderItem={(item) => (
+                <List.Item key={item.email}>
+                  <List.Item.Meta
+                    title={item.fullName}
+                    description={item.email}
+                  />
+                  <div>
+                    {item.taskDescription === null
+                      ? "Chủ nhiệm đề tài"
+                      : item.taskDescription}
+                  </div>
+                </List.Item>
+              )}
+            />
+            <p style={{ marginTop: "20px", fontWeight: "bold" }}>
+              Tài liệu liên quan
+            </p>
+            <span>
+              <a
+                href={
+                  checkEnd
+                    ? `https://view.officeapps.live.com/op/view.aspx?src=` +
+                      file.contractLink
+                    : file.contractLink
+                }
+                target="_blank"
+                rel={file.contractName}
+              >
+                {file.contractName}
+              </a>
+            </span>
+          </>
+        ) : (
+          <TimelineComponent process={process} />
+        )}
       </Drawer>
     </>
   );

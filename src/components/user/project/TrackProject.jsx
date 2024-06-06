@@ -165,8 +165,8 @@ const TrackProject = () => {
                             title:
                               dataProcess?.earlyTermReportProcess
                                 ?.waitingForCouncilFormation === "Done"
-                                ? "Staff đã tạo hội đồng đánh giá"
-                                : "Staff tạo hội đồng đánh giá",
+                                ? "Staff đã lập hội đồng đánh giá"
+                                : "Staff lập hội đồng đánh giá",
                             status:
                               dataProcess?.earlyTermReportProcess
                                 ?.waitingForCouncilFormation === "Done"
@@ -231,7 +231,7 @@ const TrackProject = () => {
                                 {item.deadlineForDocumentSupplementation ? (
                                   <>
                                     <p>
-                                      Trạng thái: Trưởng nhóm cần nộp form trước
+                                      Trạng thái: Chủ nhiệm đề tài cần nộp form trước
                                       ngày {/* 25-04-2024 */}
                                       {dayjs(
                                         item.deadlineForDocumentSupplementation
@@ -273,7 +273,7 @@ const TrackProject = () => {
                                       icon: <ScheduleOutlined />,
                                     },
                                     {
-                                      title: "Trưởng nhóm nộp đơn",
+                                      title: "Chủ nhiệm đề tài nộp đơn",
                                       status:
                                         item?.waitingForDocumentSupplementation ===
                                         "OnGoing"
@@ -285,8 +285,8 @@ const TrackProject = () => {
                                       title:
                                         item?.waitingForConfigureConference ===
                                         "Done"
-                                          ? "Staff đã tạo hội đồng đánh giá"
-                                          : "Staff tạo hội đồng đánh giá",
+                                          ? "Staff đã lập hội đồng đánh giá"
+                                          : "Staff lập hội đồng đánh giá",
                                       status:
                                         item?.waitingForConfigureConference ===
                                         "Done"
@@ -335,7 +335,7 @@ const TrackProject = () => {
                           <>
                             <p>
                               {" "}
-                              Trạng thái: Trưởng nhóm cần nộp các file liên quan
+                              Trạng thái: Chủ nhiệm đề tài cần nộp các file liên quan
                               trước ngày{" "}
                               {dayjs(
                                 dataProcess.finalTermReportProcess
@@ -388,8 +388,8 @@ const TrackProject = () => {
                               title:
                                 dataProcess.finalTermReportProcess
                                   .waitingForConfigureConference === "Done"
-                                  ? "Staff đã tạo hội đồng đánh giá"
-                                  : "Staff tạo hội đồng đánh giá",
+                                  ? "Staff đã lập hội đồng đánh giá"
+                                  : "Staff lập hội đồng đánh giá",
                               status:
                                 dataProcess.finalTermReportProcess
                                   .waitingForConfigureConference === "Done"
@@ -446,7 +446,7 @@ const TrackProject = () => {
                         <>
                           <p>
                             {" "}
-                            Trạng thái: Trưởng nhóm nộp file tính ngày công
+                            Trạng thái: Chủ nhiệm đề tài nộp file tính ngày công
                           </p>
                           {isLeader ? (
                             <ConfigProvider

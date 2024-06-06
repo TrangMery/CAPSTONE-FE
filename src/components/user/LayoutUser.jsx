@@ -1,11 +1,11 @@
 import {
   BellOutlined,
+  ContainerOutlined,
   DownOutlined,
   FileDoneOutlined,
   FileProtectOutlined,
   FileSearchOutlined,
   FileSyncOutlined,
-  HomeOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 
@@ -221,21 +221,26 @@ const LayoutUser = () => {
   };
   const items = [
     {
-      label: <Link to="/user">Đăng kí đề tài</Link>,
+      label: <Link to="/user">Hồ sơ cá nhân</Link>,
       key: "dashboard",
-      icon: <HomeOutlined />,
-      hidden: role !== "User",
+      icon: <UserOutlined />,
     },
     {
-      label: <Link to="/user/manager">Đề tài sơ duyệt</Link>,
-      key: "manager",
-      icon: <FileProtectOutlined />,
+      label: <Link to="/user/register">Đăng kí đề tài</Link>,
+      key: "register",
+      icon: <ContainerOutlined />,
+      hidden: role !== "User",
     },
     {
       label: <Link to="/user/manager-review">Đề tài thông qua</Link>,
       key: "manager-review",
       icon: <FileSearchOutlined />,
       hidden: role !== "Dean",
+    },
+    {
+      label: <Link to="/user/manager">Đề tài sơ duyệt</Link>,
+      key: "manager",
+      icon: <FileProtectOutlined />,
     },
     {
       label: <Link to="/user/review">Xem đề tài</Link>,
@@ -246,11 +251,6 @@ const LayoutUser = () => {
       label: <Link to="/user/track">Theo dõi tiến độ</Link>,
       key: "track",
       icon: <FileDoneOutlined />,
-    },
-    {
-      label: <Link to="/user/profile">Hồ sơ cá nhân</Link>,
-      key: "profile",
-      icon: <UserOutlined />,
     },
   ];
   const itemDropdown = [
@@ -280,7 +280,8 @@ const LayoutUser = () => {
   const url =
     "https://cdn1.vectorstock.com/i/1000x1000/14/80/doctor-web-icon-therapist-avatar-vector-18531480.jpg";
 
-   const notifyIsEmpty = listNotify.unreadNotificationsNumber === 0 ? true : false;
+  const notifyIsEmpty =
+    listNotify.unreadNotificationsNumber === 0 ? true : false;
   const getMessage = (notifi) => {
     for (const condition of conditions) {
       if (

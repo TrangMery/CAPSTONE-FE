@@ -140,8 +140,8 @@ const TrackProjectStaff = () => {
                         title:
                           dataProcess?.earlyTermReportProcess
                             ?.waitingForCouncilFormation === "Done"
-                            ? "Staff đã tạo hội đồng đánh giá"
-                            : "Staff tạo hội đồng đánh giá",
+                            ? "Staff đã lập hội đồng đánh giá"
+                            : "Staff lập hội đồng đánh giá",
                         status:
                           dataProcess?.earlyTermReportProcess
                             ?.waitingForCouncilFormation === "Done"

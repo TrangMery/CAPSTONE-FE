@@ -28,27 +28,19 @@ const ModalChairmanReject = (props) => {
   const handleOk = () => {
     form.submit();
   };
-  console.log('====================================');
-  console.log(newTopicFiles[0]);
-  console.log('====================================');
   const handleCancel = () => {
     props.setDataUser({});
     props.setIsModalOpen(false);
     setFileList([]);
     form.resetFields();
   };
-  console.log("day la data modal reject", data);
   const onSubmit = async () => {
     const param = {
       topicId: data[0].topicId,
       feedbackFileLink: newTopicFiles[0].topicFileLink,
     };
-    console.log('====================================');
-    console.log(param);
-    console.log('====================================');
     try {
       const res = await chairmanReject(param);
-      console.log(res);
       setIsSubmit(true);
       if (res && res.isSuccess) {
         setIsSubmit(false);

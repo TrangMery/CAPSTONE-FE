@@ -1,16 +1,10 @@
 import "./table.scss";
 import "./card.css";
-import {
-  CheckOutlined,
-  CloseOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { chairmanApprove, getReviewDocuments } from "../../../services/api";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Collapse } from 'antd';
 import ModalUpload from "./ModalResubmit";
 import ModalChairmanReject from "./ModalChairmanReject";
 import CollapseTopic from "./CollapTopic";
@@ -18,48 +12,54 @@ dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
 
 const ResubmitProject = () => {
-  const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
-  const [total, setTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  // const [isTableOpen, setTableOpen] = useState(false);
-  const [topicLink, setTopicLink] = useState([]);
   const [data, setDataUser] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenR, setIsModalOpenR] = useState(false);
   const [status, setStatus] = useState(false);
-  const userId = "7dc9eb1d-3b80-434b-9b7e-85dd78e5011d";
+  const userId = localStorage.getItem("userId");
   const [dataReviewDocument, setDataReviewDocument] = useState([]);
-
+  const [role, setRole] = useState("");
   const location = useLocation();
   let topicId = location.pathname.split("/");
   topicId = topicId[4];
-  const renderRole = (role) => {
+  const renderRole = () => {
     if (role == "Chairman") {
       return (
         <>
-        <button className="btnOk" onClick={() => chairmanApprove(topicId)}>Đồng ý</button>
-      <button className="btnRe" onClick={() => {
-        setDataUser(dataReviewDocument);
-        setIsModalOpenR(true);
-      }}>Từ chối</button>
+          <button className="btnOk" onClick={() => chairmanApprove(topicId)}>
+            Đồng ý
+          </button>
+          <button
+            className="btnRe"
+            onClick={() => {
+              setDataUser(dataReviewDocument);
+              setIsModalOpenR(true);
+            }}
+          >
+            Từ chối
+          </button>
         </>
-      
-      )
+      );
     }
     if (role == "Leader") {
       return (
-        <button className="btn" onClick={() => {
-          setDataUser(dataReviewDocument);
-          setIsModalOpen(true);
-        }}>Tải tài liệu</button>)
+        <button
+          className="btn"
+          onClick={() => {
+            setDataUser(dataReviewDocument);
+            setIsModalOpen(true);
+          }}
+        >
+          Tải tài liệu
+        </button>
+      );
     }
     return "";
-  }
+  };
 
   const getReviewDoc = async () => {
     const res = await getReviewDocuments({
-      userId: userId, 
+      userId: userId,
       topicId: topicId,
     });
     if (res && res?.data) {
@@ -68,7 +68,7 @@ const ResubmitProject = () => {
           topicId,
           role: res.data.role,
           state: res.data?.reviewEarlyDocument
-            ? "Đăng ký đề tài"
+            ? "Giai đoạn đề cương"
             : "Giai đoạn tiếp theo",
           deadline: dayjs(res.data.reviewEarlyDocument.deadline).format(
             dateFormat
@@ -79,29 +79,17 @@ const ResubmitProject = () => {
             res.data.reviewEarlyDocument.documents.length > 0
               ? res.data.reviewEarlyDocument.documents
               : null,
-
         },
       ];
-      console.log("đây là res data", res.data);
-      console.log("đây là data", data);
+      setRole(res.data.role)
+      console.log("đây là data", res.data);
       setDataReviewDocument(data);
     }
   };
-  
+
   useEffect(() => {
     getReviewDoc();
   }, [status]);
-
-  const onChange = (pagination, filters, sorter, extra) => {
-    if (pagination.current !== current) {
-      setCurrent(pagination.current);
-    }
-    if (pagination.pageSize !== pageSize) {
-      setPageSize(pagination.pageSize);
-      setCurrent(1);
-    }
-    console.log("parms: ", pagination, filters, sorter, extra);
-  };
   return (
     <>
       <h2
@@ -112,37 +100,39 @@ const ResubmitProject = () => {
           marginBottom: "40px",
         }}
       >
-        Bổ sung tài liệu
+        {role === "Chairman"
+          ? "Phê duyệt tài liệu nộp lại"
+          : role === "Leader"
+          ? "Nộp lại tài liệu đã chỉnh sửa"
+          : "Theo dõi quá trình chỉnh sửa"}
       </h2>
       <div>
         <section>
           <div className="container1">
             <div className="cards">
-              {
-                dataReviewDocument.map((card, i) => (
-                  <div key={i} className="card">
-                    <h2 style={{
+              {dataReviewDocument.map((card, i) => (
+                <div key={i} className="card">
+                  <h2
+                    style={{
                       fontWeight: "bold",
                       fontSize: "20px",
                       color: "#303972",
                       marginBottom: "10px",
-                    }}>
-                      {card.state}
-
-                    </h2>
-                    <p>Hạn nộp: {" "}
-                      {card.deadline}
-                    </p>
-                    <p> {" "}
-                      <a target="_blank" href={card.resultFileLink}>File kết quả của hội đồng</a>
-                    </p>
-                    {/* <Collapse items={items} onChange={onChange1} /> */}
-                    <CollapseTopic data={card.documents} />
-                    {renderRole(card.role)}
-                    
-                  </div>
-                ))
-              }
+                    }}
+                  >
+                    {card.state}
+                  </h2>
+                  <p>Hạn nộp: {card.deadline}</p>
+                  <p>
+                    {" "}
+                    <a target="_blank" href={card.resultFileLink}>
+                      File kết quả của hội đồng
+                    </a>
+                  </p>
+                  <CollapseTopic data={card.documents} />
+                  {renderRole()}
+                </div>
+              ))}
             </div>
           </div>
         </section>

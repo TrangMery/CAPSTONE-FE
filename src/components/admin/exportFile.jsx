@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tooltip, Tag, DatePicker, message } from "antd";
+import { Table, Tooltip, message, Row, Col } from "antd";
 import { ExportOutlined } from "@ant-design/icons";
 import { exportFileAmdin, getTopicCompleted } from "../../services/api";
-import dayjs from "dayjs";
+
+import TopicSearchForm from "./TopicSearch";
 const ExportFile = () => {
   const [loading, setLoading] = useState(false);
   const [listTopic, setListTopic] = useState();
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const [year, setYear] = useState(dayjs().year());
+  const [filters, setFilters] = useState("");
   const getTopicComplete = async () => {
     try {
       setLoading(true);
-      const res = await getTopicCompleted({
-        CompleteYear: year,
-      });
+      const res = await getTopicCompleted(filters);
+      console.log(res);
       if (res && res.statusCode === 200) {
         setListTopic(res.data.topics);
         setLoading(false);
@@ -25,14 +25,7 @@ const ExportFile = () => {
       console.log("====================================");
     }
   };
-
-  const onChangeYear = (date, dateString) => {
-    setYear(dayjs(date).format("YYYY"));
-  };
-  const disabledYear = (current) => {
-    // Không cho phép chọn năm sau năm hiện tại
-    return current && current > dayjs().endOf("year");
-  };
+  
   // edit working process
   const handleExport = async (topicId) => {
     setLoading(true);
@@ -69,14 +62,12 @@ const ExportFile = () => {
       dataIndex: "topicName",
     },
     {
-      title: "Loại đề tài",
-      dataIndex: "categoryName",
+      title: "Chủ nhiệm đề tài",
+      dataIndex: "leaderName",
     },
     {
-      title: "Trạng thái",
-      render: (text, record, index) => {
-        return <Tag color="green">Đã hoàn thành</Tag>;
-      },
+      title: "Loại đề tài",
+      dataIndex: "categoryName",
     },
     {
       title: "Hành động",
@@ -101,6 +92,9 @@ const ExportFile = () => {
       align: "center",
     },
   ];
+  const handleSearchTopic = (query) => {
+    setFilters(query);
+  };
   const renderHeader = () => (
     <div>
       <div
@@ -110,23 +104,16 @@ const ExportFile = () => {
           alignItems: "center",
         }}
       >
-        {" "}
-        <h2 style={{ fontWeight: "bold", fontSize: "30px", color: "#303972" }}>
+        <h2 style={{ fontWeight: "bold", fontSize: "20px", color: "#303972" }}>
           Danh sách đề tài đã hoàn thành
         </h2>
       </div>
-      <DatePicker
-        defaultValue={dayjs()}
-        disabledDate={disabledYear}
-        onChange={onChangeYear}
-        picker="year"
-      />
     </div>
   );
 
   useEffect(() => {
     getTopicComplete();
-  }, [year]);
+  }, [filters]);
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination.current !== current) {
       setCurrent(pagination.current);
@@ -135,31 +122,37 @@ const ExportFile = () => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
-    console.log("parms: ", pagination, filters, sorter, extra);
   };
   return (
-    <div>
-      <Table
-        title={renderHeader}
-        columns={columns}
-        dataSource={listTopic}
-        loading={loading}
-        onChange={onChange}
-        pagination={{
-          current: current,
-          pageSize: pageSize,
-          showSizeChanger: true,
-          pageSizeOptions: ["7", "10", "15"],
-          showTotal: (total, range) => {
-            return (
-              <div>
-                {range[0]} - {range[1]} on {total} rows
-              </div>
-            );
-          },
-        }}
-      />
-    </div>
+    <>
+      <Row gutter={[24, 24]}>
+        <Col span={24}>
+          <TopicSearchForm handleSearchTopic={handleSearchTopic} />
+        </Col>
+        <Col span={24}>
+          <Table
+            title={renderHeader}
+            columns={columns}
+            dataSource={listTopic}
+            loading={loading}
+            onChange={onChange}
+            pagination={{
+              current: current,
+              pageSize: pageSize,
+              showSizeChanger: true,
+              pageSizeOptions: ["7", "10", "15"],
+              showTotal: (total, range) => {
+                return (
+                  <div>
+                    {range[0]} - {range[1]} on {total} rows
+                  </div>
+                );
+              },
+            }}
+          />
+        </Col>
+      </Row>
+    </>
   );
 };
 export default ExportFile;

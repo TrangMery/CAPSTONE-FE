@@ -17,7 +17,6 @@ import {  UploadOutlined } from "@ant-design/icons";
 // import { uploadFileSingle, uploadResult } from "../../../services/api";
 import { useNavigate } from "react-router-dom";
 import { uploadFile, uploadResubmit } from "../../../services/api";
-import { useForm } from "antd/es/form/Form";
 
 const ModalUpload = (props) => {
   const isModalOpen = props.isModalOpen;
@@ -29,16 +28,12 @@ const ModalUpload = (props) => {
   const handleOk = () => {
     form.submit();
   };
-  console.log('====================================');
-  console.log(newTopicFiles);
-  console.log('====================================');
   const handleCancel = () => {
     props.setDataUser({});
     props.setIsModalOpen(false);
     setFileList([]);
     form.resetFields();
   };
-  console.log("day la data modal resubmit", data);
   const onSubmit = async () => {
     // if (newTopicFiles[0]?.topicFileLink == null) {
     //   message.error("Xin hãy tải bản chỉnh sửa");
@@ -51,16 +46,12 @@ const ModalUpload = (props) => {
       // fileName: newTopicFiles[0].fileName,
       newFiles: updatedFileFilter
     };
-    console.log('====================================');
-    console.log(param);
-    console.log('====================================');
     try {
       const res = await uploadResubmit(param);
-      console.log(res);
       setIsSubmit(true);
       if (res && res.isSuccess) {
         setIsSubmit(false);
-        message.success("Tải biên bản lên thành công");
+        message.success("Tải file nộp lại thành công");
         navigate("/user");
       }
     } catch (error) {

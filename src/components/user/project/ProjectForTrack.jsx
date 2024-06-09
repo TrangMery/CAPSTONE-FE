@@ -181,7 +181,7 @@ const ProjectForTrack = () => {
               }}
               style={style1}
             />
-            <Badge dot offset={[-10, 0]}>
+            {/* <Badge dot offset={[-10, 0]}>
               <ScheduleOutlined
                 onClick={() => {
                   setDataUser(record);
@@ -189,7 +189,7 @@ const ProjectForTrack = () => {
                 }}
                 style={style2}
               />
-            </Badge>
+            </Badge> */}
           </div>
         );
       },
@@ -253,11 +253,11 @@ const ProjectForTrack = () => {
           }}
         />
       </ConfigProvider>
-      <ModalMeetingInfor
+      {/* <ModalMeetingInfor
         data={data}
         isModalOpen={isModalInforOpen}
         setIsModalOpen={setIsModalInforOpen}
-      />
+      /> */}
     </>
   );
 };

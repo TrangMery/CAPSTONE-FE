@@ -90,17 +90,17 @@ const RegisterProject = () => {
             ? file.type === "application/x-rar-compressed" ||
               file.type === "application/x-zip-compressed" ||
               file.type === "application/x-compressed"
-            : file.type === "application/pdf";
+            : file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // sửa thành file word 
         if (!isCompressedFile) {
           message.error(
             uploadType === "document"
               ? "Chỉ được phép tải lên các file đã nén (zip hoặc rar)!"
-              : "Vui lòng upload vc bằng file pdf!"
+              : "Vui lòng upload cv bằng file word!"
           );
           setError(
             uploadType === "document"
               ? "Chỉ được phép tải lên các file đã nén (zip hoặc rar)!"
-              : "Vui lòng upload vc bằng file pdf!"
+              : "Vui lòng upload cv bằng file word!"
           );
           onError(file);
           return;

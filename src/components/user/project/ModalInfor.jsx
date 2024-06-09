@@ -63,7 +63,6 @@ const ModalInfor = (props) => {
       const res = await getTopicDetailAPI({
         topicId: topicId,
       });
-      console.log(res);
       if (res && res.isSuccess) {
         if (tab !== "tongket") {
           setTopicLink({

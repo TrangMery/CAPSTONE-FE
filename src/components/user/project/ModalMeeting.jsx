@@ -10,7 +10,7 @@ const ModalInforMeeting = (props) => {
   const isModalOpen = props.isModalOpen;
   const [form] = Form.useForm();
   const topicId = props.data.topicId;
-  const userId = "7dc9eb1d-3b80-434b-9b7e-85dd78e5011d";
+  const userId = localStorage.getItem("userId");
   const handleCancel = () => {
     props.setIsModalOpen(false);
   };
@@ -29,8 +29,6 @@ const ModalInforMeeting = (props) => {
             chairmanName: res.data.reviewMeetingInfors[0].chairmanName,
             
         }
-        console.log("đây là res",res);
-        console.log("đây là data",data);
         form.setFieldsValue(data);
       }
     } catch (error) {

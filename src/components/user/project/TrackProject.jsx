@@ -54,6 +54,7 @@ const TrackProject = () => {
       const res = await trackReseach({
         topicId: topicId,
       });
+      console.log("check resubmit", res);
       if (res && res.isSuccess) {
         setDataProcess(res.data);
         if (userId === res.data.creatorId) {
@@ -106,7 +107,20 @@ const TrackProject = () => {
                   label: "Đăng kí đề tài",
                   children: (
                     <>
-                      <p>Trạng thái: </p>
+                      {dataProcess.currentDeadline ? (
+                        <>
+                          {" "}
+                          <p>
+                            Trạng thái: Chủ nhiệm đề tài cần nộp lại tài liệu{" "}
+                            {dayjs(dataProcess.currentDeadline).format(
+                              dateFormat
+                            )}
+                          </p>{" "}
+                        </>
+                      ) : (
+                        <p>Trạng thái: </p>
+                      )}
+
                       <Steps
                         size="small"
                         labelPlacement="vertical"
@@ -175,11 +189,21 @@ const TrackProject = () => {
                             icon: <UsergroupAddOutlined />,
                           },
                           {
-                            title: "Staff tải lên quyết định",
+                            title:
+                              dataProcess?.earlyTermReportProcess
+                                ?.waitingForUploadMeetingMinutes === "Accept"
+                                ? "Staff tải lên quyết định"
+                                : dataProcess?.earlyTermReportProcess
+                                    ?.waitingForUploadMeetingMinutes === "Edit"
+                                ? "Vui lòng nộp lại"
+                                : "wait",
                             status:
                               dataProcess?.earlyTermReportProcess
                                 ?.waitingForUploadMeetingMinutes === "Accept"
                                 ? "finished"
+                                : dataProcess?.earlyTermReportProcess
+                                    ?.waitingForUploadMeetingMinutes === "Edit"
+                                ? "error"
                                 : "wait",
                             icon: <CloudUploadOutlined />,
                           },
@@ -231,8 +255,8 @@ const TrackProject = () => {
                                 {item.deadlineForDocumentSupplementation ? (
                                   <>
                                     <p>
-                                      Trạng thái: Chủ nhiệm đề tài cần nộp form trước
-                                      ngày {/* 25-04-2024 */}
+                                      Trạng thái: Chủ nhiệm đề tài cần nộp form
+                                      trước ngày
                                       {dayjs(
                                         item.deadlineForDocumentSupplementation
                                       ).format(dateFormat)}
@@ -335,8 +359,8 @@ const TrackProject = () => {
                           <>
                             <p>
                               {" "}
-                              Trạng thái: Chủ nhiệm đề tài cần nộp các file liên quan
-                              trước ngày{" "}
+                              Trạng thái: Chủ nhiệm đề tài cần nộp các file liên
+                              quan trước ngày{" "}
                               {dayjs(
                                 dataProcess.finalTermReportProcess
                                   .deadlineForDocumentSupplementation

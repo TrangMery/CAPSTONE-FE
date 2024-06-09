@@ -128,7 +128,7 @@ const ModalTime = (props) => {
 
   const isOutsideWorkingHours = (time) => {
     const hour = time.hour();
-    return hour < 8 || (hour >= 11 && hour < 13) || hour >= 17;
+    return hour < 7 || (hour >= 11 && hour < 13) || hour >= 17;
   };
 
   const options = [

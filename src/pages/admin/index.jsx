@@ -19,6 +19,7 @@ const AdminPage = () => {
       if (res && res.statusCode === 200) {
         setTotal(res.data.length);
       }
+      console.log(res.data);
     } catch (error) {
       console.log("====================================");
       console.log("có lỗi tại getAllProjects", error);

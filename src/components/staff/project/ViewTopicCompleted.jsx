@@ -1,24 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tag, DatePicker } from "antd";
-import { getTopicCompleted } from "../../../services/api";
-import dayjs from "dayjs";
+import { Table, Tag, DatePicker, Row, Col } from "antd";
+import { getAllTopics } from "../../../services/api";
+import TopicSearchFormStaff from "./TopicSearchStaff";
 const ViewTopic = () => {
   const [loading, setLoading] = useState(false);
   const [listTopic, setListTopic] = useState();
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const [year, setYear] = useState(dayjs().year());
+  const [filters, setFilters] = useState("");
   const getTopicComplete = async () => {
     try {
       setLoading(true);
-      const res = await getTopicCompleted({
-        CompleteYear: year,
-      });
-      console.log("====================================");
-      console.log(res);
-      console.log("====================================");
+      const res = await getAllTopics(filters);
       if (res && res.statusCode === 200) {
-        setListTopic(res.data.topics);
+        setListTopic(res.data);
         setLoading(false);
       }
     } catch (error) {
@@ -26,13 +21,6 @@ const ViewTopic = () => {
       console.log("có lỗi tại admin account", error);
       console.log("====================================");
     }
-  };
-  const onChangeYear = (date, dateString) => {
-    setYear(dayjs(date).format("YYYY"));
-  };
-  const disabledYear = (current) => {
-    // Không cho phép chọn năm sau năm hiện tại
-    return current && current > dayjs().endOf("year");
   };
   const columns = [
     {
@@ -44,16 +32,17 @@ const ViewTopic = () => {
       dataIndex: "topicName",
     },
     {
+      title: "Chủ nhiệm đề tài",
+      dataIndex: "leaderName",
+    },
+    {
       title: "Loại đề tài",
       dataIndex: "categoryName",
     },
-    {
-      title: "Trạng thái",
-      render: (text, record, index) => {
-        return <Tag color="green">Đã hoàn thành</Tag>;
-      },
-    }
   ];
+  const handleSearchTopic = (query) => {
+    setFilters(query);
+  };
   const renderHeader = () => (
     <div>
       <div
@@ -64,22 +53,16 @@ const ViewTopic = () => {
         }}
       >
         {" "}
-        <h2 style={{ fontWeight: "bold", fontSize: "30px", color: "#303972" }}>
+        <h2 style={{ fontWeight: "bold", fontSize: "20px", color: "#303972" }}>
           Danh sách đề tài đã hoàn thành
         </h2>
       </div>
-      <DatePicker
-        defaultValue={dayjs()}
-        disabledDate={disabledYear}
-        onChange={onChangeYear}
-        picker="year"
-      />
     </div>
   );
 
   useEffect(() => {
     getTopicComplete();
-  }, [year]);
+  }, [filters]);
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination.current !== current) {
       setCurrent(pagination.current);
@@ -88,31 +71,37 @@ const ViewTopic = () => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
-    console.log("parms: ", pagination, filters, sorter, extra);
   };
   return (
-    <div>
-      <Table
-        title={renderHeader}
-        columns={columns}
-        dataSource={listTopic}
-        loading={loading}
-        onChange={onChange}
-        pagination={{
-          current: current,
-          pageSize: pageSize,
-          showSizeChanger: true,
-          pageSizeOptions: ["7", "10", "15"],
-          showTotal: (total, range) => {
-            return (
-              <div>
-                {range[0]} - {range[1]} on {total} rows
-              </div>
-            );
-          },
-        }}
-      />
-    </div>
+    <>
+      <Row gutter={[24, 24]}>
+        <Col span={24}>
+          <TopicSearchFormStaff handleSearchTopic={handleSearchTopic} />
+        </Col>
+        <Col span={24}>
+          <Table
+            title={renderHeader}
+            columns={columns}
+            dataSource={listTopic}
+            loading={loading}
+            onChange={onChange}
+            pagination={{
+              current: current,
+              pageSize: pageSize,
+              showSizeChanger: true,
+              pageSizeOptions: ["7", "10", "15"],
+              showTotal: (total, range) => {
+                return (
+                  <div>
+                    {range[0]} - {range[1]} on {total} rows
+                  </div>
+                );
+              },
+            }}
+          />
+        </Col>
+      </Row>
+    </>
   );
 };
 export default ViewTopic;

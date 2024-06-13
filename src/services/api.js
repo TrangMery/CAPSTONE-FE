@@ -30,7 +30,9 @@ export const getAllUser = (param) => {
 
 // get all user except dean
 export const getAllUserWithoutCreator = (param) => {
-  return axios.get(`/api/user/user-to-add-member-review?${qs.stringify(param)}`);
+  return axios.get(
+    `/api/user/user-to-add-member-review?${qs.stringify(param)}`
+  );
 };
 
 // get all user for admin
@@ -486,8 +488,8 @@ export const deleteContractType = (data) => {
 };
 
 // admin get all topic
-export const getAllTopics = () => {
-  return axios.get("/api/topic/all");
+export const getAllTopics = (param) => {
+  return axios.get(`/api/topic/all?${param}`);
 };
 
 // admin get topic completely
@@ -528,11 +530,21 @@ export const getContractDone = (data) => {
   return axios.post("/api/contract/final-contract", data);
 };
 
-//user get history project done 
+//user get history project done
 export const getHistoryProject = (param) => {
   return axios.get(`/api/topic/history?${qs.stringify(param)}`);
-}
-//admin export file 
+};
+//admin export file
 export const exportFileAmdin = (param) => {
   return axios.get(`/api/topic/report?${qs.stringify(param)}`);
-}
+};
+
+//user get CV to export file
+export const exportFileCv = (param) => {
+  return axios.get(`/api/user/cv?${qs.stringify(param)}`);
+};
+
+//staff search
+export const stateProject = () => {
+  return axios.get("/api/topic/topic-state");
+};

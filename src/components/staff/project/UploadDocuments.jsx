@@ -33,6 +33,7 @@ const UploadDocument = () => {
   const [isModalContractOpen, setIsModalContractOpen] = useState(false);
   const [dataTopic, setDataTopic] = useState([]);
   const [checkTab, setCheckTab] = useState("confirm");
+
   const navigate = useNavigate();
   const getTopicUpload = async () => {
     try {
@@ -184,7 +185,7 @@ const UploadDocument = () => {
       console.log("có lỗi tại ", error);
     }
   };
-  const cancel = () => {};
+
   const columns = [
     {
       title: "Mã đề tài",

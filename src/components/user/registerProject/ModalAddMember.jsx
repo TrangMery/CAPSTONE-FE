@@ -5,7 +5,12 @@ const ModalAddMember = ({ open, onCancel, data, setAddMember }) => {
   const [form] = Form.useForm();
   const options = data.map((user) => ({
     value: user.accountEmail,
-    label: user.accountEmail, // Hiển thị tên người dùng
+    label: (
+      <div>
+        {user.fullName} <br />
+        <small>{user.accountEmail}</small>
+      </div>
+    ),
   }));
   const [searchText, setSearchText] = useState("");
   const filteredOptions =

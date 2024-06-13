@@ -15,7 +15,6 @@ import TrackProject from "./components/user/project/TrackProject.jsx";
 import ProjectForTrack from "./components/user/project/ProjectForTrack.jsx";
 import ResubmitProject from "./components/user/project/ResubmitProject.jsx";
 import ProjectResubmit from "./components/user/project/ProjectResubmit.jsx";
-import ProjectForTrackStaff from "./components/staff/project/ProjectForTrackStaff.jsx";
 import MidtermProject from "./pages/projectMangerStaff/midterm.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/index.jsx";
 import FinaltermProject from "./pages/projectMangerStaff/finalterm.jsx";

@@ -25,8 +25,6 @@ const ProjectForTrack = () => {
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [dataTopicForMember, setdataTopicForMember] = useState([]);
-  const [isModalInforOpen, setIsModalInforOpen] = useState(false);
-  const [data, setDataUser] = useState({});
   const getProjectProcess = async () => {
     try {
       const res = await getTopicByUserId({
@@ -133,10 +131,10 @@ const ProjectForTrack = () => {
 
   const columns = [
     {
-      title: "STT",
-      key: "index",
-      render: (text, record, index) => index + 1,
+      title: "Mã đề tài",
+      key: "code",
       color: "red",
+      dataIndex: "code",
       width: "10%",
     },
     {

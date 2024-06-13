@@ -90,7 +90,8 @@ const RegisterProject = () => {
             ? file.type === "application/x-rar-compressed" ||
               file.type === "application/x-zip-compressed" ||
               file.type === "application/x-compressed"
-            : file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // sửa thành file word 
+            : file.type ===
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // sửa thành file word
         if (!isCompressedFile) {
           message.error(
             uploadType === "document"
@@ -420,7 +421,7 @@ const RegisterProject = () => {
             </Form.List>
           </Col>
           <Col span={12}>
-            <Form.Item label="Đính kèm tài cv cá nhân: ">
+            <Form.Item label="Đính kèm tài cv cá nhân: " required={true}>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Upload {...props} listType="picture">
                   <Button
@@ -438,7 +439,17 @@ const RegisterProject = () => {
           </Col>
           <Col span={24}>
             <h3>Đính kèm tài liệu liên quan</h3>
-            <p>Chỉ hỗ trợ cái file như zip hoặc rar</p>
+            <p>
+              Chỉ hỗ trợ cái file như zip hoặc rar :{" "}
+              <a
+                onClick={(e) => e.stopPropagation()}
+                href="https://srms2.sgp1.cdn.digitaloceanspaces.com/1.xetduyetdetai-20240614002212615.rar"
+                download
+              >
+                Tải tập tin mẫu
+              </a>
+            </p>
+
             <Form.Item
               labelCol={{
                 span: 12,

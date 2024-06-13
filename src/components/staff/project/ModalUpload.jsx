@@ -33,8 +33,9 @@ dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
 
 const ModalUpload = (props) => {
+  const data = props.data;
   const isModalOpen = props.isModalOpen;
-  const today = dayjs().add(1, "day");
+  const today = dayjs(data.meetingTime).add(1, "day");
   const maxDate = dayjs().add(14, "day");
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
@@ -43,7 +44,6 @@ const ModalUpload = (props) => {
   const [reviewMidtearm, setReviewMidtearm] = useState(null);
   const [meetingDate, setMeetingDate] = useState(today);
   const [errorMessage, setError] = useState("");
-  const data = props.data;
   const state = data.state === "MidtermReport" ? true : false;
   const navigate = useNavigate();
   const handleOk = () => {
@@ -55,7 +55,6 @@ const ModalUpload = (props) => {
     setFileList({});
     form.resetFields();
   };
-
   const onSubmit = async (values) => {
     if (Object.values(newTopicFiles).length === 0) {
       message.error("Xin hãy tải biên bản cuộc họp lên");

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table, Tooltip, message, Row, Col } from "antd";
-import { ExportOutlined } from "@ant-design/icons";
+import { CloudDownloadOutlined, ExportOutlined } from "@ant-design/icons";
 import { exportFileAmdin, getTopicCompleted } from "../../services/api";
-
 import TopicSearchForm from "./TopicSearch";
 const ExportFile = () => {
   const [loading, setLoading] = useState(false);
@@ -14,7 +13,6 @@ const ExportFile = () => {
     try {
       setLoading(true);
       const res = await getTopicCompleted(filters);
-      console.log(res);
       if (res && res.statusCode === 200) {
         setListTopic(res.data.topics);
         setLoading(false);
@@ -25,7 +23,7 @@ const ExportFile = () => {
       console.log("====================================");
     }
   };
-  
+
   // edit working process
   const handleExport = async (topicId) => {
     setLoading(true);
@@ -33,9 +31,6 @@ const ExportFile = () => {
       const res = await exportFileAmdin({
         topicId: topicId,
       });
-      console.log("====================================");
-      console.log("check data: ", res);
-      console.log("====================================");
       if (res && res.statusCode === 200) {
         setLoading(false);
         const link = document.createElement("a");
@@ -81,7 +76,7 @@ const ExportFile = () => {
         return (
           <div>
             <Tooltip placement="top" title="Xuất file tổng kết">
-              <ExportOutlined
+              <CloudDownloadOutlined
                 onClick={() => handleExport(record.topicId)}
                 style={style1}
               />

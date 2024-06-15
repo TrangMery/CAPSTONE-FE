@@ -27,7 +27,7 @@ const ModalConfirm = (props) => {
     try {
       const res = await createTopicAPI(data);
       if (res && res.statusCode === 200) {
-        message.success("Tạo topic thành công");
+        message.success("Đăng ký đề tài thành công");
         props.setFileList([]);
         props.setAddMember([]);
         props.form.resetFields();

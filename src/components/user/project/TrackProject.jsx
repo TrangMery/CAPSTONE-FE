@@ -104,7 +104,7 @@ const TrackProject = () => {
               items={[
                 {
                   key: "1",
-                  label: "Đăng kí đề tài",
+                  label: "Đăng ký đề tài",
                   children: (
                     <>
                       {dataProcess.currentDeadline ? (
@@ -153,8 +153,8 @@ const TrackProject = () => {
                             title:
                               dataProcess?.preliminaryReviewProcess
                                 ?.waitingForCouncilFormation === "Done"
-                                ? "Staff đã thêm thành viên sơ duyệt"
-                                : "Staff thêm thành viên sơ duyệt",
+                                ? "Staff đã thành lập hội đồng sơ duyệt"
+                                : "Staff thành lập hội đồng sơ duyệt",
                             status:
                               dataProcess?.preliminaryReviewProcess
                                 ?.waitingForCouncilFormation === "Done"

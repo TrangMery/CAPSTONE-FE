@@ -139,7 +139,7 @@ const UploadMidTerm = (props) => {
       <Modal
         title={
           props.state === "2"
-            ? "Đăng kí báo cáo giữa kỳ"
+            ? "Đăng ký báo cáo giữa kỳ"
             : "Nộp tài liệu cuối kỳ"
         }
         centered

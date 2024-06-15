@@ -46,7 +46,7 @@ const ProjectManagerUser = () => {
   const getTopicReviewer = async () => {
     try {
       const res = await getTopicReviewerAPI({
-        memberId: userId, // Nguyen Van A
+        memberId: userId, 
       });
       if (res && res?.data) {
         setdataTopicForMember(res.data);

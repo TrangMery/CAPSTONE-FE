@@ -221,7 +221,7 @@ const RegisterProject = () => {
           marginBottom: "40px",
         }}
       >
-        Đăng kí đề tài
+        Đăng kýđề tài
       </h2>
       <Form form={form} name="basicForm" onFinish={onFinish}>
         <Row gutter={16}>

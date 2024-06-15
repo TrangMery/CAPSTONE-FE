@@ -28,7 +28,7 @@ const StaffPage = () => {
         return (
           <>
             {record.state === "EarlytermReport"
-              ? "Đăng kýđề tài"
+              ? "Đăng ký đề tài"
               : record.state === "MidtermReport"
               ? "Báo cáo giữa kỳ"
               : "Báo cáo cuối kỳ"}

@@ -1,13 +1,13 @@
-import "./table.scss";
-import "./card.css";
+import "./card.scss";
 import dayjs from "dayjs";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { chairmanApprove, getReviewDocuments } from "../../../services/api";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useLocation, useNavigate } from "react-router-dom";
 import ModalUpload from "./ModalResubmit";
 import ModalChairmanReject from "./ModalChairmanReject";
 import CollapseTopic from "./CollapTopic";
+import { Button } from "antd";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
 
@@ -15,21 +15,27 @@ const ResubmitProject = () => {
   const [data, setDataUser] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenR, setIsModalOpenR] = useState(false);
-  const [status, setStatus] = useState(false);
   const userId = localStorage.getItem("userId");
   const [dataReviewDocument, setDataReviewDocument] = useState([]);
   const [role, setRole] = useState("");
   const location = useLocation();
+  const navigate = useNavigate();
   let topicId = location.pathname.split("/");
   topicId = topicId[4];
   const renderRole = () => {
-    if (role == "Chairman") {
+    if (role == "Chairman" && dataReviewDocument[0].documents !== null) {
       return (
         <>
-          <button className="btnOk" onClick={() => chairmanApprove(topicId)}>
+          <Button
+            type="primary"
+            className="btnOk"
+            onClick={() => chairmanApprove(topicId)}
+          >
             Đồng ý
-          </button>
-          <button
+          </Button>
+          <Button
+            type="primary"
+            danger
             className="btnRe"
             onClick={() => {
               setDataUser(dataReviewDocument);
@@ -37,13 +43,13 @@ const ResubmitProject = () => {
             }}
           >
             Từ chối
-          </button>
+          </Button>
         </>
       );
     }
     if (role == "Leader") {
       return (
-        <button
+        <Button
           className="btn"
           onClick={() => {
             setDataUser(dataReviewDocument);
@@ -51,10 +57,18 @@ const ResubmitProject = () => {
           }}
         >
           Tải tài liệu
-        </button>
+        </Button>
       );
     }
-    return "";
+    return (
+      <>
+        <div style={{ marginTop: "20px" }}>
+          <p style={{ fontWeight: "bold" }}>
+            Chủ nhiệm đề tài chưa nộp lại tài liệu
+          </p>
+        </div>
+      </>
+    );
   };
 
   const getReviewDoc = async () => {
@@ -70,7 +84,7 @@ const ResubmitProject = () => {
           state: res.data?.reviewEarlyDocument
             ? "Giai đoạn đề cương"
             : "Giai đoạn tiếp theo",
-          deadline: dayjs(res.data.reviewEarlyDocument.deadline).format(
+          deadline: dayjs(res.data.reviewEarlyDocument.resubmitDeadline).format(
             dateFormat
           ),
           decisionOfCouncil: res.data.reviewEarlyDocument.decisionOfCouncil,
@@ -81,7 +95,7 @@ const ResubmitProject = () => {
               : null,
         },
       ];
-      setRole(res.data.role)
+      setRole(res.data.role);
       console.log("đây là data", res.data);
       setDataReviewDocument(data);
     }
@@ -89,7 +103,7 @@ const ResubmitProject = () => {
 
   useEffect(() => {
     getReviewDoc();
-  }, [status]);
+  }, []);
   return (
     <>
       <h2

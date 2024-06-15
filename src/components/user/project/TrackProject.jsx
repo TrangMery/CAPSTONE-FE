@@ -196,7 +196,7 @@ const TrackProject = () => {
                                 : dataProcess?.earlyTermReportProcess
                                     ?.waitingForUploadMeetingMinutes === "Edit"
                                 ? "Vui lòng nộp lại"
-                                : "wait",
+                                : "Tải lên quyết định",
                             status:
                               dataProcess?.earlyTermReportProcess
                                 ?.waitingForUploadMeetingMinutes === "Accept"

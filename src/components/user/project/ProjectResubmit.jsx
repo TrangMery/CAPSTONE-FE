@@ -1,13 +1,10 @@
 import {
-  CheckOutlined,
-  CloseOutlined,
   FileSyncOutlined,
-  FundViewOutlined,
+  FormOutlined,
   InfoCircleOutlined,
-  ScheduleOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Button, Input, Space, Table, Tabs, Tag } from "antd";
+import { Button, Input, Space, Table, Tabs, Tag, Tooltip } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import "../../staff/project/project.scss";
@@ -20,10 +17,7 @@ import {
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import ModalInfor from "./ModalInfor";
-import ModalInforMeeting from "./ModalMeeting";
 dayjs.extend(customParseFormat);
-const dateFormat = "DD/MM/YYYY";
-// import ModalInfor from "../../modalInfor.jsx";
 const ProjectResubmit = () => {
   const navigate = useNavigate();
   const [current, setCurrent] = useState(1);
@@ -156,9 +150,9 @@ const ProjectResubmit = () => {
       render: (text, record, index) => {
         return (
           <>
-            {record.state === "EarlytermReport"
-              ? "Đăng kýđề tài"
-              : record.state === "MidtermReport"
+            {record.state === "EarlyTermReport"
+              ? "Đăng ký đề tài"
+              : record.state === "MidTermReport"
               ? "Báo cáo giữa kỳ"
               : "Báo cáo cuối kỳ"}
           </>
@@ -166,11 +160,9 @@ const ProjectResubmit = () => {
       },
     },
     {
-      title: "Ngày",
-      render: (text, record, index) => {
-        return <div>{dayjs(record.createdAt).format(dateFormat)}</div>;
-      },
-      key: "createdAt",
+      title: "Chủ tịch hội đồng",
+      dataIndex: "chairmanName",
+      key: "chairmanName",
     },
     {
       title: "Hành động",
@@ -198,12 +190,14 @@ const ProjectResubmit = () => {
               }}
             />
             {record.hasResultFile && (
-              <FileSyncOutlined
-                onClick={() => {
-                  navigate(`/user/review/review-topic/${record.topicId}`);
-                }}
-                style={style2}
-              />
+              <Tooltip title="Phê duyệt tài liệu chỉnh sửa ">
+                <FormOutlined
+                  onClick={() => {
+                    navigate(`/user/review/review-topic/${record.topicId}`);
+                  }}
+                  style={style2}
+                />
+              </Tooltip>
             )}
             {activeTab == "done" && (
               <>
@@ -244,20 +238,28 @@ const ProjectResubmit = () => {
     </div>
   );
   const getTopicForCouncil = async () => {
-    const res = await getTopicForCouncilMeeting({
-      councilId: userId,
-    });
-    if (res && res?.data) {
-      setdataTopicForCouncil(res.data);
+    try {
+      const res = await getTopicForCouncilMeeting({
+        councilId: userId,
+      });
+      if (res && res?.data) {
+        setdataTopicForCouncil(res.data);
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("có lỗi tại getTopicForCouncil", error);
+      console.log("====================================");
     }
   };
   const getTopicDoneForCouncil = async () => {
-    const res = await getReviewDocumentsDone({
-      councilId: userId,
-    });
-    if (res && res?.data) {
-      setdataTopicForCouncil(res.data);
-    }
+    try {
+      const res = await getReviewDocumentsDone({
+        councilId: userId,
+      });
+      if (res && res?.data) {
+        setdataTopicForCouncil(res.data);
+      }
+    } catch (error) {}
   };
   useEffect(() => {
     getTopicForCouncil();

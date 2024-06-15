@@ -1,0 +1,112 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f5f5f5;
+  color: #111;
+}
+
+.container1 {
+  max-width: 1800px;
+  width: 100%;
+  margin: auto;
+  padding: 0px 20px;
+}
+
+section {
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.card {
+  flex: 0 0 calc(99.33% - 20px);
+  max-width: calc(99.33% - 20px);
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: 0.3s;
+  border: 2px solid transparent;
+}
+
+.btn {
+  border: none;
+  outline: none;
+  background: #1d39c4;
+  color: #fff;
+  border-radius: 10px;
+  max-width: 100px;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-right: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+  border: 1px solid #1d39c4;
+  float: left;
+}
+.btnOk {
+  float: left;
+  border: none;
+  outline: none;
+  color: #fff;
+  border-radius: 10px;
+  max-width: 100px;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-right: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.btnRe {
+  float: left;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  max-width: 100px;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+@media (max-width: 969px) {
+  section {
+    padding: 20px 0px;
+  }
+  h1 {
+    font-size: 30px;
+    line-height: 40px;
+  }
+  .card {
+    flex: 0 0 calc(50% - 20px);
+    max-width: calc(50% - 20px);
+  }
+}
+@media (max-width: 600px) {
+  .card {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}

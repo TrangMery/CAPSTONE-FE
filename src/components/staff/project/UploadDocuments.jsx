@@ -207,9 +207,9 @@ const UploadDocument = () => {
       render: (text, record, index) => {
         return (
           <>
-            {record.state === "EarlytermReport"
-              ? "Đăng kýđề tài"
-              : record.state === "MidtermReport"
+            {record.state === "EarlyTermReport"
+              ? "Đăng ký đề tài"
+              : record.state === "MidTermReport"
               ? "Báo cáo giữa kỳ"
               : "Báo cáo cuối kỳ"}
           </>

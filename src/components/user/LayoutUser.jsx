@@ -226,7 +226,7 @@ const LayoutUser = () => {
       icon: <UserOutlined />,
     },
     {
-      label: <Link to="/user/register">Đăng kýđề tài</Link>,
+      label: <Link to="/user/register">Đăng ký đề tài</Link>,
       key: "register",
       icon: <ContainerOutlined />,
       hidden: role !== "User",

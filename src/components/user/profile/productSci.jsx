@@ -6,7 +6,7 @@ const ProductPage = () => {
   const items = [
     {
       key: "1",
-      label: "Bài báo khoa học",
+      label: "Báo cáo chuyên đề",
       children: <ScientificArticle />,
     },
     {

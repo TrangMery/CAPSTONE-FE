@@ -50,7 +50,7 @@ const ScientificArticle = () => {
       {listProduct?.length === 0 ? (
         <Empty
           style={{ marginTop: 100 }}
-          description={<span>Chưa có bài báo khoa học</span>}
+          description={<span>Chưa có bài báo chuyên đề</span>}
         />
       ) : (
         <Col md={18} xs={24}>

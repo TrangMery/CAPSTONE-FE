@@ -53,7 +53,7 @@ const ArticalModal = (props) => {
       <Modal
         maskClosable={false}
         open={props.openModal}
-        title="Thêm mới các bài báo khoa học"
+        title="Thêm mới các báo cáo chuyên đề"
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[

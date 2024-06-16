@@ -17,6 +17,7 @@
     "axios": "^1.6.7",
     "dayjs-ext": "^2.2.0",
     "docxtemplater": "^3.47.4",
+    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
     "js-base64": "^3.7.7",
@@ -32,8 +33,7 @@
     "react-icons": "^5.0.1",
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.22.1",
-    "sass": "^1.71.1",
-    "xlsx": "^0.18.5"
+    "sass": "^1.71.1"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",

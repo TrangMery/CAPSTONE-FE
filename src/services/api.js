@@ -290,42 +290,42 @@ export const getAllDepartment = () => {
 
 // upload infor user
 export const uploadInforUser = (data) => {
-  return axios.post("api/user/register-user-infor", data);
+  return axios.post("/api/user/register-user-infor", data);
 };
 // topic has created deadline
 export const topicMidTearmCreatedDeadline = () => {
-  return axios.get("api/topic/middle-topic-waiting-document-supplementation");
+  return axios.get("/api/topic/middle-topic-waiting-document-supplementation");
 };
 
 //move to final term
 export const moveToFinalTerm = (param) => {
-  return axios.post(`api/topic/move-to-final-term?${qs.stringify(param)}`);
+  return axios.post(`/api/topic/move-to-final-term?${qs.stringify(param)}`);
 };
 
 // get topic final term
 
 export const getFinalTerm = () => {
-  return axios.get("api/topic/final-topic-waiting-make-schedule");
+  return axios.get("/api/topic/final-topic-waiting-make-schedule");
 };
 
 // get topic final term waiting council
 export const getFinalTermReport = () => {
-  return axios.get("api/topic/final-topic-waiting-configure-conference");
+  return axios.get("/api/topic/final-topic-waiting-configure-conference");
 };
 
 // make deadline submit documents
 export const makeDeadlineFinalSubmit = (data) => {
-  return axios.post("api/review/make-final-review-schedule", data);
+  return axios.post("/api/review/make-final-review-schedule", data);
 };
 
 // submit documents final-term
 export const submitDocumentsFinalterm = (data) => {
-  return axios.post("api/document/supplementation-final-document", data);
+  return axios.post("/api/document/supplementation-final-document", data);
 };
 
 // create final-term council
 export const councilConfigFinalterm = (data) => {
-  return axios.post("api/review/config-final", data);
+  return axios.post("/api/review/config-final", data);
 };
 
 // upload final-term contract

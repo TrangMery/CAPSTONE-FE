@@ -407,6 +407,7 @@ const ProjectManagerFinalTerm = () => {
     <div>
       <Tabs
         defaultActiveKey="notyet"
+        activeKey={checkTab}
         items={items}
         onChange={(value) => {
           setCheckTab(value);

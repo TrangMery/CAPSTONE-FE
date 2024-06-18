@@ -550,8 +550,8 @@ export const stateProject = () => {
 };
 
 //staff get early-topic-waiting-create-meeting
-export const topicWaitingMeeting = (data) => {
-  return axios.post("/api/topic/topic-wait-for-meeting", data);
+export const topicWaitingMeeting = (param) => {
+  return axios.get(`/api/topic/topic-wait-for-meeting?${qs.stringify(param)}`);
 };
 
 //staff cancel council

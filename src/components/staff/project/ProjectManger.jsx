@@ -345,7 +345,7 @@ const ProjectManager = () => {
         topicId: topicId,
       };
       const res = await staffCancelCouncil(data);
-      if (res && res?.data) {
+      if (res && res.statusCode === 200) {
         setCheckTab("chohoidong");
       }
     } catch (error) {
@@ -359,6 +359,7 @@ const ProjectManager = () => {
     <div>
       <Tabs
         defaultActiveKey="notyet"
+        activeKey={checkTab}
         items={items}
         onChange={(value) => {
           setCheckTab(value);

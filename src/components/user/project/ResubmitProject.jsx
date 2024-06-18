@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { chairmanApprove, getReviewDocuments } from "../../../services/api";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useLocation, useNavigate } from "react-router-dom";
-import ModalUpload from "./ModalResubmit";
 import ModalChairmanReject from "./ModalChairmanReject";
 import CollapseTopic from "./CollapTopic";
 import { Button } from "antd";
@@ -13,11 +12,11 @@ const dateFormat = "DD/MM/YYYY";
 
 const ResubmitProject = () => {
   const [data, setDataUser] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenR, setIsModalOpenR] = useState(false);
   const userId = localStorage.getItem("userId");
   const [dataReviewDocument, setDataReviewDocument] = useState([]);
   const [role, setRole] = useState("");
+  const [status, setStatus] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   let topicId = location.pathname.split("/");
@@ -29,7 +28,7 @@ const ResubmitProject = () => {
           <Button
             type="primary"
             className="btnOk"
-            onClick={() => chairmanApprove(topicId)}
+            onClick={() => chairmanApproved(topicId)}
           >
             Đồng ý
           </Button>
@@ -47,22 +46,12 @@ const ResubmitProject = () => {
         </>
       );
     }
-    if (role == "Leader") {
-      return (
-        <Button
-          className="btn"
-          onClick={() => {
-            setDataUser(dataReviewDocument);
-            setIsModalOpen(true);
-          }}
-        >
-          Tải tài liệu
-        </Button>
-      );
-    }
     return (
       <>
         <div style={{ marginTop: "20px" }}>
+          <Button type="primary" onClick={() => navigate(-1)}>
+            Quay lại
+          </Button>
           <p style={{ fontWeight: "bold" }}>
             Chủ nhiệm đề tài chưa nộp lại tài liệu
           </p>
@@ -70,7 +59,27 @@ const ResubmitProject = () => {
       </>
     );
   };
-
+  const chairmanApproved = async (topicId) => {
+    try {
+      const res = await chairmanApprove({
+        topicId: topicId,
+      });
+      console.log('====================================');
+      console.log(res);
+      console.log('====================================');
+      if (res && res.statusCode === 200) {
+        if (status === true) {
+          setStatus(false);
+        } else {
+          setStatus(true);
+        }
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("có lỗi tại chairman approve", error);
+      console.log("====================================");
+    }
+  };
   const getReviewDoc = async () => {
     const res = await getReviewDocuments({
       userId: userId,
@@ -96,14 +105,13 @@ const ResubmitProject = () => {
         },
       ];
       setRole(res.data.role);
-      console.log("đây là data", res.data);
       setDataReviewDocument(data);
     }
   };
 
   useEffect(() => {
     getReviewDoc();
-  }, []);
+  }, [status]);
   return (
     <>
       <h2
@@ -151,14 +159,9 @@ const ResubmitProject = () => {
           </div>
         </section>
       </div>
-      <ModalUpload
-        data={data}
-        setDataUser={setDataUser}
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-      />
       <ModalChairmanReject
         data={data}
+        topicId={topicId}
         setDataUser={setDataUser}
         isModalOpen={isModalOpenR}
         setIsModalOpen={setIsModalOpenR}

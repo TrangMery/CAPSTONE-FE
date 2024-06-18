@@ -39,7 +39,7 @@ const ViewTopic = () => {
       dataIndex: "leaderName",
     },
     {
-      title: "Loại đề tài",
+      title: "Lĩnh vực ",
       dataIndex: "categoryName",
     },
     {
@@ -88,7 +88,7 @@ const ViewTopic = () => {
         "Mã đề tài",
         "Tên đề tài",
         "Chủ nhiệm đề tài",
-        "Loại đề tài",
+        "Lĩnh vực ",
         "Ngày tạo",
       ];
 
@@ -103,7 +103,7 @@ const ViewTopic = () => {
         { header: "Mã đề tài", key: "code", width: 10 },
         { header: "Tên đề tài", key: "topicName", width: 30 },
         { header: "Chủ nhiệm đề tài", key: "leaderName", width: 20 },
-        { header: "Loại đề tài", key: "categoryName", width: 30 },
+        { header: "Lĩnh vực ", key: "categoryName", width: 30 },
         { header: "Ngày tạo", key: "createdAt", width: 15 },
       ];
       listTopic.forEach((data, index) => {

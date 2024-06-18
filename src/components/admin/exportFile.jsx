@@ -61,7 +61,7 @@ const ExportFile = () => {
       dataIndex: "leaderName",
     },
     {
-      title: "Loại đề tài",
+      title: "Lĩnh vực ",
       dataIndex: "categoryName",
     },
     {

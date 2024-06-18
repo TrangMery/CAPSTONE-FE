@@ -222,8 +222,8 @@ export const uploadResubmit = (data) => {
 };
 
 // chairman approve
-export const chairmanApprove = (data) => {
-  return axios.post("/api/topic/chairman-approve", data);
+export const chairmanApprove = (param) => {
+  return axios.post(`/api/topic/chairman-approve?${qs.stringify(param)}`);
 };
 
 //chairman reject
@@ -547,4 +547,14 @@ export const exportFileCv = (param) => {
 //staff search
 export const stateProject = () => {
   return axios.get("/api/topic/topic-state");
+};
+
+//staff get early-topic-waiting-create-meeting
+export const topicWaitingMeeting = (data) => {
+  return axios.post("/api/topic/topic-wait-for-meeting", data);
+};
+
+//staff cancel council
+export const staffCancelCouncil = (data) => {
+  return axios.post("/api/review/cancel-meeting", data);
 };

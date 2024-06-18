@@ -73,7 +73,17 @@ const RegisterProject = () => {
         width: 104,
       }}
     >
-      <Option value="VND">triệu VND</Option>
+      <Option value="VND">VND</Option>
+    </Select>
+  );
+  const selectMonth = (
+    <Select
+      defaultValue={"Tháng"}
+      style={{
+        width: 104,
+      }}
+    >
+      <Option value="Tháng">Tháng</Option>
     </Select>
   );
   const [form] = Form.useForm();
@@ -192,7 +202,7 @@ const RegisterProject = () => {
       return;
     }
 
-    const { categoryId, topicName, description, budget, startTime } = values;
+    const { categoryId, topicName, description, budget, startTime, topicType, expectedNumberOfMonthToComplete } = values;
     const data = {
       categoryId: categoryId,
       creatorId: creatorId,
@@ -204,6 +214,8 @@ const RegisterProject = () => {
       topicFileLink: newTopicFiles.fileLink,
       startTime: dayjs(startTime).local().format(),
       cvLink: cvLink,
+      topicType: parseInt(topicType),
+      expectedNumberOfMonthToComplete: expectedNumberOfMonthToComplete,
     };
     if (data !== null) {
       setOpenConfirm(true);
@@ -259,6 +271,42 @@ const RegisterProject = () => {
           </Col>
           <Col span={12}>
             <Form.Item
+              name="startTime"
+              label="Thời gian bắt đầu dự kiến: "
+              rules={[
+                {
+                  required: true,
+                  message: "Xin hãy chọn thời gian bắt đầu dự kiến",
+                },
+              ]}
+            >
+              <DatePicker
+                format={dateFormat}
+                minDate={today}
+                placeholder="Chọn ngày"
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="expectedNumberOfMonthToComplete"
+              label="Thời gian dự kiến làm: "
+              rules={[
+                {
+                  required: true,
+                  message: "Xin hãy chọn thời gian bắt đầu dự kiến",
+                },
+              ]}
+            >
+              <InputNumber
+                style={{ width: 230 }}
+                min={0}
+                addonAfter={selectMonth}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
               name="budget"
               label="Kinh Phí Dự Kiến"
               rules={[
@@ -267,7 +315,6 @@ const RegisterProject = () => {
                   message: "Xin hãy nhập kinh phí dự kiến",
                 },
               ]}
-              labelCol={{ span: 24 }}
             >
               <InputNumber
                 className="text-align-input"
@@ -280,24 +327,30 @@ const RegisterProject = () => {
               />
             </Form.Item>
           </Col>
+
           <Col span={12}>
             <Form.Item
-              name="categoryId"
-              label="Lĩnh vực nghiên cứu"
+              name="topicType"
+              label="Loại đề tài nghiên cứu"
               rules={[
                 {
                   required: true,
                   message: "Xin hãy chọn lĩnh vực nghiên cứu",
                 },
               ]}
-              labelCol={{ span: 24 }}
             >
               <Select
                 style={{ width: 200 }}
-                options={category.map((item) => ({
-                  value: item.categoryId,
-                  label: item.categoryName,
-                }))}
+                options={[
+                  {
+                    value: '0',
+                    label: 'Lĩnh vực nội khoa',
+                  },
+                  {
+                    value: '1',
+                    label: 'Lĩnh vực ngoại khoa',
+                  },
+                ]}
               />
             </Form.Item>
           </Col>
@@ -331,20 +384,39 @@ const RegisterProject = () => {
           </Col>
           <Col span={12}>
             <Form.Item
-              name="startTime"
-              label="Thời gian bắt đầu dự kiến: "
+              name="categoryId"
+              label="Lĩnh vực nghiên cứu:"
               rules={[
                 {
                   required: true,
-                  message: "Xin hãy chọn thời gian bắt đầu dự kiến",
+                  message: "Xin hãy chọn lĩnh vực nghiên cứu",
                 },
               ]}
             >
-              <DatePicker
-                format={dateFormat}
-                minDate={today}
-                placeholder="Chọn ngày"
+              <Select
+                style={{ width: 200 }}
+                options={category.map((item) => ({
+                  value: item.categoryId,
+                  label: item.categoryName,
+                }))}
               />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Đính kèm tài cv cá nhân: " required={true}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Upload {...props} listType="picture">
+                  <Button
+                    onClick={() => setUploadType("cv")}
+                    icon={<InboxOutlined />}
+                  >
+                    Tải CV lên
+                  </Button>
+                </Upload>
+              </div>
+              {error && (
+                <p style={{ color: "red", marginLeft: "10px" }}>{error}</p>
+              )}
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -420,23 +492,7 @@ const RegisterProject = () => {
               )}
             </Form.List>
           </Col>
-          <Col span={12}>
-            <Form.Item label="Đính kèm tài cv cá nhân: " required={true}>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Upload {...props} listType="picture">
-                  <Button
-                    onClick={() => setUploadType("cv")}
-                    icon={<InboxOutlined />}
-                  >
-                    Tải CV lên
-                  </Button>
-                </Upload>
-              </div>
-              {error && (
-                <p style={{ color: "red", marginLeft: "10px" }}>{error}</p>
-              )}
-            </Form.Item>
-          </Col>
+
           <Col span={24}>
             <h3>Đính kèm tài liệu liên quan</h3>
             <p>

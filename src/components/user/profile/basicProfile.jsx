@@ -45,6 +45,9 @@ const BasicProfile = () => {
           sex: res.data.sex === "Male" ? "Nam" : "Nữ",
         };
 
+        console.log("====================================");
+        console.log("check custom data: ", customData);
+        console.log("====================================");
         form.setFieldsValue(customData);
       }
     } catch (error) {
@@ -150,6 +153,16 @@ const BasicProfile = () => {
               </Col>
               <Col span={12}>
                 <Form.Item name="taxCode" label="Mã số thuế">
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="bank" label="Ngân hàng sử dụng">
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="bankAccountNumber" label="Số tài khoản">
                   <Input />
                 </Form.Item>
               </Col>

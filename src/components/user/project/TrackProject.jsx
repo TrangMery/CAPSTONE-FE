@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import UploadMidTerm from "./UploadMidTerm";
 import UploadFileFinal from "./modalUploadFinal";
+import ModalUploadResubmit from "./ModalResubmit";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD-MM-YYYY";
 const TrackProject = () => {
@@ -30,6 +31,8 @@ const TrackProject = () => {
   const [status, setStatus] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalFinalOpen, setIsModalFinalOpen] = useState(false);
+  const [modalResubmit, setModalResubmit] = useState(false);
+  const [resubmitEarly, setResubmitEarly] = useState([]);
   const [isLeader, setIsLeader] = useState(false);
   const [leaderId, setLeaderId] = useState();
   const userId = localStorage.getItem("userId");
@@ -72,6 +75,11 @@ const TrackProject = () => {
           setCurrentStep("3");
         } else if (res.data?.state === "EndingPhase") {
           setCurrentStep("4");
+        }
+        if (
+          res.data?.earlyTermReportProcess.resubmitProcesses.length > 0 
+        ) {
+          setResubmitEarly(res.data?.earlyTermReportProcess.resubmitProcesses)
         }
       }
     } catch (error) {
@@ -116,6 +124,27 @@ const TrackProject = () => {
                               dateFormat
                             )}
                           </p>{" "}
+                          {isLeader ? (
+                            <ConfigProvider
+                              theme={{
+                                token: {
+                                  colorPrimary: "#55E6A0",
+                                },
+                              }}
+                            >
+                              <Button
+                                type="primary"
+                                style={{
+                                  marginBottom: "10px",
+                                }}
+                                onClick={() => setModalResubmit(true)}
+                              >
+                                Nộp tài liệu chỉnh sửa
+                              </Button>
+                            </ConfigProvider>
+                          ) : (
+                            ""
+                          )}
                         </>
                       ) : (
                         <p>Trạng thái: </p>
@@ -195,7 +224,7 @@ const TrackProject = () => {
                                 ? "Staff tải lên quyết định"
                                 : dataProcess?.earlyTermReportProcess
                                     ?.waitingForUploadMeetingMinutes === "Edit"
-                                ? "Vui lòng nộp lại"
+                                ? "Nộp lại tài liệu đã chỉnh sửa"
                                 : "Tải lên quyết định",
                             status:
                               dataProcess?.earlyTermReportProcess
@@ -207,16 +236,6 @@ const TrackProject = () => {
                                 : "wait",
                             icon: <CloudUploadOutlined />,
                           },
-                          // nếu resubmit thì mới hiện
-                          // {
-                          //   title: "Staff tải hợp đồng lên",
-                          //   status:
-                          //     dataProcess?.earlyTermReportProcess
-                          //       ?.waitingForContractSigning === "Accept"
-                          //       ? "finished"
-                          //       : "wait",
-                          //   icon: <ContactsOutlined />,
-                          // },
                           {
                             title: "Staff tải hợp đồng lên",
                             status:
@@ -284,7 +303,7 @@ const TrackProject = () => {
                                     )}
                                   </>
                                 ) : (
-                                  <p>Trạng thái: </p>
+                                  <p></p>
                                 )}
 
                                 <Steps
@@ -562,6 +581,12 @@ const TrackProject = () => {
         setIsModalOpen={setIsModalFinalOpen}
         status={status}
         setStatus={setStatus}
+      />
+      <ModalUploadResubmit
+        userId={userId}
+        topicId={topicId}
+        isModalOpen={modalResubmit}
+        setIsModalOpen={setModalResubmit}
       />
     </div>
   );

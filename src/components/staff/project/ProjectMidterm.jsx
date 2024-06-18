@@ -1,6 +1,7 @@
 import {
   CalendarOutlined,
   InfoCircleOutlined,
+  MinusCircleOutlined,
   SearchOutlined,
   UsergroupAddOutlined,
 } from "@ant-design/icons";
@@ -8,9 +9,11 @@ import {
   Button,
   ConfigProvider,
   Input,
+  Popconfirm,
   Space,
   Table,
   Tabs,
+  Tag,
   Tooltip,
 } from "antd";
 import React, { useEffect, useRef, useState } from "react";
@@ -22,9 +25,11 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
 import {
+  topicWaitingMeeting,
   getMidTermReport,
   getMidTermReportWait,
   topicMidTearmCreatedDeadline,
+  staffCancelCouncil,
 } from "../../../services/api";
 import ModalMidTerm from "./ModalMidterm";
 import { useNavigate } from "react-router-dom";
@@ -53,6 +58,11 @@ const ProjectManagerMidTerm = () => {
     {
       key: "taohoidong",
       label: `Thêm thành viên hội đồng`,
+      children: <></>,
+    },
+    {
+      key: "dataohoidong",
+      label: `Đã tạo hội đồng`,
       children: <></>,
     },
   ];
@@ -166,10 +176,21 @@ const ProjectManagerMidTerm = () => {
       key: "categoryName",
     },
     {
-      title: checkTab === "notyet" ? "Ngày tải hợp đồng" : "Hạn nộp file",
+      title:
+        checkTab === "notyet"
+          ? "Ngày tải hợp đồng"
+          : checkTab === "dataohoidong"
+          ? "Ngày họp"
+          : "Hạn nộp file",
       render: (text, record, index) => {
         if (checkTab === "notyet") {
           return <div>{dayjs(record.uploadContractAt).format(dateFormat)}</div>;
+        } else if (checkTab === "dataohoidong") {
+          return (
+            <div>
+               {dayjs(record.meetingTime).format("DD/MM/YYYY HH:mm")}
+            </div>
+          );
         }
         return (
           <div>
@@ -181,6 +202,25 @@ const ProjectManagerMidTerm = () => {
         );
       },
       key: "createdAt",
+      align: "center",
+    },
+    {
+      title: "Loại đề tài",
+      render: (text, record, index) => {
+        const content =
+          record.topicType === "Internal" ? "Nội Khoa" : "Ngoại Khoa";
+        const color = record.topicType === "Internal" ? "green" : "blue";
+        return (
+          <Tag
+            style={{
+              fontSize: "13px",
+            }}
+            color={color}
+          >
+            {content}
+          </Tag>
+        );
+      },
       align: "center",
     },
     {
@@ -236,6 +276,26 @@ const ProjectManagerMidTerm = () => {
                   </UsergroupAddOutlined>
                 </Tooltip>
               )}
+              {checkTab === "dataohoidong" && (
+              <Popconfirm
+                title="Hủy hội đồng"
+                description="Bạn có chắc chắn hủy hội đồng"
+                onConfirm={() => cancelCouncil(record.topicId)}
+                okText="Hủy"
+                cancelText="Quay lại"
+              >
+                <Tooltip placement="bottom" title={"Hủy hội đồng"}>
+                  <MinusCircleOutlined
+                    style={{
+                      fontSize: "20px",
+                      color: "red",
+                      margin: "0 10px",
+                    }}
+                    type="primary"
+                  />
+                </Tooltip>
+              </Popconfirm>
+            )}
             </ConfigProvider>
           </div>
         );
@@ -278,6 +338,31 @@ const ProjectManagerMidTerm = () => {
       console.log("có lỗi tại getTopicWaitCouncil: " + error);
     }
   };
+  const getTopicHadCreateCouncil = async () => {
+    try {
+      const res = await topicWaitingMeeting({
+        state: 2,
+      });
+      if (res && res?.data) {
+        setData(res.data);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
+  const cancelCouncil = async (topicId) => {
+    try {
+      const data = {
+        topicId: topicId,
+      };
+      const res = await staffCancelCouncil(data);
+      if (res && res?.data) {
+        setCheckTab("taohoidong");
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
   useEffect(() => {
     getTopicMidTerm();
   }, [isModalOpen]);
@@ -292,6 +377,8 @@ const ProjectManagerMidTerm = () => {
             getTopicMidTerm();
           } else if (value === "dabaocao") {
             getTopicHadDeadline();
+          } else if (value === "dataohoidong") {
+            getTopicHadCreateCouncil();
           } else {
             getTopicWaitCouncil();
           }

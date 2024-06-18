@@ -1,5 +1,6 @@
 import {
   InfoCircleOutlined,
+  MinusCircleOutlined,
   SearchOutlined,
   UserAddOutlined,
   UsergroupAddOutlined,
@@ -8,9 +9,11 @@ import {
   Button,
   ConfigProvider,
   Input,
+  Popconfirm,
   Space,
   Table,
   Tabs,
+  Tag,
   Tooltip,
 } from "antd";
 import React, { useEffect, useRef, useState } from "react";
@@ -26,11 +29,11 @@ import {
   getTopicForCouncil,
   getTopicForMemberApproval,
   getTopicWaitingMember,
+  staffCancelCouncil,
+  topicWaitingMeeting,
 } from "../../../services/api";
 import ModalTimeCouncil from "./modalTimeCouncil";
 const ProjectManager = () => {
-  //staff ID để test
-  const staffId = "2D5E2220-EEEF-4FDC-8C98-1B5C5012319C";
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +56,12 @@ const ProjectManager = () => {
     },
     {
       key: "chohoidong",
-      label: `Xem xét`,
+      label: `Tạo hội đồng xem xét`,
+      children: <></>,
+    },
+    {
+      key: "dataohoidong",
+      label: `Đã tạo hội đồng`,
       children: <></>,
     },
   ];
@@ -168,14 +176,42 @@ const ProjectManager = () => {
       key: "categoryName",
     },
     {
-      title: checkTab === "notyet" ? "Ngày nộp" : "Ngày Kết Thúc Sơ Duyệt ",
+      title:
+        checkTab === "notyet"
+          ? "Ngày nộp"
+          : checkTab === "dataohoidong"
+          ? "Ngày họp"
+          : "Ngày Kết Thúc Sơ Duyệt ",
       render: (text, record, index) => {
         if (checkTab === "notyet") {
           return <div>{dayjs(record.createdAt).format(dateFormat)}</div>;
+        } else if (checkTab === "dataohoidong") {
+          return (
+            <div>{dayjs(record.meetingTime).format("DD/MM/YYYY HH:mm")}</div>
+          );
         }
         return <div>{dayjs(record.reviewEndDate).format(dateFormat)}</div>;
       },
       key: "createdAt",
+      align: "center",
+    },
+    {
+      title: "Loại đề tài",
+      render: (text, record, index) => {
+        const content =
+          record.topicType === "Internal" ? "Nội Khoa" : "Ngoại Khoa";
+        const color = record.topicType === "Internal" ? "green" : "blue";
+        return (
+          <Tag
+            style={{
+              fontSize: "13px",
+            }}
+            color={color}
+          >
+            {content}
+          </Tag>
+        );
+      },
       align: "center",
     },
     {
@@ -231,6 +267,26 @@ const ProjectManager = () => {
                 </Tooltip>
               )}
             </ConfigProvider>
+            {checkTab === "dataohoidong" && (
+              <Popconfirm
+                title="Hủy hội đồng"
+                description="Bạn có chắc chắn hủy hội đồng"
+                onConfirm={() => cancelCouncil(record.topicId)}
+                okText="Hủy"
+                cancelText="Quay lại"
+              >
+                <Tooltip placement="bottom" title={"Hủy hội đồng"}>
+                  <MinusCircleOutlined
+                    style={{
+                      fontSize: "20px",
+                      color: "red",
+                      margin: "0 10px",
+                    }}
+                    type="primary"
+                  />
+                </Tooltip>
+              </Popconfirm>
+            )}
           </div>
         );
       },
@@ -240,9 +296,7 @@ const ProjectManager = () => {
 
   const getTopicMemberApproval = async () => {
     try {
-      const res = await getTopicForMemberApproval({
-        staffId: staffId,
-      });
+      const res = await getTopicForMemberApproval();
       setIsLoading(true);
       if (res && res?.data) {
         setData(res.data);
@@ -254,9 +308,7 @@ const ProjectManager = () => {
   };
   const getTopicCoucil = async () => {
     try {
-      const res = await getTopicForCouncil({
-        staffId: staffId,
-      });
+      const res = await getTopicForCouncil();
       if (res && res?.data) {
         setData(res.data);
       }
@@ -267,11 +319,34 @@ const ProjectManager = () => {
 
   const getMemberApprovalTopic = async () => {
     try {
-      const res = await getTopicWaitingMember({
-        staffId: staffId,
+      const res = await getTopicWaitingMember();
+      if (res && res?.data) {
+        setData(res.data);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
+  const getTopicHadCreateCouncil = async () => {
+    try {
+      const res = await topicWaitingMeeting({
+        state: 1,
       });
       if (res && res?.data) {
         setData(res.data);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
+  const cancelCouncil = async (topicId) => {
+    try {
+      const data = {
+        topicId: topicId,
+      };
+      const res = await staffCancelCouncil(data);
+      if (res && res?.data) {
+        setCheckTab("chohoidong");
       }
     } catch (error) {
       console.log("có lỗi tại getTopicForCouncil: " + error);
@@ -293,6 +368,8 @@ const ProjectManager = () => {
             getTopicCoucil();
           } else if (value === "wait") {
             getMemberApprovalTopic();
+          } else if (value === "dataohoidong") {
+            getTopicHadCreateCouncil();
           }
         }}
         style={{ overflowX: "auto", marginLeft: "30px" }}

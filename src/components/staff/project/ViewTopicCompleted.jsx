@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Row, Col, Button, message } from "antd";
+import { Table, Row, Col, Button, message, Tag } from "antd";
 import { getAllTopics } from "../../../services/api";
 import TopicSearchFormStaff from "./TopicSearchStaff";
 import { CloudUploadOutlined } from "@ant-design/icons";
@@ -41,6 +41,30 @@ const ViewTopic = () => {
     {
       title: "Lĩnh vực ",
       dataIndex: "categoryName",
+    },
+    {
+      title: "Loại đề tài",
+      sorter: (a, b) => {
+        if (a.type < b.type) return -1;
+        if (a.type > b.type) return 1;
+        return 0;
+      },
+      render: (text, record, index) => {
+        const content =
+          record.topicType === "Internal" ? "Nội Khoa" : "Ngoại Khoa";
+        const color = record.topicType === "Internal" ? "green" : "blue";
+        return (
+          <Tag
+            style={{
+              fontSize: "13px",
+            }}
+            color={color}
+          >
+            {content}
+          </Tag>
+        );
+      },
+      align: "center",
     },
     {
       title: "Trạng thái ",
@@ -117,7 +141,6 @@ const ViewTopic = () => {
         });
       });
 
-
       const file = await workbook.xlsx.writeBuffer();
 
       // Xuất file ra
@@ -178,6 +201,13 @@ const ViewTopic = () => {
       setCurrent(1);
     }
   };
+  const locale = {
+    // Tùy chỉnh thông báo sắp xếp
+    sortTitle: 'Sắp xếp theo loại đề tài',
+    triggerDesc: "Đề tài Nội Khoa",
+    triggerAsc: "Đề tài Ngoại Khoa",
+    cancelSort: "Hủy sắp xếp",
+  };
   return (
     <>
       <Row gutter={[24, 24]}>
@@ -204,6 +234,7 @@ const ViewTopic = () => {
                 );
               },
             }}
+            locale={locale}
           />
         </Col>
       </Row>

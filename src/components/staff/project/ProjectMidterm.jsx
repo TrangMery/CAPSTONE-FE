@@ -187,9 +187,7 @@ const ProjectManagerMidTerm = () => {
           return <div>{dayjs(record.uploadContractAt).format(dateFormat)}</div>;
         } else if (checkTab === "dataohoidong") {
           return (
-            <div>
-               {dayjs(record.meetingTime).format("DD/MM/YYYY HH:mm")}
-            </div>
+            <div>{dayjs(record.meetingTime).format("DD/MM/YYYY HH:mm")}</div>
           );
         }
         return (
@@ -206,6 +204,11 @@ const ProjectManagerMidTerm = () => {
     },
     {
       title: "Loại đề tài",
+      sorter: (a, b) => {
+        if (a.type < b.type) return -1;
+        if (a.type > b.type) return 1;
+        return 0;
+      },
       render: (text, record, index) => {
         const content =
           record.topicType === "Internal" ? "Nội Khoa" : "Ngoại Khoa";
@@ -277,25 +280,25 @@ const ProjectManagerMidTerm = () => {
                 </Tooltip>
               )}
               {checkTab === "dataohoidong" && (
-              <Popconfirm
-                title="Hủy hội đồng"
-                description="Bạn có chắc chắn hủy hội đồng"
-                onConfirm={() => cancelCouncil(record.topicId)}
-                okText="Hủy"
-                cancelText="Quay lại"
-              >
-                <Tooltip placement="bottom" title={"Hủy hội đồng"}>
-                  <MinusCircleOutlined
-                    style={{
-                      fontSize: "20px",
-                      color: "red",
-                      margin: "0 10px",
-                    }}
-                    type="primary"
-                  />
-                </Tooltip>
-              </Popconfirm>
-            )}
+                <Popconfirm
+                  title="Hủy hội đồng"
+                  description="Bạn có chắc chắn hủy hội đồng"
+                  onConfirm={() => cancelCouncil(record.topicId)}
+                  okText="Hủy"
+                  cancelText="Quay lại"
+                >
+                  <Tooltip placement="bottom" title={"Hủy hội đồng"}>
+                    <MinusCircleOutlined
+                      style={{
+                        fontSize: "20px",
+                        color: "red",
+                        margin: "0 10px",
+                      }}
+                      type="primary"
+                    />
+                  </Tooltip>
+                </Popconfirm>
+              )}
             </ConfigProvider>
           </div>
         );
@@ -411,6 +414,13 @@ const ProjectManagerMidTerm = () => {
     }
     console.log("parms: ", pagination, filters, sorter, extra);
   };
+  const locale = {
+    // Tùy chỉnh thông báo sắp xếp
+    sortTitle: "Sắp xếp theo loại đề tài",
+    triggerDesc: "Đề tài Nội Khoa",
+    triggerAsc: "Đề tài Ngoại Khoa",
+    cancelSort: "Hủy sắp xếp",
+  };
   return (
     <div>
       <h2 style={{ fontWeight: "bold", fontSize: "30px", color: "#303972" }}>
@@ -440,6 +450,7 @@ const ProjectManagerMidTerm = () => {
         }}
         title={renderHeader}
         loading={isLoading}
+        locale={locale}
       />
 
       <ModalInfor

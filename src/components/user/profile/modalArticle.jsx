@@ -16,10 +16,8 @@ import {
 import dayjs from "dayjs";
 import { createArticle, uploadFile } from "../../../services/api";
 import { UploadOutlined } from "@ant-design/icons";
-import axios from "axios";
 const { Search } = Input;
 const ArticalModal = (props) => {
-  const apiKey = import.meta.env.API_KEY;
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState();
   const [newTopicFiles, setFileList] = useState({});
@@ -28,16 +26,6 @@ const ArticalModal = (props) => {
 
   const getResultId = async (query) => {
     try {
-      const response = await axios.get("https://serpapi.com/search", {
-        params: {
-          engine: "google",
-          api_key: apiKey,
-          q: query,
-        },
-      });
-      console.log('====================================');
-      console.log(response.data.organic_results);
-      console.log('====================================');
       setResultId(response.data.organic_results);
     } catch (error) {
       console.error("Error fetching the data", error);

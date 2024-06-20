@@ -66,6 +66,11 @@ const ModalUploadResubmit = (props) => {
         setIsSubmit(false);
         message.success("Tải file chỉnh sửa thành công");
         handleCancel();
+        if (props.status) {
+          props.setStatus(false);
+        } else {
+          props.setStatus(true);
+        }
       }
     } catch (error) {
       console.log("====================================");

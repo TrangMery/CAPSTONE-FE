@@ -23,6 +23,7 @@ const ModalChairmanReject = (props) => {
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
   const [newTopicFiles, setFileList] = useState({});
+  const [errorMessage, setError] = useState("");
   const navigate = useNavigate();
   const handleOk = () => {
     form.submit();
@@ -42,13 +43,14 @@ const ModalChairmanReject = (props) => {
       topicId: props.topicId,
       feedbackFileLink: newTopicFiles.topicFileLink,
     };
+    console.log("check param: ", param);
     try {
       const res = await chairmanReject(param);
       setIsSubmit(true);
       if (res && res.isSuccess) {
         setIsSubmit(false);
         message.success("Tải biên bản lên thành công");
-        navigate("/user");
+        navigate("/user/review");
       }
     } catch (error) {
       console.log("====================================");
@@ -63,9 +65,7 @@ const ModalChairmanReject = (props) => {
     customRequest: async ({ file, onSuccess, onError }) => {
       try {
         const isCompressedFile =
-          file.type === "application/x-rar-compressed" ||
-          file.type === "application/x-zip-compressed" ||
-          file.type === "application/x-compressed";
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
         if (!isCompressedFile) {
           message.error("Chỉ được phép tải lên các file word!");
           setError("Chỉ được phép tải lên các file word!");
@@ -77,12 +77,10 @@ const ModalChairmanReject = (props) => {
           onError(response, file);
           message.error(`${file.name} file uploaded unsuccessfully.`);
         } else {
-          setFileList(() => [
-            {
-              topicFileName: response.data.fileName,
-              topicFileLink: response.data.fileLink,
-            },
-          ]);
+          setFileList({
+            topicFileName: response.data.fileName,
+            topicFileLink: response.data.fileLink,
+          });
           // Gọi onSuccess để xác nhận rằng tải lên đã thành công
           onSuccess(response, file);
           // Hiển thị thông báo thành công
@@ -102,7 +100,6 @@ const ModalChairmanReject = (props) => {
       console.log("Dropped files", e.dataTransfer.files);
     },
   };
-
 
   return (
     <>
@@ -143,6 +140,7 @@ const ModalChairmanReject = (props) => {
                 <Upload {...propsUpload}>
                   <Button icon={<UploadOutlined />}>Tải lên biên bản</Button>
                 </Upload>
+                {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
               </Form.Item>
             </Col>
           </Row>

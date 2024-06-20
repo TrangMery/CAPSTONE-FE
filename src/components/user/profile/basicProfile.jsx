@@ -44,10 +44,6 @@ const BasicProfile = () => {
           departmentId: departmentName,
           sex: res.data.sex === "Male" ? "Nam" : "Nữ",
         };
-
-        console.log("====================================");
-        console.log("check custom data: ", customData);
-        console.log("====================================");
         form.setFieldsValue(customData);
       }
     } catch (error) {

@@ -22,6 +22,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import UploadMidTerm from "./UploadMidTerm";
 import UploadFileFinal from "./modalUploadFinal";
 import ModalUploadResubmit from "./ModalResubmit";
+import TrackResubmitModal from "./TrackResubmitModal";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD-MM-YYYY";
 const TrackProject = () => {
@@ -31,6 +32,7 @@ const TrackProject = () => {
   const [status, setStatus] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalFinalOpen, setIsModalFinalOpen] = useState(false);
+  const [isModalResubmitOpen, setIsModalResubmitOpen] = useState(false);
   const [modalResubmit, setModalResubmit] = useState(false);
   const [resubmitEarly, setResubmitEarly] = useState([]);
   const [isLeader, setIsLeader] = useState(false);
@@ -76,10 +78,8 @@ const TrackProject = () => {
         } else if (res.data?.state === "EndingPhase") {
           setCurrentStep("4");
         }
-        if (
-          res.data?.earlyTermReportProcess.resubmitProcesses.length > 0 
-        ) {
-          setResubmitEarly(res.data?.earlyTermReportProcess.resubmitProcesses)
+        if (res.data?.earlyTermReportProcess.resubmitProcesses.length > 0) {
+          setResubmitEarly(res.data?.earlyTermReportProcess.resubmitProcesses);
         }
       }
     } catch (error) {
@@ -146,8 +146,24 @@ const TrackProject = () => {
                             ""
                           )}
                         </>
+                      ) : resubmitEarly.length > 0 ? (
+                        <ConfigProvider
+                          theme={{
+                            token: {
+                              colorPrimary: "#55E6A0",
+                            },
+                          }}
+                        >
+                          <Button
+                            type="primary"
+                            style={{ marginBottom: "20px" }}
+                            onClick={() => setIsModalResubmitOpen(true)}
+                          >
+                            Xem lịch sử nộp lại
+                          </Button>
+                        </ConfigProvider>
                       ) : (
-                        <p>Trạng thái: </p>
+                        ""
                       )}
 
                       <Steps
@@ -156,7 +172,7 @@ const TrackProject = () => {
                         items={[
                           {
                             title: "Nộp đề tài",
-                            status: "finished",
+                            status: "finish",
                             icon: <FileProtectOutlined />,
                           },
                           {
@@ -171,7 +187,7 @@ const TrackProject = () => {
                             status:
                               dataProcess?.preliminaryReviewProcess
                                 ?.waitingForDean === "Accept"
-                                ? "finished"
+                                ? "finish"
                                 : dataProcess?.preliminaryReviewProcess
                                     ?.waitingForDean === "Reject"
                                 ? "error"
@@ -187,7 +203,7 @@ const TrackProject = () => {
                             status:
                               dataProcess?.preliminaryReviewProcess
                                 ?.waitingForCouncilFormation === "Done"
-                                ? "finished"
+                                ? "finish"
                                 : "wait",
                             icon: <UserAddOutlined />,
                           },
@@ -200,7 +216,7 @@ const TrackProject = () => {
                             status:
                               dataProcess?.preliminaryReviewProcess
                                 ?.waitingForCouncilDecision === "Accept"
-                                ? "finished"
+                                ? "finish"
                                 : "wait",
                             icon: <FileDoneOutlined />,
                           },
@@ -213,7 +229,7 @@ const TrackProject = () => {
                             status:
                               dataProcess?.earlyTermReportProcess
                                 ?.waitingForCouncilFormation === "Done"
-                                ? "finished"
+                                ? "finish"
                                 : "wait",
                             icon: <UsergroupAddOutlined />,
                           },
@@ -222,17 +238,36 @@ const TrackProject = () => {
                               dataProcess?.earlyTermReportProcess
                                 ?.waitingForUploadMeetingMinutes === "Accept"
                                 ? "Staff tải lên quyết định"
-                                : dataProcess?.earlyTermReportProcess
-                                    ?.waitingForUploadMeetingMinutes === "Edit"
+                                : (dataProcess?.earlyTermReportProcess
+                                    ?.waitingForUploadMeetingMinutes ===
+                                    "Edit" &&
+                                    dataProcess?.earlyTermReportProcess
+                                      .resubmitProcesses.length === 0) ||
+                                  dataProcess?.progress ===
+                                    "WaitingForDocumentEditing"
                                 ? "Nộp lại tài liệu đã chỉnh sửa"
-                                : "Tải lên quyết định",
+                                : dataProcess?.progress ===
+                                  "WaitingForCouncilDecision"
+                                ? "Chờ quyết định của hội đồng"
+                                : "Tải lên quyết định ",
                             status:
                               dataProcess?.earlyTermReportProcess
                                 ?.waitingForUploadMeetingMinutes === "Accept"
-                                ? "finished"
-                                : dataProcess?.earlyTermReportProcess
-                                    ?.waitingForUploadMeetingMinutes === "Edit"
+                                ? "finish"
+                                : (dataProcess?.earlyTermReportProcess
+                                    ?.waitingForUploadMeetingMinutes ===
+                                    "Edit" &&
+                                    dataProcess?.earlyTermReportProcess
+                                      .resubmitProcesses.length === 0) ||
+                                  dataProcess?.progress ===
+                                    "WaitingForDocumentEditing"
                                 ? "error"
+                                : dataProcess?.progress ===
+                                  "WaitingForCouncilDecision"
+                                ? "process"
+                                : dataProcess?.progress ===
+                                  "WaitingForUploadContract"
+                                ? "finish"
                                 : "wait",
                             icon: <CloudUploadOutlined />,
                           },
@@ -241,7 +276,7 @@ const TrackProject = () => {
                             status:
                               dataProcess?.state === "MidtermReport" ||
                               dataProcess?.state === "FinaltermReport"
-                                ? "finished"
+                                ? "finish"
                                 : "wait",
                             icon: <ContactsOutlined />,
                           },
@@ -312,7 +347,7 @@ const TrackProject = () => {
                                   items={[
                                     {
                                       title: "Staff tạo ngày nộp đơn",
-                                      status: "finished",
+                                      status: "finish",
                                       icon: <ScheduleOutlined />,
                                     },
                                     {
@@ -321,7 +356,7 @@ const TrackProject = () => {
                                         item?.waitingForDocumentSupplementation ===
                                         "OnGoing"
                                           ? "wait"
-                                          : "finished",
+                                          : "finish",
                                       icon: <FileTextOutlined />,
                                     },
                                     {
@@ -333,7 +368,7 @@ const TrackProject = () => {
                                       status:
                                         item?.waitingForConfigureConference ===
                                         "Done"
-                                          ? "finished"
+                                          ? "finish"
                                           : "wait",
                                       icon: <UsergroupAddOutlined />,
                                     },
@@ -346,7 +381,7 @@ const TrackProject = () => {
                                       status:
                                         item?.waitingForUploadEvaluate ===
                                         "Done"
-                                          ? "finished"
+                                          ? "finish"
                                           : "wait",
                                       icon: <UploadOutlined />,
                                     },
@@ -423,7 +458,7 @@ const TrackProject = () => {
                               status:
                                 dataProcess.finalTermReportProcess
                                   .waitingForDocumentSupplementation === "Done"
-                                  ? "finished"
+                                  ? "finish"
                                   : "wait",
                               icon: <FileProtectOutlined />,
                             },
@@ -436,7 +471,7 @@ const TrackProject = () => {
                               status:
                                 dataProcess.finalTermReportProcess
                                   .waitingForConfigureConference === "Done"
-                                  ? "finished"
+                                  ? "finish"
                                   : "wait",
                               icon: <UsergroupAddOutlined />,
                             },
@@ -449,7 +484,7 @@ const TrackProject = () => {
                               status:
                                 dataProcess.finalTermReportProcess
                                   .waitingForUploadMeetingMinutes === "Done"
-                                  ? "finished"
+                                  ? "finish"
                                   : "wait",
                               icon: <CloudUploadOutlined />,
                             },
@@ -459,7 +494,7 @@ const TrackProject = () => {
                             //   status:
                             //     dataProcess?.earlyTermReportProcess
                             //       ?.waitingForContractSigning === "Accept"
-                            //       ? "finished"
+                            //       ? "finish"
                             //       : "wait",
                             //   icon: <ContactsOutlined />,
                             // },
@@ -529,9 +564,9 @@ const TrackProject = () => {
                             status:
                               dataProcess.progress ===
                               "WaitingForCensorshipRemuneration"
-                                ? "finished"
+                                ? "finish"
                                 : dataProcess.progress === "Completed"
-                                ? "finished"
+                                ? "finish"
                                 : "wait",
                             icon: <FileProtectOutlined />,
                           },
@@ -539,7 +574,7 @@ const TrackProject = () => {
                             title: "Staff tải lên quyết định",
                             status:
                               dataProcess.progress === "Completed"
-                                ? "finished"
+                                ? "finish"
                                 : "wait",
                             icon: <CloudUploadOutlined />,
                           },
@@ -565,7 +600,11 @@ const TrackProject = () => {
       >
         Quay về
       </Button>
-
+      <TrackResubmitModal
+        isModalOpen={isModalResubmitOpen}
+        setIsModalOpen={setIsModalResubmitOpen}
+        data={resubmitEarly}
+      />
       <UploadMidTerm
         state={currentStep}
         topicId={topicId}
@@ -587,6 +626,8 @@ const TrackProject = () => {
         topicId={topicId}
         isModalOpen={modalResubmit}
         setIsModalOpen={setModalResubmit}
+        status={status}
+        setStatus={setStatus}
       />
     </div>
   );

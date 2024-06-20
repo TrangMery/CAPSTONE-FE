@@ -66,33 +66,7 @@ const TimelineComponent = ({ process }) => {
                     Tải tài liệu
                   </Button>
                 )}
-                {/* {events.resubmit.length > 0 && (
-                  <Timeline style={{ marginTop: 16 }}>
-                    {events.resubmit.map((subEvent, subIdx) => (
-                      <Timeline.Item
-                        key={subIdx}
-                        color={subEvent.status === "success" ? "green" : "gray"}
-                        label={dayjs(events.date).format("DD.MM.YYYY")}
-                      >
-                        <div>
-                          <span>
-                            {translate(subEvent.description, "events")}
-                          </span>
-                        </div>
-                        {subEvent.file && (
-                          <Button
-                            type="primary"
-                            icon={<DownloadOutlined />}
-                            onClick={() => handleDownload(subEvent.file)}
-                            style={{ marginTop: 8 }}
-                          >
-                            Tải tài liệu
-                          </Button>
-                        )}
-                      </Timeline.Item>
-                    ))}
-                  </Timeline>
-                )} */}
+               
               </Timeline.Item>
             ))}
           </Timeline>

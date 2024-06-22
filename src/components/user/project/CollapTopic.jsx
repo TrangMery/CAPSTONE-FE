@@ -13,6 +13,7 @@ const CollapseTopic = ({
   topicId,
   setStatus,
   status,
+  role
 }) => {
   const [itemsCollapse, setItemsCollapse] = useState([]);
   const { token } = theme.useToken();
@@ -70,7 +71,7 @@ const CollapseTopic = ({
           <p>
             Quyết định của chủ tịch hội đồng:{" "}
             {items.isAccepted
-              ? "Đồng ý"
+              ? "Thông qua"
               : items.isAccepted === null
               ? "Chưa đánh giá"
               : "Không đồng ý"}
@@ -79,7 +80,7 @@ const CollapseTopic = ({
               File góp ý
             </a>
           </p>
-          {items.isAccepted === null ? (
+          {items.isAccepted === null && role === "Chairman" ? (
             <>
               <Divider />
               <p>Quyết định:</p>

@@ -20,24 +20,19 @@ const ResubmitProject = () => {
   let topicId = location.pathname.split("/");
   topicId = topicId[4];
   const renderRole = () => {
-    if (role == "Chairman") {
-      return (
-        <>
-          <Button type="primary" className="btnOk" onClick={() => navigate(-1)}>
-            Quay về
-          </Button>
-        </>
-      );
-    }
     return (
       <>
+        {dataReviewDocument.length === 0 ? (
+          <p style={{ fontWeight: "bold" }}>
+            Chủ nhiệm đề tài chưa nộp lại tài liệu
+          </p>
+        ) : (
+          ""
+        )}
         <div style={{ marginTop: "20px" }}>
           <Button type="primary" onClick={() => navigate(-1)}>
             Quay lại
           </Button>
-          <p style={{ fontWeight: "bold" }}>
-            Chủ nhiệm đề tài chưa nộp lại tài liệu
-          </p>
         </div>
       </>
     );
@@ -119,6 +114,7 @@ const ResubmitProject = () => {
                     setIsModalOpen={setIsModalOpenR}
                     topicId={topicId}
                     setStatus={setStatus}
+                    role = {role}
                   />
                   {renderRole()}
                 </div>

@@ -1,7 +1,7 @@
 import "./card.scss";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import { chairmanApprove, getReviewDocuments } from "../../../services/api";
+import { getReviewDocuments } from "../../../services/api";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useLocation, useNavigate } from "react-router-dom";
 import ModalChairmanReject from "./ModalChairmanReject";
@@ -9,9 +9,7 @@ import CollapseTopic from "./CollapTopic";
 import { Button } from "antd";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
-
 const ResubmitProject = () => {
-  const [data, setDataUser] = useState({});
   const [isModalOpenR, setIsModalOpenR] = useState(false);
   const userId = localStorage.getItem("userId");
   const [dataReviewDocument, setDataReviewDocument] = useState([]);
@@ -22,26 +20,11 @@ const ResubmitProject = () => {
   let topicId = location.pathname.split("/");
   topicId = topicId[4];
   const renderRole = () => {
-    if (role == "Chairman" && dataReviewDocument[0].documents !== null) {
+    if (role == "Chairman") {
       return (
         <>
-          <Button
-            type="primary"
-            className="btnOk"
-            onClick={() => chairmanApproved(topicId)}
-          >
-            Đồng ý
-          </Button>
-          <Button
-            type="primary"
-            danger
-            className="btnRe"
-            onClick={() => {
-              setDataUser(dataReviewDocument);
-              setIsModalOpenR(true);
-            }}
-          >
-            Từ chối
+          <Button type="primary" className="btnOk" onClick={() => navigate(-1)}>
+            Quay về
           </Button>
         </>
       );
@@ -59,27 +42,7 @@ const ResubmitProject = () => {
       </>
     );
   };
-  const chairmanApproved = async (topicId) => {
-    try {
-      const res = await chairmanApprove({
-        topicId: topicId,
-      });
-      console.log('====================================');
-      console.log(res);
-      console.log('====================================');
-      if (res && res.statusCode === 200) {
-        if (status === true) {
-          setStatus(false);
-        } else {
-          setStatus(true);
-        }
-      }
-    } catch (error) {
-      console.log("====================================");
-      console.log("có lỗi tại chairman approve", error);
-      console.log("====================================");
-    }
-  };
+
   const getReviewDoc = async () => {
     const res = await getReviewDocuments({
       userId: userId,
@@ -151,7 +114,12 @@ const ResubmitProject = () => {
                       File kết quả của hội đồng
                     </a>
                   </p>
-                  <CollapseTopic data={card.documents} />
+                  <CollapseTopic
+                    data={card.documents}
+                    setIsModalOpen={setIsModalOpenR}
+                    topicId={topicId}
+                    setStatus={setStatus}
+                  />
                   {renderRole()}
                 </div>
               ))}
@@ -160,9 +128,7 @@ const ResubmitProject = () => {
         </section>
       </div>
       <ModalChairmanReject
-        data={data}
         topicId={topicId}
-        setDataUser={setDataUser}
         isModalOpen={isModalOpenR}
         setIsModalOpen={setIsModalOpenR}
       />

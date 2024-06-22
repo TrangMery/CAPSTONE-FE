@@ -185,7 +185,9 @@ const UploadFileFinal = (props) => {
     },
   };
   useEffect(() => {
-    getAllMenber();
+    if (props.isModalOpen === true) {
+      getAllMenber();
+    }
   }, [props.isModalOpen]);
   return (
     <>

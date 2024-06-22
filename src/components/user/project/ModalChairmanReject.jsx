@@ -29,7 +29,6 @@ const ModalChairmanReject = (props) => {
     form.submit();
   };
   const handleCancel = () => {
-    props.setDataUser({});
     props.setIsModalOpen(false);
     setFileList([]);
     form.resetFields();

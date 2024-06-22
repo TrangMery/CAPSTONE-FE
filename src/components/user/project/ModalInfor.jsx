@@ -219,9 +219,11 @@ const ModalInfor = (props) => {
 
   // set up initial value for the form
   useEffect(() => {
-    getTopicDetail();
-    if (tab === "tongket") {
-      getFinalFile();
+    if (isModalOpen === true) {
+      getTopicDetail();
+      if (tab === "tongket") {
+        getFinalFile();
+      }
     }
   }, [isModalOpen === true]);
 

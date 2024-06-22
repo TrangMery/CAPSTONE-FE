@@ -9,15 +9,19 @@ const TrackResubmitModal = (props) => {
   const data = props.data.map((events, idx) => ({
     key: idx,
     color: events.waitingForCouncilDecision === "Accept" ? "green" : "red",
-    label: events.waitingForCouncilDecision === "Accept" ? "Thông Qua" : "Tiếp tục chỉnh sửa",
+    label:
+      events.waitingForCouncilDecision === "Accept"
+        ? "Thông qua"
+        : "Tiếp tục chỉnh sửa",
+    pending:
+      events.waitingForCouncilDecision === "Ongoing" ? "Chờ phê duyệt" : "",
     children: (
       <div>
-        <p>Nộp lại tài liệu chỉnh sửa lần thứ {idx + 1}</p>
-          {dayjs(events.date).format("DD.MM.YYYY")}
+        <p>Nộp lại tài liệu chỉnh sửa lần thứ {events.numberOfResubmmit}</p>
+        {dayjs(events.date).format("DD.MM.YYYY")}
       </div>
     ),
   }));
-  console.log("check data: ", props.data);
   return (
     <>
       <Modal

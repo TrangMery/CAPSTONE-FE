@@ -50,9 +50,9 @@ const ViewDetailTopic = (props) => {
   };
   useEffect(() => {
     if (props.isOwner === true) {
-      getTopicDetail();
+      getHistoryTopic();
     }
-    getHistoryTopic();
+    getTopicDetail();
   }, [props.open === true]);
 
   return (

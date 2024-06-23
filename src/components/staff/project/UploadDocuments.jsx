@@ -348,6 +348,7 @@ const UploadDocument = () => {
         setDataUser={setDataUser}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+        setCheckTab={setCheckTab}
       />
       <ModalInfor
         data={dataPro}

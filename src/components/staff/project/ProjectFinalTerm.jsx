@@ -14,6 +14,7 @@ import {
   Space,
   Table,
   Tabs,
+  Tag,
   Tooltip,
 } from "antd";
 import React, { useEffect, useRef, useState } from "react";
@@ -216,8 +217,8 @@ const ProjectManagerFinalTerm = () => {
     {
       title: "Loại đề tài",
       sorter: (a, b) => {
-        if (a.type < b.type) return -1;
-        if (a.type > b.type) return 1;
+        if (a.topicType < b.topicType) return -1;
+        if (a.topicType > b.topicType) return 1;
         return 0;
       },
       render: (text, record, index) => {
@@ -398,6 +399,9 @@ const ProjectManagerFinalTerm = () => {
         topicId: topicId,
       };
       const res = await staffCancelCouncil(data);
+      console.log('====================================');
+      console.log("check res: ", res.message);
+      console.log('====================================');
       if (res && res?.data) {
         setCheckTab("taohoidong");
       }

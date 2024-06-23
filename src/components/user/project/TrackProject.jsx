@@ -310,7 +310,7 @@ const TrackProject = () => {
                                   <>
                                     <p>
                                       Trạng thái: Chủ nhiệm đề tài cần nộp form
-                                      trước ngày
+                                      trước ngày: {" "}
                                       {dayjs(
                                         item.deadlineForDocumentSupplementation
                                       ).format(dateFormat)}

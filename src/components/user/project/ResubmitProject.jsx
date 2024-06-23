@@ -43,6 +43,7 @@ const ResubmitProject = () => {
       userId: userId,
       topicId: topicId,
     });
+    console.log("check res: ", res);
     if (res && res?.data) {
       const data = [
         {
@@ -59,7 +60,7 @@ const ResubmitProject = () => {
           documents:
             res.data.reviewEarlyDocument.documents.length > 0
               ? res.data.reviewEarlyDocument.documents
-              : null,
+              : [],
         },
       ];
       setRole(res.data.role);
@@ -102,7 +103,12 @@ const ResubmitProject = () => {
                   >
                     {card.state}
                   </h2>
-                  <p>Hạn nộp: {card.deadline}</p>
+                  {card.decisionOfCouncil === "Accept" ? (
+                    <p>Đề tài đã được thông qua</p>
+                  ) : (
+                    <p>Hạn nộp: {card.deadline}=</p>
+                  )}
+
                   <p>
                     {" "}
                     <a target="_blank" href={card.resultFileLink}>
@@ -114,7 +120,7 @@ const ResubmitProject = () => {
                     setIsModalOpen={setIsModalOpenR}
                     topicId={topicId}
                     setStatus={setStatus}
-                    role = {role}
+                    role={role}
                   />
                   {renderRole()}
                 </div>

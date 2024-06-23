@@ -198,8 +198,8 @@ const ProjectManager = () => {
     {
       title: "Loại đề tài",
       sorter: (a, b) => {
-        if (a.type < b.type) return -1;
-        if (a.type > b.type) return 1;
+        if (a.topicType < b.topicType) return -1;
+        if (a.topicType > b.topicType) return 1;
         return 0;
       },
       render: (text, record, index) => {

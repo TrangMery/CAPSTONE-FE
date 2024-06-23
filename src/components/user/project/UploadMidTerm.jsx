@@ -132,7 +132,7 @@ const UploadMidTerm = (props) => {
     },
   };
   useEffect(() => {
-    if (props.state === true) {
+    if (props.isModalOpen === true) {
       listFileType();
     }
   }, [props.state]);

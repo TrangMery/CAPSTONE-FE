@@ -32,7 +32,6 @@ import {
   staffCancelCouncil,
 } from "../../../services/api";
 import ModalMidTerm from "./ModalMidterm";
-import { useNavigate } from "react-router-dom";
 import ModalTimeCouncil from "./modalTimeCouncil";
 const ProjectManagerMidTerm = () => {
   const [current, setCurrent] = useState(1);
@@ -205,8 +204,8 @@ const ProjectManagerMidTerm = () => {
     {
       title: "Loại đề tài",
       sorter: (a, b) => {
-        if (a.type < b.type) return -1;
-        if (a.type > b.type) return 1;
+        if (a.topicType < b.topicType) return -1;
+        if (a.topicType > b.topicType) return 1;
         return 0;
       },
       render: (text, record, index) => {
@@ -359,6 +358,7 @@ const ProjectManagerMidTerm = () => {
         topicId: topicId,
       };
       const res = await staffCancelCouncil(data);
+      console.log("check res: " , res);
       if (res && res?.data) {
         setCheckTab("taohoidong");
       }

@@ -558,3 +558,13 @@ export const topicWaitingMeeting = (param) => {
 export const staffCancelCouncil = (data) => {
   return axios.post("/api/review/cancel-meeting", data);
 };
+
+//admin, user get state
+export const getStateApi = () => {
+  return axios.get("/api/Configure");
+};
+
+//admin config state
+export const configStateAdmin = (param) => {
+  return axios.post(`/api/Configure?${qs.stringify(param)}`);
+};

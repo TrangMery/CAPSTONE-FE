@@ -82,14 +82,6 @@ const LayoutStaff = () => {
   const name = jwtDecode(localStorage.getItem("token")).role;
   const itemDropdown = [
     {
-      label: <label>Account Manager</label>,
-      key: "account",
-    },
-    {
-      label: <a href="/">Trang chủ</a>,
-      key: "homepage",
-    },
-    {
       label: (
         <label style={{ cursor: "pointer" }} onClick={() => handleLogout()}>
           Đăng xuất

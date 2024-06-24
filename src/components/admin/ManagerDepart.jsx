@@ -142,13 +142,13 @@ const ManagerDepartment = () => {
         cell.border = headerStyle.border;
       });
       worksheet.columns = [
-        { header: "Mã khoa", key: "departmentId", width: 10 },
+        { header: "Mã khoa", key: "acronym", width: 10 },
         { header: "Tên khoa", key: "departmentName", width: 30 },
       ];
       listDepartment.forEach((data, index) => {
         const rowIndex = index + 2; // Bắt đầu từ hàng thứ hai (sau header)
         worksheet.addRow({
-          departmentId: data.departmentId,
+          acronym: data.acronym,
           departmentName: data.departmentName,
         });
       });
@@ -180,8 +180,7 @@ const ManagerDepartment = () => {
   const columns = [
     {
       title: "Mã Khoa",
-      dataIndex: "departmentId",
-      width: "30%",
+      dataIndex: "acronym",
     },
     {
       title: "Khoa",

@@ -1,54 +1,37 @@
-import React from 'react';
-import { Card, Row, Col, Statistic, Layout, Typography } from 'antd';
-import { FundOutlined, PlayCircleOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
-
+import React from "react";
+import { Card, Col, Layout, Row, Typography } from "antd";
+import BypassSwitch from "./dashboardComponent/BypassSwitch";
+import BreakTimeInput from "./dashboardComponent/BreakTimeInput";
+import CancelTimeInput from "./dashboardComponent/CancelTimeInput";
+import HolidaysPicker from "./dashboardComponent/HolidaysPicker";
 const { Content } = Layout;
 const { Title } = Typography;
-
-const Dashboard = ({ totalProjects, runningProjects, completedProjects, rejectedProjects }) => {
+const Dashboard = () => {
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Content style={{ padding: '50px' }}>
-        <Title level={2} style={{ textAlign: 'center', marginBottom: '40px' }}>Dashboard Quản lý Đề tài</Title>
-        <Row gutter={16}>
-          <Col span={6}>
-            <Card>
-              <Statistic
-                title="Tổng số đề tài"
-                value={totalProjects}
-                valueStyle={{ color: '#3f8600' }}
-                prefix={<FundOutlined />}
-              />
+    <Layout style={{ minHeight: "100vh" }}>
+      <Content>
+        <Title level={2} style={{ textAlign: "center", marginBottom: "40px" }}>
+          Quản lý các trạng thái 
+        </Title>
+        <Row gutter={[20, 20]} className="admin-panel">
+          <Col span={12}>
+            <Card title="Thêm trường phòng duyệt" className="admin-card">
+              <BypassSwitch />
             </Card>
           </Col>
-          <Col span={6}>
-            <Card>
-              <Statistic
-                title="Đề tài đang tiến hành"
-                value={runningProjects}
-                valueStyle={{ color: '#1890ff' }}
-                prefix={<PlayCircleOutlined />}
-              />
+          <Col span={12}>
+            <Card title="Thời gian chuẩn bị" className="admin-card">
+              <BreakTimeInput />
             </Card>
           </Col>
-          <Col span={6}>
-            <Card>
-              <Statistic
-                title="Đề tài đã hoàn thành"
-                value={completedProjects}
-                valueStyle={{ color: '#cf1322' }}
-                prefix={<CheckCircleOutlined />}
-              />
+          <Col span={12}>
+            <Card title="Thời gian cho phép hủy" className="admin-card">
+              <CancelTimeInput />
             </Card>
           </Col>
-          <Col span={6}>
-            <Card>
-              <Statistic
-                title="Đề tài bị từ chối"
-                value={rejectedProjects}
-                valueStyle={{ color: '#d9534f' }}
-                prefix={<CloseCircleOutlined />}
-              />
+          <Col span={12}>
+            <Card title="Holidays" className="admin-card">
+              <HolidaysPicker />
             </Card>
           </Col>
         </Row>

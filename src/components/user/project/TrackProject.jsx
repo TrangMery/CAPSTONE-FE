@@ -15,7 +15,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { Collapse, Space, Steps, Button, ConfigProvider } from "antd";
 import "./track.scss";
-import { trackReseach } from "../../../services/api";
+import { getStateApi, trackReseach } from "../../../services/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -37,6 +37,7 @@ const TrackProject = () => {
   const [resubmitEarly, setResubmitEarly] = useState([]);
   const [isLeader, setIsLeader] = useState(false);
   const [leaderId, setLeaderId] = useState();
+  const [state, setState] = useState(false);
   const userId = localStorage.getItem("userId");
   const renderExtra = (step) => {
     if (step === currentStep) {
@@ -59,7 +60,6 @@ const TrackProject = () => {
       const res = await trackReseach({
         topicId: topicId,
       });
-      console.log("check resubmit", res);
       if (res && res.isSuccess) {
         setDataProcess(res.data);
         if (userId === res.data.creatorId) {
@@ -88,8 +88,21 @@ const TrackProject = () => {
       console.log("====================================");
     }
   };
+  const getState = async () => {
+    try {
+      const res = await getStateApi();
+      if (res && res.statusCode === 200) {
+        setState(res.data.isBypassCensorship);
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("có lỗi tại getState: ", error);
+      console.log("====================================");
+    }
+  };
   useEffect(() => {
     getProjectProcess();
+    getState();
   }, [status]);
   return (
     <div>
@@ -193,6 +206,7 @@ const TrackProject = () => {
                                 ? "error"
                                 : "wait",
                             icon: <SolutionOutlined />,
+                            hidden: state === true ? false : true,
                           },
                           {
                             title:
@@ -310,7 +324,7 @@ const TrackProject = () => {
                                   <>
                                     <p>
                                       Trạng thái: Chủ nhiệm đề tài cần nộp form
-                                      trước ngày: {" "}
+                                      trước ngày:{" "}
                                       {dayjs(
                                         item.deadlineForDocumentSupplementation
                                       ).format(dateFormat)}

@@ -14,7 +14,7 @@ const CancelTimeInput = () => {
 
   return (
     <Space>
-      <label>Nhập thời gian</label>
+      <label>Số giờ</label>
       <InputNumber
         min={0}
         value={cancelTime}

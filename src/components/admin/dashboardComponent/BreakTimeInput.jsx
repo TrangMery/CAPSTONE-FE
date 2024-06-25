@@ -14,9 +14,9 @@ const BreakTimeInput = () => {
 
   return (
     <Space>
-      <label>Nhập thời gian</label>
+      <label>Số phút</label>
       <InputNumber min={0} value={breakTime} onChange={handleBreakTimeChange} />
-      <Button type="primary" onClick={handleSubmit} style={{ marginLeft: 8 }}>Submit</Button>
+      <Button type="primary" onClick={handleSubmit}>Xác nhận</Button>
     </Space>
   );
 };

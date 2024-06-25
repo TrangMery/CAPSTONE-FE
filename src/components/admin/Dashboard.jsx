@@ -4,6 +4,7 @@ import BypassSwitch from "./dashboardComponent/BypassSwitch";
 import BreakTimeInput from "./dashboardComponent/BreakTimeInput";
 import CancelTimeInput from "./dashboardComponent/CancelTimeInput";
 import HolidaysPicker from "./dashboardComponent/HolidaysPicker";
+import "./AdminPanel.scss";
 const { Content } = Layout;
 const { Title } = Typography;
 const Dashboard = () => {
@@ -14,23 +15,23 @@ const Dashboard = () => {
           Quản lý các trạng thái 
         </Title>
         <Row gutter={[20, 20]} className="admin-panel">
-          <Col span={12}>
+          <Col span={8}>
             <Card title="Thêm trường phòng duyệt" className="admin-card">
               <BypassSwitch />
             </Card>
           </Col>
-          <Col span={12}>
-            <Card title="Thời gian chuẩn bị" className="admin-card">
+          <Col span={8}>
+            <Card title="Thời gian chuẩn bị cuộc họp" className="admin-card">
               <BreakTimeInput />
             </Card>
           </Col>
-          <Col span={12}>
-            <Card title="Thời gian cho phép hủy" className="admin-card">
+          <Col span={8}>
+            <Card title="Thời gian cho phép hủy cuộc họp" className="admin-card">
               <CancelTimeInput />
             </Card>
           </Col>
-          <Col span={12}>
-            <Card title="Holidays" className="admin-card">
+          <Col span={24}>
+            <Card title="Các ngày nghỉ lễ" className="admin-card">
               <HolidaysPicker />
             </Card>
           </Col>

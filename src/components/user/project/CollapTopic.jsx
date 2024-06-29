@@ -116,7 +116,7 @@ const CollapseTopic = ({
       style: panelStyle,
     }));
     setItemsCollapse(newData);
-  }, [data]);
+  }, []);
   return (
     <Collapse
       style={{

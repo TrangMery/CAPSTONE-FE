@@ -159,14 +159,8 @@ const ProjectForTrack = () => {
     {
       title: "Hành động",
       render: (text, record, index) => {
-        const style2 = {
-          color: "green",
-          fontSize: "20px",
-          margin: "0 10px",
-          cursor: "pointer",
-        };
         const style1 = {
-          color: "black",
+          color: "green",
           fontSize: "20px",
           cursor: "pointer",
           paddingTop: "2px",
@@ -179,15 +173,6 @@ const ProjectForTrack = () => {
               }}
               style={style1}
             />
-            {/* <Badge dot offset={[-10, 0]}>
-              <ScheduleOutlined
-                onClick={() => {
-                  setDataUser(record);
-                  setIsModalInforOpen(true);
-                }}
-                style={style2}
-              />
-            </Badge> */}
           </div>
         );
       },
@@ -251,11 +236,6 @@ const ProjectForTrack = () => {
           }}
         />
       </ConfigProvider>
-      {/* <ModalMeetingInfor
-        data={data}
-        isModalOpen={isModalInforOpen}
-        setIsModalOpen={setIsModalInforOpen}
-      /> */}
     </>
   );
 };

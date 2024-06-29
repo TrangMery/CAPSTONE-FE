@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { InputNumber, Button, Space, message } from "antd";
 import { configCancelHour } from "../../../services/api";
 
-const CancelTimeInput = ({timeDefault}) => {
-  const [cancelTime, setCancelTime] = useState(0);
-
+const CancelTimeInput = ({ timeDefault }) => {
+  const [cancelTime, setCancelTime] = useState(timeDefault);
+  console.log('====================================');
+  console.log(timeDefault);
+  console.log('====================================');
   const handleCancelTimeChange = (value) => {
     setCancelTime(value);
   };
@@ -15,7 +17,7 @@ const CancelTimeInput = ({timeDefault}) => {
         minutes: cancelTime * 60,
       });
       if (res && res.statusCode === 200) {
-        message.success("Tạo thành công")
+        message.success("Tạo thành công");
       }
     } catch (error) {
       console.log("Có lỗi tại cancel time ", error);

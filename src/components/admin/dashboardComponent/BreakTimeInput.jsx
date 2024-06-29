@@ -1,22 +1,34 @@
-import React, { useState } from 'react';
-import { InputNumber, Button, Space } from 'antd';
+import React, { useState } from "react";
+import { InputNumber, Button, Space, message } from "antd";
+import { configBreakTimeAdmin } from "../../../services/api";
 
-const BreakTimeInput = () => {
-  const [breakTime, setBreakTime] = useState(0);
+const BreakTimeInput = ({ timeDefault }) => {
+  const [breakTime, setBreakTime] = useState(timeDefault);
 
   const handleBreakTimeChange = (value) => {
     setBreakTime(value);
   };
 
-  const handleSubmit = () => {
-    console.log('Break Time (minutes):', breakTime);
+  const handleSubmit = async () => {
+    try {
+      const res = await configBreakTimeAdmin({
+        minutes: breakTime,
+      });
+      if (res && res.statusCode === 200) {
+        message.success("Tạo thành công");
+      }
+    } catch (error) {
+      console.log("Có lỗi tại cancel time ", error);
+    }
   };
 
   return (
     <Space>
       <label>Số phút</label>
       <InputNumber min={0} value={breakTime} onChange={handleBreakTimeChange} />
-      <Button type="primary" onClick={handleSubmit}>Xác nhận</Button>
+      <Button type="primary" onClick={handleSubmit}>
+        Xác nhận
+      </Button>
     </Space>
   );
 };

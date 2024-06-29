@@ -1,10 +1,11 @@
 import {
+  EyeOutlined,
   FileSyncOutlined,
   FormOutlined,
   InfoCircleOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Button, Input, Space, Table, Tabs, Tag, Tooltip } from "antd";
+import { Badge, Button, Input, Space, Table, Tabs, Tag, Tooltip } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import "../../staff/project/project.scss";
@@ -178,6 +179,12 @@ const ProjectResubmit = () => {
           margin: "0 10px",
           cursor: "pointer",
         };
+        const style3 = {
+          color: "blue",
+          fontSize: "1.7em",
+          margin: "0 10px",
+          cursor: "pointer",
+        };
         const color = record.ChairmanDecision ? "green" : "red";
         const status = record.ChairmanDecision ? "Đồng ý" : "Từ chối";
         return (
@@ -190,13 +197,34 @@ const ProjectResubmit = () => {
               }}
             />
             {record.hasResultFile && (
-              <Tooltip title="Phê duyệt tài liệu chỉnh sửa ">
-                <FormOutlined
-                  onClick={() => {
-                    navigate(`/user/review/review-topic/${record.topicId}`);
-                  }}
-                  style={style2}
-                />
+              <Tooltip
+                title={
+                  record.isChairman === true
+                    ? "Phê duyệt tài liệu chỉnh sửa"
+                    : "Xem đề tài"
+                }
+              >
+                {record.isChairman === true ? (
+                  <Badge
+                    dot={record.hasResultFile}
+                    status="processing"
+                    offset={[-2, -1]}
+                  >
+                    <FormOutlined
+                      onClick={() => {
+                        navigate(`/user/review/review-topic/${record.topicId}`);
+                      }}
+                      style={style2}
+                    />
+                  </Badge>
+                ) : (
+                  <EyeOutlined
+                    onClick={() => {
+                      navigate(`/user/review/review-topic/${record.topicId}`);
+                    }}
+                    style={style3}
+                  />
+                )}
               </Tooltip>
             )}
             {activeTab == "done" && (
@@ -239,11 +267,16 @@ const ProjectResubmit = () => {
   );
   const getTopicForCouncil = async () => {
     try {
+      setIsLoading(true);
       const res = await getTopicForCouncilMeeting({
         councilId: userId,
       });
-      if (res && res?.data) {
-        setdataTopicForCouncil(res.data);
+      if (res && res.statusCode === 200) {
+        setIsLoading(false);
+        const newData = res.data.map((items) => {
+          return { ...items, isChairman: items.chairmanId === userId };
+        });
+        setdataTopicForCouncil(newData);
       }
     } catch (error) {
       console.log("====================================");

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { DatePicker, Button, message } from "antd";
+import { DatePicker, Button, message, Row, Col } from "antd";
 import { assignHoliday } from "../../../services/api";
 import dayjs from "dayjs";
 const HolidaysPicker = () => {
@@ -24,13 +24,25 @@ const HolidaysPicker = () => {
   };
   return (
     <>
-      <label>Quản lí ngày nghỉ lễ</label>
-      <DatePicker
-        multiple
-        minDate={today}
-        onChange={onChange}
-        value={listDate.length ? listDate.map((item, index) => dayjs(item)) : []}
-      />
+      <Row gutter={15}>
+        <Col span={17}>
+          <label>Quản lí ngày nghỉ lễ</label>
+          <DatePicker
+            multiple
+            minDate={today}
+            onChange={onChange}
+            value={
+              listDate.length ? listDate.map((item, index) => dayjs(item)) : []
+            }
+          />
+        </Col>
+        <Col span={4}>
+          <Button type="primary" style={{ marginTop: "20px" }}>
+            Thêm ngày nghỉ lễ excel
+          </Button>
+        </Col>
+      </Row>
+
       <Button
         onClick={() => handleSubmit()}
         type="primary"

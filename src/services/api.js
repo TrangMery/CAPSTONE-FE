@@ -340,7 +340,7 @@ export const topicFinalTearmCreatedDeadline = () => {
 
 // resubmit final-term document
 export const resubmitFinalDocument = (data) => {
-  return axios.post("/api/review/resubmit-final-document", data);
+  return axios.post("/api/document/resubmit-final-document", data);
 };
 
 // get topics has submit file money
@@ -566,7 +566,7 @@ export const getStateApi = () => {
 
 //admin config state
 export const configStateAdmin = (param) => {
-  return axios.post(`/api/Configure?${qs.stringify(param)}`);
+  return axios.post(`/api/Configure/setting-bypass?${qs.stringify(param)}`);
 };
 
 //admin config break time
@@ -576,5 +576,7 @@ export const configBreakTimeAdmin = (param) => {
 
 //admin config cancel hour
 export const configCancelHour = (param) => {
-  return axios.post(`/api/configure/setting-cancel-meeting-min-time?${qs.stringify(param)}`);
+  return axios.post(
+    `/api/configure/setting-cancel-meeting-min-time?${qs.stringify(param)}`
+  );
 };

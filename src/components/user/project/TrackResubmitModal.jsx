@@ -8,13 +8,18 @@ const TrackResubmitModal = (props) => {
   };
   const data = props.data.map((events, idx) => ({
     key: idx,
-    color: events.waitingForCouncilDecision === "Accept" ? "green" : "red",
+    color:
+      events.waitingForCouncilDecision === "Accept"
+        ? "green"
+        : events.waitingForCouncilDecision === "OnGoing"
+        ? "gray"
+        : "red",
     label:
       events.waitingForCouncilDecision === "Accept"
         ? "Thông qua"
+        : events.waitingForCouncilDecision === "OnGoing"
+        ? "Chờ phê duyệt"
         : "Tiếp tục chỉnh sửa",
-    pending:
-      events.waitingForCouncilDecision === "Ongoing" ? "Chờ phê duyệt" : "",
     children: (
       <div>
         <p>Nộp lại tài liệu chỉnh sửa lần thứ {events.numberOfResubmmit}</p>

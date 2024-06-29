@@ -13,6 +13,8 @@ const ResubmitProject = () => {
   const [isModalOpenR, setIsModalOpenR] = useState(false);
   const userId = sessionStorage.getItem("userId");
   const [dataReviewDocument, setDataReviewDocument] = useState([]);
+  const [dataReviewDocumentMiddle, setDataReviewDocumentMiddle] = useState([]);
+  const [dataReviewDocumentFinal, setDataReviewDocumentFinal] = useState([]);
   const [role, setRole] = useState("");
   const [status, setStatus] = useState(false);
   const location = useLocation();
@@ -29,11 +31,6 @@ const ResubmitProject = () => {
         ) : (
           ""
         )}
-        <div style={{ marginTop: "20px" }}>
-          <Button type="primary" onClick={() => navigate(-1)}>
-            Quay lại
-          </Button>
-        </div>
       </>
     );
   };
@@ -45,29 +42,27 @@ const ResubmitProject = () => {
     });
     console.log("check res: ", res);
     if (res && res?.data) {
-      const data = [
-        {
-          topicId,
-          role: res.data.role,
-          state: res.data?.reviewEarlyDocument
-            ? "Giai đoạn đề cương"
-            : "Giai đoạn tiếp theo",
-          deadline: dayjs(res.data.reviewEarlyDocument.resubmitDeadline).format(
-            dateFormat
-          ),
-          decisionOfCouncil: res.data.reviewEarlyDocument.decisionOfCouncil,
-          resultFileLink: res.data.reviewEarlyDocument.resultFileLink,
-          documents:
-            res.data.reviewEarlyDocument.documents.length > 0
-              ? res.data.reviewEarlyDocument.documents
-              : [],
-        },
-      ];
+      const dataEarly = {
+        state: "Giai đoạn đề cương",
+        deadline: dayjs(res.data.reviewEarlyDocument.resubmitDeadline).format(
+          dateFormat
+        ),
+        decisionOfCouncil: res.data.reviewEarlyDocument.decisionOfCouncil,
+        resultFileLink: res.data.reviewEarlyDocument.resultFileLink,
+        documents:
+          res.data.reviewEarlyDocument.documents.length > 0
+            ? res.data.reviewEarlyDocument.documents
+            : [],
+      };
+      console.log("====================================");
+      console.log(res);
+      console.log("====================================");
       setRole(res.data.role);
-      setDataReviewDocument(data);
+      setDataReviewDocument(dataEarly);
+      setDataReviewDocumentMiddle(res.data.reviewMiddleDocuments);
+      setDataReviewDocumentFinal(res.data.reviewFinalDocument);
     }
   };
-
   useEffect(() => {
     getReviewDoc();
   }, [status]);
@@ -91,40 +86,107 @@ const ResubmitProject = () => {
         <section>
           <div className="container1">
             <div className="cards">
-              {dataReviewDocument.map((card, i) => (
-                <div key={i} className="card">
-                  <h2
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: "20px",
-                      color: "#303972",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    {card.state}
-                  </h2>
-                  {card.decisionOfCouncil === "Accept" ? (
-                    <p>Đề tài đã được thông qua</p>
-                  ) : (
-                    <p>Hạn nộp: {card.deadline}</p>
-                  )}
+              <div className="card">
+                <h2
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "20px",
+                    color: "#303972",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {dataReviewDocument.state}
+                </h2>
+                {dataReviewDocument.decisionOfCouncil === "Accept" ? (
+                  <p>Đề tài đã được thông qua</p>
+                ) : (
+                  <p>Hạn nộp: {dataReviewDocument.deadline}</p>
+                )}
 
-                  <p>
-                    {" "}
-                    <a target="_blank" href={card.resultFileLink}>
-                      File kết quả của hội đồng
-                    </a>
-                  </p>
-                  <CollapseTopic
-                    data={card.documents}
-                    setIsModalOpen={setIsModalOpenR}
-                    topicId={topicId}
-                    setStatus={setStatus}
-                    role={role}
-                  />
-                  {renderRole()}
-                </div>
-              ))}
+                <p>
+                  {" "}
+                  <a target="_blank" href={dataReviewDocument.resultFileLink}>
+                    File kết quả của hội đồng
+                  </a>
+                </p>
+                <CollapseTopic
+                  data={dataReviewDocument.documents}
+                  setIsModalOpen={setIsModalOpenR}
+                  topicId={topicId}
+                  setStatus={setStatus}
+                  role={role}
+                />
+                {renderRole()}
+              </div>
+              <div className="card">
+                <h2
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "20px",
+                    color: "#303972",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {dataReviewDocument.state}
+                </h2>
+                {dataReviewDocument.decisionOfCouncil === "Accept" ? (
+                  <p>Đề tài đã được thông qua</p>
+                ) : (
+                  <p>Hạn nộp: {dataReviewDocument.deadline}</p>
+                )}
+
+                <p>
+                  {" "}
+                  <a target="_blank" href={dataReviewDocument.resultFileLink}>
+                    File kết quả của hội đồng
+                  </a>
+                </p>
+                <CollapseTopic
+                  data={dataReviewDocument.documents}
+                  setIsModalOpen={setIsModalOpenR}
+                  topicId={topicId}
+                  setStatus={setStatus}
+                  role={role}
+                />
+                {renderRole()}
+              </div>
+              <div className="card">
+                <h2
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "20px",
+                    color: "#303972",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {dataReviewDocument.state}
+                </h2>
+                {dataReviewDocument.decisionOfCouncil === "Accept" ? (
+                  <p>Đề tài đã được thông qua</p>
+                ) : (
+                  <p>Hạn nộp: {dataReviewDocument.deadline}</p>
+                )}
+
+                <p>
+                  {" "}
+                  <a target="_blank" href={dataReviewDocument.resultFileLink}>
+                    File kết quả của hội đồng
+                  </a>
+                </p>
+                <CollapseTopic
+                  data={dataReviewDocument.documents}
+                  setIsModalOpen={setIsModalOpenR}
+                  topicId={topicId}
+                  setStatus={setStatus}
+                  role={role}
+                />
+                {renderRole()}
+              </div>
+            </div>
+            <div style={{ marginTop: "10px" }}>
+              <Button type="primary" onClick={() => navigate(-1)}>
+                Quay lại
+              </Button>
             </div>
           </div>
         </section>

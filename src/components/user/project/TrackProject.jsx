@@ -35,8 +35,10 @@ const TrackProject = () => {
   const [isModalResubmitOpen, setIsModalResubmitOpen] = useState(false);
   const [modalResubmit, setModalResubmit] = useState(false);
   const [resubmitEarly, setResubmitEarly] = useState([]);
+  const [resubmitFinal, setResubmitFinal] = useState([]);
   const [isLeader, setIsLeader] = useState(false);
   const [leaderId, setLeaderId] = useState();
+  const [checked, setChecked] = useState();
   const [state, setState] = useState(false);
   const userId = sessionStorage.getItem("userId");
   const renderExtra = (step) => {
@@ -60,7 +62,7 @@ const TrackProject = () => {
       const res = await trackReseach({
         topicId: topicId,
       });
-      console.log("check res: " , res);
+      console.log("check res: ", res);
       if (res && res.isSuccess) {
         setDataProcess(res.data);
         if (userId === res.data.creatorId) {
@@ -81,6 +83,9 @@ const TrackProject = () => {
         }
         if (res.data?.earlyTermReportProcess?.resubmitProcesses.length > 0) {
           setResubmitEarly(res.data?.earlyTermReportProcess.resubmitProcesses);
+        }
+        if (res.data?.finalTermReportProcess?.resubmitProcesses.length > 0) {
+          setResubmitFinal(res.data?.finalTermReportProcess.resubmitProcesses);
         }
       }
     } catch (error) {
@@ -129,7 +134,8 @@ const TrackProject = () => {
                   label: "Đăng ký đề tài",
                   children: (
                     <>
-                      {dataProcess.currentDeadline ? (
+                      {dataProcess.currentDeadline &&
+                      dataProcess.state === "EarlyTermReport" ? (
                         <>
                           {" "}
                           <p>
@@ -171,7 +177,10 @@ const TrackProject = () => {
                           <Button
                             type="primary"
                             style={{ marginBottom: "20px" }}
-                            onClick={() => setIsModalResubmitOpen(true)}
+                            onClick={() => {
+                              setIsModalResubmitOpen(true);
+                              setChecked(1);
+                            }}
                           >
                             Xem lịch sử nộp lại
                           </Button>
@@ -457,9 +466,61 @@ const TrackProject = () => {
                               ""
                             )}
                           </>
+                        ) : dataProcess.currentDeadline &&
+                          dataProcess.state === "FinaltermReport" ? (
+                          <>
+                            {" "}
+                            <p>
+                              Trạng thái: Chủ nhiệm đề tài cần nộp lại tài liệu{" "}
+                              {dayjs(dataProcess.currentDeadline).format(
+                                dateFormat
+                              )}
+                            </p>{" "}
+                            {isLeader ? (
+                              <ConfigProvider
+                                theme={{
+                                  token: {
+                                    colorPrimary: "#55E6A0",
+                                  },
+                                }}
+                              >
+                                <Button
+                                  type="primary"
+                                  style={{
+                                    marginBottom: "10px",
+                                  }}
+                                  onClick={() => {
+                                    setIsModalResubmitOpen(true);
+                                    setChecked(3);
+                                  }}
+                                >
+                                  Nộp tài liệu chỉnh sửa
+                                </Button>
+                              </ConfigProvider>
+                            ) : (
+                              ""
+                            )}
+                          </>
+                        ) : resubmitFinal.length > 0 ? (
+                          <ConfigProvider
+                            theme={{
+                              token: {
+                                colorPrimary: "#55E6A0",
+                              },
+                            }}
+                          >
+                            <Button
+                              type="primary"
+                              style={{ marginBottom: "20px" }}
+                              onClick={() => setIsModalResubmitOpen(true)}
+                            >
+                              Xem lịch sử nộp lại
+                            </Button>
+                          </ConfigProvider>
                         ) : (
-                          <p>Trạng thái: </p>
+                          ""
                         )}
+
                         <Steps
                           size="small"
                           labelPlacement="vertical"
@@ -493,13 +554,23 @@ const TrackProject = () => {
                             {
                               title:
                                 dataProcess.finalTermReportProcess
-                                  .waitingForUploadMeetingMinutes === "Done"
-                                  ? "Bảo vệ thành công"
+                                  .waitingForUploadMeetingMinutes === "Done" &&
+                                dataProcess.progress ===
+                                  "WaitingForDocumentEditing"
+                                  ? "Nộp lại tài liệu đã chỉnh sửa "
+                                  : dataProcess.progress ===
+                                    "WaitingForCouncilDecision"
+                                  ? "Chờ quyết định của hội đồng"
                                   : "Staff tải lên quyết định",
                               status:
                                 dataProcess.finalTermReportProcess
-                                  .waitingForUploadMeetingMinutes === "Done"
-                                  ? "finish"
+                                  .waitingForUploadMeetingMinutes === "Done" &&
+                                dataProcess.progress ===
+                                  "WaitingForDocumentEditing"
+                                  ? "error"
+                                  : dataProcess.progress ===
+                                    "WaitingForCouncilDecision"
+                                  ? "wait"
                                   : "wait",
                               icon: <CloudUploadOutlined />,
                             },
@@ -608,7 +679,7 @@ const TrackProject = () => {
       <TrackResubmitModal
         isModalOpen={isModalResubmitOpen}
         setIsModalOpen={setIsModalResubmitOpen}
-        data={resubmitEarly}
+        data={checked === 1 ? resubmitEarly : resubmitFinal}
       />
       <UploadMidTerm
         state={currentStep}
@@ -627,6 +698,7 @@ const TrackProject = () => {
         setStatus={setStatus}
       />
       <ModalUploadResubmit
+        currentStep={currentStep}
         userId={userId}
         topicId={topicId}
         isModalOpen={modalResubmit}

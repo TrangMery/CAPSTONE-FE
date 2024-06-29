@@ -18,6 +18,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
   getReviewDocuments,
+  resubmitFinalDocument,
   uploadFile,
   uploadResubmit,
 } from "../../../services/api";
@@ -44,7 +45,11 @@ const ModalUploadResubmit = (props) => {
       topicId: props.topicId,
     });
     if (res && res?.data) {
-      setDataResubmit(res.data.reviewEarlyDocument);
+      if (parseInt(props.currentStep) === 1) {
+        setDataResubmit(res.data.reviewEarlyDocument);
+      } else if (parseInt(props.currentStep) === 3) {
+        setDataResubmit(res.data.reviewFinalDocument);
+      }
     }
   };
   const onSubmit = async () => {
@@ -60,8 +65,13 @@ const ModalUploadResubmit = (props) => {
       },
     };
     try {
-      const res = await uploadResubmit(param);
       setIsSubmit(true);
+      let res;
+      if (parseInt(props.currentStep) === 1) {
+        res = await uploadResubmit(param);
+      } else if (parseInt(props.currentStep) === 3) {
+        res = await resubmitFinalDocument(param);
+      }
       if (res && res.isSuccess) {
         setIsSubmit(false);
         message.success("Tải file chỉnh sửa thành công");

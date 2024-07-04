@@ -490,7 +490,7 @@ const TrackProject = () => {
                                     marginBottom: "10px",
                                   }}
                                   onClick={() => {
-                                    setIsModalResubmitOpen(true);
+                                    setModalResubmit(true);
                                     setChecked(3);
                                   }}
                                 >
@@ -571,6 +571,8 @@ const TrackProject = () => {
                                   : dataProcess.progress ===
                                     "WaitingForCouncilDecision"
                                   ? "wait"
+                                  : dataProcess.state === "EndingPhase"
+                                  ? "finish"
                                   : "wait",
                               icon: <CloudUploadOutlined />,
                             },

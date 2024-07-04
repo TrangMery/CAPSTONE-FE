@@ -3,19 +3,30 @@ import {
   CloseOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import { Button, Collapse, ConfigProvider, Divider, Space, theme } from "antd";
+import {
+  Button,
+  Collapse,
+  ConfigProvider,
+  Divider,
+  Space,
+  message,
+  theme,
+} from "antd";
 import { useEffect, useState } from "react";
-import { chairmanApprove } from "../../../services/api";
+import { chairmanApprove, chairmanMakeFinalDecision } from "../../../services/api";
+import ModalChairmanReject from "./ModalChairmanReject";
 
 const CollapseTopic = ({
   data = [],
-  setIsModalOpen,
   topicId,
   setStatus,
   status,
-  role
+  role,
+  state,
 }) => {
   const [itemsCollapse, setItemsCollapse] = useState([]);
+  const [isModalOpenR, setIsModalOpenR] = useState(false);
+
   const { token } = theme.useToken();
   const panelStyle = {
     marginBottom: 24,
@@ -32,6 +43,9 @@ const CollapseTopic = ({
       return <LoadingOutlined style={{ color: "blue" }} />;
     }
   };
+  console.log('====================================');
+  console.log(data);
+  console.log('====================================');
   const chairmanApproved = async () => {
     try {
       const res = await chairmanApprove({
@@ -43,6 +57,32 @@ const CollapseTopic = ({
         } else {
           setStatus(true);
         }
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("có lỗi tại chairman approve", error);
+      console.log("====================================");
+    }
+  };
+  const chairmanFinalDecision = async (status, fileLink) => {
+    try {
+      const data = {
+        topicId: topicId,
+        feedbackFileLink: fileLink,
+        isAccepted: status,
+      };
+      console.log('====================================');
+      console.log(data);
+      console.log('====================================');
+      const res = await chairmanMakeFinalDecision(data);
+      if (res && res.statusCode === 200) {
+        if (status === true) {
+          setStatus(false);
+        } else {
+          setStatus(true);
+        }
+      } else {
+        message.error("Vui lòng thử lại sau");
       }
     } catch (error) {
       console.log("====================================");
@@ -92,7 +132,16 @@ const CollapseTopic = ({
                     },
                   }}
                 >
-                  <Button type="primary" onClick={() => chairmanApproved()}>
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      if (state === 1) {
+                        chairmanApproved();
+                      } else {
+                        chairmanFinalDecision(true,   );
+                      }
+                    }}
+                  >
                     Thông qua
                   </Button>
                 </ConfigProvider>
@@ -100,7 +149,7 @@ const CollapseTopic = ({
                   type="primary"
                   danger
                   onClick={() => {
-                    setIsModalOpen(true);
+                    setIsModalOpenR(true);
                   }}
                 >
                   Từ chối
@@ -116,16 +165,25 @@ const CollapseTopic = ({
       style: panelStyle,
     }));
     setItemsCollapse(newData);
-  }, []);
+  }, [data.length]);
   return (
-    <Collapse
-      style={{
-        background: token.colorBgContainer,
-      }}
-      bordered={false}
-      defaultActiveKey={[data.length]}
-      items={itemsCollapse}
-    />
+    <>
+      <Collapse
+        style={{
+          background: token.colorBgContainer,
+        }}
+        bordered={false}
+        defaultActiveKey={[data.length]}
+        items={itemsCollapse}
+      />
+      <ModalChairmanReject
+        state={state}
+        topicId={topicId}
+        isModalOpen={isModalOpenR}
+        setIsModalOpen={setIsModalOpenR}
+        chairmanFinalDecision={chairmanFinalDecision}
+      />
+    </>
   );
 };
 export default CollapseTopic;

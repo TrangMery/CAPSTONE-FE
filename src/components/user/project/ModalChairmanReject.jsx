@@ -20,6 +20,7 @@ import { uploadFile, chairmanReject } from "../../../services/api";
 
 const ModalChairmanReject = (props) => {
   const isModalOpen = props.isModalOpen;
+  const state = props.state;
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
   const [newTopicFiles, setFileList] = useState({});
@@ -42,14 +43,25 @@ const ModalChairmanReject = (props) => {
       topicId: props.topicId,
       feedbackFileLink: newTopicFiles.topicFileLink,
     };
-    console.log("check param: ", param);
     try {
-      const res = await chairmanReject(param);
       setIsSubmit(true);
-      if (res && res.isSuccess) {
-        setIsSubmit(false);
-        message.success("Tải biên bản lên thành công");
-        navigate("/user/review");
+      if (state === 1) {
+        const res = await chairmanReject(param);
+        if (res.isSuccess) {
+          setIsSubmit(false);
+          message.success("Tải biên bản lên thành công");
+          navigate("/user/review");
+        }
+      } else if (state === 3) {
+        const res = props.chairmanFinalDecision(
+          false,
+          newTopicFiles.topicFileLink
+        );
+        if (res === true) {
+          setIsSubmit(false);
+          message.success("Tải biên bản lên thành công");
+          navigate("/user/review");
+        }
       }
     } catch (error) {
       console.log("====================================");

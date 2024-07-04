@@ -231,6 +231,11 @@ export const chairmanReject = (data) => {
   return axios.post("/api/topic/chairman-reject", data);
 };
 
+//chairman final decision
+export const chairmanMakeFinalDecision = (data) => {
+  return axios.post("/api/topic/chairman-make-final-decision", data);
+};
+
 // done early term report
 export const moveToMiddleReport = (param) => {
   return axios.post(`/api/topic/move-to-middle-term?${qs.stringify(param)}`);

@@ -11,7 +11,7 @@ const BasicProfile = () => {
   const { TextArea } = Input;
   const [form] = Form.useForm();
   const [departMent, setDepartMent] = useState([]);
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const getDepartment = async () => {
     try {
       const res = await getAllDepartment();

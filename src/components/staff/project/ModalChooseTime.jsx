@@ -82,7 +82,7 @@ const ModalTime = (props) => {
       start: meetingStartTime,
       end: dayjs(meetingStartTime)
         .add(meetingDuration, "minute")
-        .add(15, "minute"),
+        .add(props.breakTime, "minute"),
     };
 
     setMeetings([...meetings, newMeeting]);
@@ -112,7 +112,7 @@ const ModalTime = (props) => {
       const time = dayjs().startOf("day").add(i, "minute");
       const proposedMeeting = {
         start: time,
-        end: time.clone().add(duration, "minute").add(15, "minute"),
+        end: time.clone().add(duration, "minute").add(props.breakTime, "minute"),
       };
 
       if (

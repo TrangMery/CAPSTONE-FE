@@ -9,7 +9,7 @@ const ScientificArticle = () => {
   const [listProduct, setListProduct] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
-  const UserId = localStorage.getItem("userId");
+  const UserId = sessionStorage.getItem("userId");
   const [currentPage, setCurrentPage] = useState(1);
   const [product, setProduct] = useState();
   const itemsPerPage = 3;

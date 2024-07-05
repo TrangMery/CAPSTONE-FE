@@ -16,7 +16,7 @@ import {
   Tag,
   Tooltip,
 } from "antd";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import "./project.scss";
 import { useNavigate } from "react-router-dom";
@@ -33,7 +33,9 @@ import {
   topicWaitingMeeting,
 } from "../../../services/api";
 import ModalTimeCouncil from "./modalTimeCouncil";
+import { ConfigAppContext } from "../ConfigAppContext";
 const ProjectManager = () => {
+  const config = useContext(ConfigAppContext);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
@@ -222,6 +224,12 @@ const ProjectManager = () => {
     {
       title: "Hành động",
       render: (text, record, index) => {
+        const differenceInMinutes = dayjs(record.meetingTime).diff(
+          dayjs(),
+          "minute"
+        );
+        const checkOverTime =
+          differenceInMinutes >= config.cancelMeetingMinTimeInMinutes;
         return (
           <div style={{ textAlign: "center" }}>
             <ConfigProvider
@@ -273,24 +281,40 @@ const ProjectManager = () => {
               )}
             </ConfigProvider>
             {checkTab === "dataohoidong" && (
-              <Popconfirm
-                title="Hủy hội đồng"
-                description="Bạn có chắc chắn hủy hội đồng"
-                onConfirm={() => cancelCouncil(record.topicId)}
-                okText="Hủy"
-                cancelText="Quay lại"
-              >
-                <Tooltip placement="bottom" title={"Hủy hội đồng"}>
-                  <MinusCircleOutlined
-                    style={{
-                      fontSize: "20px",
-                      color: "red",
-                      margin: "0 10px",
-                    }}
-                    type="primary"
-                  />
-                </Tooltip>
-              </Popconfirm>
+              <>
+                {checkOverTime !== true ? (
+                  <Tooltip placement="bottom" title={"Đã qua thời gian hủy"}>
+                    <MinusCircleOutlined
+                      style={{
+                        fontSize: "20px",
+                        color: "gray",
+                        margin: "0 10px",
+                      }}
+                      disabled
+                      type="primary"
+                    />
+                  </Tooltip>
+                ) : (
+                  <Popconfirm
+                    title="Hủy hội đồng"
+                    description="Bạn có chắc chắn hủy hội đồng"
+                    onConfirm={() => cancelCouncil(record.topicId)}
+                    okText="Hủy"
+                    cancelText="Quay lại"
+                  >
+                    <Tooltip placement="bottom" title={"Hủy hội đồng"}>
+                      <MinusCircleOutlined
+                        style={{
+                          fontSize: "20px",
+                          color: "red",
+                          margin: "0 10px",
+                        }}
+                        type="primary"
+                      />
+                    </Tooltip>
+                  </Popconfirm>
+                )}
+              </>
             )}
           </div>
         );

@@ -33,7 +33,7 @@ const ModalInfor = (props) => {
   const [state, setState] = useState();
   const [open, setOpen] = useState(false);
   const topicId = props.data.topicId;
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const { TextArea } = Input;
   let checkEnd;
   const location = useLocation();

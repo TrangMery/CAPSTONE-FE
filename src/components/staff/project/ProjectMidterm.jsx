@@ -359,7 +359,7 @@ const ProjectManagerMidTerm = () => {
       };
       const res = await staffCancelCouncil(data);
       console.log("check res: " , res);
-      if (res && res?.data) {
+      if (res && res.statusCode === 200) {
         setCheckTab("taohoidong");
       }
     } catch (error) {

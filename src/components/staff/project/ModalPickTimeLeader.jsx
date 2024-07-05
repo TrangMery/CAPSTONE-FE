@@ -231,7 +231,6 @@ const ModalPickTimeLeader = (props) => {
       meetingDetail: meetingDetails,
       meetingDuration: props.meetingDuration,
     };
-    console.log(data);
     let res;
     try {
       if (checkTerm === "earlyterm") {

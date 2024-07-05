@@ -124,13 +124,16 @@ const ModalUploadResubmit = (props) => {
       console.log("Dropped files", e.dataTransfer.files);
     },
   };
-  if ( Object.values(dataResubmit).length !== 0) {
+
+  if (Object.values(dataResubmit).length !== 0) {
     checkEnd = dataResubmit?.resultFileLink.endsWith(".docx");
   }
 
   useEffect(() => {
-    getReviewDoc();
-  }, [isModalOpen === true]);
+    if (isModalOpen === true) {
+      getReviewDoc();
+    }
+  }, [isModalOpen]);
   return (
     <>
       <Modal

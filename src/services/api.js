@@ -568,3 +568,13 @@ export const getStateApi = () => {
 export const configStateAdmin = (param) => {
   return axios.post(`/api/Configure?${qs.stringify(param)}`);
 };
+
+//admin config break time
+export const configBreakTimeAdmin = (param) => {
+  return axios.post(`/api/configure/setting-break-time?${qs.stringify(param)}`);
+};
+
+//admin config cancel hour
+export const configCancelHour = (param) => {
+  return axios.post(`/api/configure/setting-cancel-meeting-min-time?${qs.stringify(param)}`);
+};

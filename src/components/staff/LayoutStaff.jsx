@@ -2,14 +2,12 @@ import {
   BellOutlined,
   CalendarOutlined,
   DownOutlined,
-  FileDoneOutlined,
   FlagOutlined,
   FolderViewOutlined,
   HomeOutlined,
   HourglassOutlined,
   UnorderedListOutlined,
   UploadOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import {
   Layout,
@@ -21,11 +19,13 @@ import {
   theme,
   ConfigProvider,
 } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import "./staff.scss";
 import logo from "../../assets/logoBV.png";
 import { jwtDecode } from "jwt-decode";
+import { getStateApi } from "../../services/api";
+import { ConfigAppContext } from "./ConfigAppContext";
 const { Header, Content, Sider } = Layout;
 const items = [
   {
@@ -72,12 +72,13 @@ const LayoutStaff = () => {
     token: { colorBgContainer },
   } = theme.useToken();
   const [activeMenu, setActiveMenu] = useState("dashboard");
+  const [config, setConfig] = useState({});
   const navigate = useNavigate();
   const handleLogout = async () => {
     message.success("Đăng xuất thành công");
     navigate("/login");
     localStorage.removeItem("token");
-    localStorage.removeItem("userId");
+    sessionStorage.removeItem("userId");
   };
   const name = jwtDecode(localStorage.getItem("token")).role;
   const itemDropdown = [
@@ -98,6 +99,22 @@ const LayoutStaff = () => {
   }
   const url =
     "https://static.vecteezy.com/system/resources/previews/020/429/953/non_2x/admin-icon-vector.jpg";
+  const getConfig = async () => {
+    try {
+      const res = await getStateApi();
+      if (res && res.statusCode === 200) {
+        setConfig(res.data);
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("có lỗi tại getState: ", error);
+      console.log("====================================");
+    }
+  };
+
+  useEffect(() => {
+    getConfig();
+  }, []);
   return (
     <Layout className="layout-staff">
       <ConfigProvider
@@ -156,11 +173,13 @@ const LayoutStaff = () => {
                 </Space>
               </a>
             </Dropdown>
-          </div>{" "}
+          </div>
         </Header>
 
         <Content className="layout-content">
-          <Outlet />
+          <ConfigAppContext.Provider value={config}>
+            <Outlet />
+          </ConfigAppContext.Provider>
         </Content>
       </Layout>
     </Layout>

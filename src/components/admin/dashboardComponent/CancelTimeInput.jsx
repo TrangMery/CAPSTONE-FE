@@ -1,22 +1,33 @@
 import React, { useState } from "react";
-import { InputNumber, Button, Space } from "antd";
+import { InputNumber, Button, Space, message } from "antd";
+import { configCancelHour } from "../../../services/api";
 
-const CancelTimeInput = () => {
+const CancelTimeInput = ({timeDefault}) => {
   const [cancelTime, setCancelTime] = useState(0);
 
   const handleCancelTimeChange = (value) => {
     setCancelTime(value);
   };
 
-  const handleSubmit = () => {
-    console.log("Cancel Time (hours):", cancelTime);
+  const handleSubmit = async () => {
+    try {
+      const res = await configCancelHour({
+        minutes: cancelTime * 60,
+      });
+      if (res && res.statusCode === 200) {
+        message.success("Tạo thành công")
+      }
+    } catch (error) {
+      console.log("Có lỗi tại cancel time ", error);
+    }
   };
 
   return (
     <Space>
       <label>Số giờ</label>
       <InputNumber
-        min={0}
+        min={2}
+        max={24}
         value={cancelTime}
         onChange={handleCancelTimeChange}
       />

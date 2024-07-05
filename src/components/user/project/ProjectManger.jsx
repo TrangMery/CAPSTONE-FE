@@ -27,7 +27,7 @@ const ProjectManagerUser = () => {
   const [status, setStatus] = useState(false);
   const [activeTab, setActiveTab] = useState("notpassyet");
   const [dataTopicForMember, setdataTopicForMember] = useState([]);
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   useEffect(() => {
     getTopicReviewer();
   }, [status]);

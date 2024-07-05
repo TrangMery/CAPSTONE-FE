@@ -45,7 +45,7 @@ const RegisterProject = () => {
   const [cvLink, setCvLink] = useState([]);
   const [error, setError] = useState(null);
   const [uploadType, setUploadType] = useState("");
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const showUserModal = () => {
     setOpen(true);
   };

@@ -120,7 +120,7 @@ const ModalUpload = (props) => {
         if (res && res.isSuccess) {
           setIsSubmit(false);
           message.success("Tải biên bản lên thành công");
-          props.setCheckTab("submitted")
+          navigate("/staff");
         }
       } catch (error) {
         console.log("====================================");

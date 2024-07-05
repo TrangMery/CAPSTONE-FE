@@ -27,7 +27,7 @@ const ProjectResubmit = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("notyet");
   const [dataTopicForCouncil, setdataTopicForCouncil] = useState([]);
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const items = [
     {
       key: "notyet",
@@ -152,7 +152,7 @@ const ProjectResubmit = () => {
           <>
             {record.state === "EarlyTermReport"
               ? "Đăng ký đề tài"
-              : record.state === "MidTermReport"
+              : record.state === "MidtermReport"
               ? "Báo cáo giữa kỳ"
               : "Báo cáo cuối kỳ"}
           </>

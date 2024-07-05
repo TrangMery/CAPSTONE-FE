@@ -399,10 +399,7 @@ const ProjectManagerFinalTerm = () => {
         topicId: topicId,
       };
       const res = await staffCancelCouncil(data);
-      console.log('====================================');
-      console.log("check res: ", res.message);
-      console.log('====================================');
-      if (res && res?.data) {
+      if (res && res.statusCode === 200) {
         setCheckTab("taohoidong");
       }
     } catch (error) {

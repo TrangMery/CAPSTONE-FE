@@ -28,7 +28,7 @@ const ProjectForTrack = () => {
   const getProjectProcess = async () => {
     try {
       const res = await getTopicByUserId({
-        userId: localStorage.getItem("userId"),
+        userId: sessionStorage.getItem("userId"),
       });
       if (res && res.isSuccess) {
         setdataTopicForMember(res.data);

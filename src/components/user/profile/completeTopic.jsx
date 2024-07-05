@@ -35,7 +35,7 @@ const CompletedTopic = () => {
   const [file, setFile] = useState(null);
   const [fileUrl, setFileUrl] = useState(null);
   const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const getTopic = async () => {
     try {
       setLoading(true);

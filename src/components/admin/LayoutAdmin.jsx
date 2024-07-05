@@ -81,7 +81,7 @@ const LayoutAdmin = () => {
     message.success("Đăng xuất thành công");
     navigate("/login");
     localStorage.removeItem("token");
-    localStorage.removeItem("userId");
+    sessionStorage.removeItem("userId");
   };
   const name = jwtDecode(localStorage.getItem("token")).role;
   const itemDropdown = [

@@ -8,6 +8,17 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 const Login = () => {
   const navigation = useNavigate();
+  const checkRoleNavitgate = (decoded) => {
+    if (decoded.role === "Dean") {
+      navigation("/user/manager");
+    } else if (decoded.role === "User") {
+      navigation("/user");
+    } else if (decoded.role === "Staff") {
+      navigation("/staff");
+    } else if (decoded.role === "Admin") {
+      navigation("/admin/accounts");
+    }
+  };
   const onFinish = async (values) => {
     try {
       const data = {
@@ -18,16 +29,8 @@ const Login = () => {
       if (res && res.isSuccess) {
         localStorage.setItem("token", res.data.token);
         const decoded = jwtDecode(res.data.token);
-        localStorage.setItem("userId", decoded?.userid);
-        if (decoded.role === "Dean") {
-          navigation("/user/manager");
-        } else if (decoded.role === "User") {
-          navigation("/user");
-        } else if (decoded.role === "Staff") {
-          navigation("/staff");
-        } else if (decoded.role === "Admin") {
-          navigation("/admin/accounts");
-        }
+        sessionStorage.setItem("userId", decoded?.userid);
+        checkRoleNavitgate(decoded);
       } else {
         message.error("Vui lòng kiểm tra lại thông tin");
       }
@@ -37,10 +40,12 @@ const Login = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token") !== null ? true : false;
-    // if (token) {
-    //   // navigation(-1);
-    // }
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decoded = jwtDecode(token);
+      checkRoleNavitgate(decoded);
+      sessionStorage.setItem("userId", decoded?.userid);
+    }
   }, []);
   return (
     <>

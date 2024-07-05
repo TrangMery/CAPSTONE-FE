@@ -23,7 +23,7 @@ const ProjectManagerUserReview = () => {
   const [status, setStatus] = useState(false);
   const [dataTopicForDean, setdataTopicForDean] = useState([]);
   const [currentTab, setCurrentTab] = useState("notpassyet");
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const items = [
     {
       key: "notpassyet",

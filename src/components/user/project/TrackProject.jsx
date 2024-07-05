@@ -38,7 +38,7 @@ const TrackProject = () => {
   const [isLeader, setIsLeader] = useState(false);
   const [leaderId, setLeaderId] = useState();
   const [state, setState] = useState(false);
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const renderExtra = (step) => {
     if (step === currentStep) {
       return <SyncOutlined spin style={{ color: "blue" }} />;
@@ -60,6 +60,7 @@ const TrackProject = () => {
       const res = await trackReseach({
         topicId: topicId,
       });
+      console.log("check res: " , res);
       if (res && res.isSuccess) {
         setDataProcess(res.data);
         if (userId === res.data.creatorId) {
@@ -78,7 +79,7 @@ const TrackProject = () => {
         } else if (res.data?.state === "EndingPhase") {
           setCurrentStep("4");
         }
-        if (res.data?.earlyTermReportProcess.resubmitProcesses.length > 0) {
+        if (res.data?.earlyTermReportProcess?.resubmitProcesses.length > 0) {
           setResubmitEarly(res.data?.earlyTermReportProcess.resubmitProcesses);
         }
       }
@@ -212,8 +213,8 @@ const TrackProject = () => {
                             title:
                               dataProcess?.preliminaryReviewProcess
                                 ?.waitingForCouncilFormation === "Done"
-                                ? "Staff đã thành lập hội đồng sơ duyệt"
-                                : "Staff thành lập hội đồng sơ duyệt",
+                                ? "Thành lập hội đồng sơ duyệt"
+                                : "Thành lập hội đồng sơ duyệt",
                             status:
                               dataProcess?.preliminaryReviewProcess
                                 ?.waitingForCouncilFormation === "Done"
@@ -238,8 +239,8 @@ const TrackProject = () => {
                             title:
                               dataProcess?.earlyTermReportProcess
                                 ?.waitingForCouncilFormation === "Done"
-                                ? "Staff đã lập hội đồng đánh giá"
-                                : "Staff lập hội đồng đánh giá",
+                                ? "Đã lập hội đồng đánh giá"
+                                : "Lập hội đồng đánh giá",
                             status:
                               dataProcess?.earlyTermReportProcess
                                 ?.waitingForCouncilFormation === "Done"
@@ -365,7 +366,7 @@ const TrackProject = () => {
                                       icon: <ScheduleOutlined />,
                                     },
                                     {
-                                      title: "Chủ nhiệm đề tài nộp đơn",
+                                      title: "Chủ nhiệm đề tài nộp tài liệu",
                                       status:
                                         item?.waitingForDocumentSupplementation ===
                                         "OnGoing"
@@ -377,8 +378,8 @@ const TrackProject = () => {
                                       title:
                                         item?.waitingForConfigureConference ===
                                         "Done"
-                                          ? "Staff đã lập hội đồng đánh giá"
-                                          : "Staff lập hội đồng đánh giá",
+                                          ? "Đã lập hội đồng đánh giá"
+                                          : "Lập hội đồng đánh giá",
                                       status:
                                         item?.waitingForConfigureConference ===
                                         "Done"
@@ -390,8 +391,8 @@ const TrackProject = () => {
                                       title:
                                         item?.waitingForUploadEvaluate ===
                                         "Done"
-                                          ? "Staff đã tải lên quyết định"
-                                          : "Staff tải lên quyết định",
+                                          ? "Đã tải lên quyết định"
+                                          : "Tải lên quyết định",
                                       status:
                                         item?.waitingForUploadEvaluate ===
                                         "Done"
@@ -480,8 +481,8 @@ const TrackProject = () => {
                               title:
                                 dataProcess.finalTermReportProcess
                                   .waitingForConfigureConference === "Done"
-                                  ? "Staff đã lập hội đồng đánh giá"
-                                  : "Staff lập hội đồng đánh giá",
+                                  ? "Đã lập hội đồng đánh giá"
+                                  : "Lập hội đồng đánh giá",
                               status:
                                 dataProcess.finalTermReportProcess
                                   .waitingForConfigureConference === "Done"
@@ -502,16 +503,6 @@ const TrackProject = () => {
                                   : "wait",
                               icon: <CloudUploadOutlined />,
                             },
-                            // nếu resubmit thì mới hiện
-                            // {
-                            //   title: "Staff tải hợp đồng lên",
-                            //   status:
-                            //     dataProcess?.earlyTermReportProcess
-                            //       ?.waitingForContractSigning === "Accept"
-                            //       ? "finish"
-                            //       : "wait",
-                            //   icon: <ContactsOutlined />,
-                            // },
                           ]}
                         />
                       </>

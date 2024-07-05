@@ -11,7 +11,7 @@ dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
 const ResubmitProject = () => {
   const [isModalOpenR, setIsModalOpenR] = useState(false);
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const [dataReviewDocument, setDataReviewDocument] = useState([]);
   const [role, setRole] = useState("");
   const [status, setStatus] = useState(false);
@@ -106,7 +106,7 @@ const ResubmitProject = () => {
                   {card.decisionOfCouncil === "Accept" ? (
                     <p>Đề tài đã được thông qua</p>
                   ) : (
-                    <p>Hạn nộp: {card.deadline}=</p>
+                    <p>Hạn nộp: {card.deadline}</p>
                   )}
 
                   <p>

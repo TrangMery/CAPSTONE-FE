@@ -43,7 +43,7 @@ const LayoutUser = () => {
   const role = decoded?.role;
   const name = decoded?.fullname;
   const email = decoded?.email;
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -188,7 +188,7 @@ const LayoutUser = () => {
     message.success("Đăng xuất thành công");
     navigate("/login");
     localStorage.removeItem("token");
-    localStorage.removeItem("userId");
+    sessionStorage.removeItem("userId");
   };
   const getNotify = async () => {
     try {

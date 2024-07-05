@@ -209,7 +209,7 @@ const UploadDocument = () => {
           <>
             {record.state === "EarlyTermReport"
               ? "Đăng ký đề tài"
-              : record.state === "MidTermReport"
+              : record.state === "MidtermReport"
               ? "Báo cáo giữa kỳ"
               : "Báo cáo cuối kỳ"}
           </>

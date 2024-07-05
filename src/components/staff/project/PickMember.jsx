@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button, ConfigProvider, Input, List, Space, Table } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import Highlighter from "react-highlight-words";
@@ -11,7 +11,9 @@ import {
 import { getMemberReview } from "../../../services/api";
 import ModalTime from "./ModalChooseTime.jsx";
 import dayjs from "dayjs";
+import { ConfigAppContext } from "../ConfigAppContext.jsx";
 const PickMember = (props) => {
+  const config = useContext(ConfigAppContext);
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -354,6 +356,7 @@ const PickMember = (props) => {
         />
       </div>
       <ModalTime
+        breakTime = {config.breakTimeInMinutes}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         setTime={props.setTime}

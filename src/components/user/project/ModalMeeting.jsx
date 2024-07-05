@@ -10,7 +10,7 @@ const ModalInforMeeting = (props) => {
   const isModalOpen = props.isModalOpen;
   const [form] = Form.useForm();
   const topicId = props.data.topicId;
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const handleCancel = () => {
     props.setIsModalOpen(false);
   };

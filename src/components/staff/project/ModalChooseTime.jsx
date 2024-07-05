@@ -8,6 +8,7 @@ dayjs.extend(timezone);
 dayjs.extend(isBetween);
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { getMemberReviewAvailabe } from "../../../services/api";
 
 const format = "HH:mm";
 const styles = {
@@ -29,8 +30,11 @@ const ModalTime = (props) => {
   const [meetingEndTime, setMeetingEndTime] = useState(null);
   const [availableStartTimes, setAvailableStartTimes] = useState([]);
   const [meetings, setMeetings] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
+  let checkPath = location.pathname.split("/");
+  let topicID = checkPath[4];
+
   const meetingDate = dayjs(location.state.meetingDate).format("DD/MM/YYYY");
 
   useEffect(() => {
@@ -65,8 +69,13 @@ const ModalTime = (props) => {
     setMeetingEndTime(null);
     setAvailableStartTimes([]);
   };
-
-  const handleSubmit = () => {
+  const error = () => {
+    Modal.error({
+      title: "Tạo thành viên không thành công",
+      content: "Số lượng nhà không học không đủ để tạo hội đồng",
+    });
+  };
+  const handleSubmit = async () => {
     const dateStartString = `${meetingDate} ${dayjs(meetingStartTime).format(
       format
     )}`;
@@ -90,8 +99,18 @@ const ModalTime = (props) => {
       meetingStartTime: startDate + "Z",
       meetingEndTime: endDate + "Z",
     };
-    props.setTime(data);
-    props.next();
+    const result = await getAvalableUserAPI(data);
+    if (result === false) {
+      error();
+      setMeetingDuration(null);
+      setMeetingStartTime(null);
+      setMeetingEndTime(null);
+      setAvailableStartTimes([]);
+    } else {
+      props.setData(result);
+      props.next();
+      props.setTime(data);
+    }
   };
 
   const isOverlapping = (newMeeting) => {
@@ -112,7 +131,10 @@ const ModalTime = (props) => {
       const time = dayjs().startOf("day").add(i, "minute");
       const proposedMeeting = {
         start: time,
-        end: time.clone().add(duration, "minute").add(props.breakTime, "minute"),
+        end: time
+          .clone()
+          .add(duration, "minute")
+          .add(props.breakTime, "minute"),
       };
 
       if (
@@ -137,7 +159,30 @@ const ModalTime = (props) => {
     { value: 60, label: "60 phút" },
     { value: 90, label: "90 phút" },
   ];
-
+  const getAvalableUserAPI = async (data) => {
+    try {
+      const res = await getMemberReviewAvailabe({
+        TopicId: topicID,
+        MeetingStartTime: data.meetingStartTime,
+        MeetingEndTime: data.meetingEndTime,
+      });
+      setIsLoading(true);
+      if (res && res?.data) {
+        setIsLoading(false);
+        if (res.data.length >= 5) {
+          let dataKey = res.data.map((item) => ({
+            ...item,
+            key: item.id,
+          }));
+          return dataKey;
+        } else {
+          return false;
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching get user:", error);
+    }
+  };
   return (
     <Modal
       title="Thời gian họp"

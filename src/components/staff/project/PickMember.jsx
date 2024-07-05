@@ -359,6 +359,7 @@ const PickMember = (props) => {
         breakTime = {config.breakTimeInMinutes}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+        setData={props.setData}
         setTime={props.setTime}
         next={props.next}
         timeMeeting={timeMeeting}

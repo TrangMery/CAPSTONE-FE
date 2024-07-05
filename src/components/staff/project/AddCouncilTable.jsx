@@ -17,7 +17,6 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import ModalPickTimeLeader from "./ModalPickTimeLeader";
-import { getMemberReviewAvailabe } from "../../../services/api";
 const AddCouncilTable = (props) => {
   const firstMember = props.firstMember[0];
   const searchInput = useRef(null);
@@ -27,16 +26,11 @@ const AddCouncilTable = (props) => {
   const [user, setUser] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(7);
-  const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFullData, setShowFullData] = useState({});
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [maxSelectedMembers, setMaxSelectedMembers] = useState();
   const [newData, setNewData] = useState([]);
-  const [error, setError] = useState();
-  const location = useLocation();
-  let checkPath = location.pathname.split("/");
-  let topicID = checkPath[4];
   const isRowDisabled = (record) => {
     // Check if the row should be disabled based on the number of selected members
     return (
@@ -205,33 +199,12 @@ const AddCouncilTable = (props) => {
       ),
     },
   ];
-  const getUserAPI = async () => {
-    try {
-      const res = await getMemberReviewAvailabe({
-        TopicId: topicID,
-        MeetingStartTime: props.time.meetingStartTime,
-        MeetingEndTime: props.time.meetingEndTime,
-      });
-      setIsLoading(true);
-      if (res && res?.data) {
-        let dataKey = res.data.map((item) => ({
-          ...item,
-          key: item.id,
-        }));
-        setUser(dataKey);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error("Error fetching get user:", error);
-    }
-  };
-  useEffect(() => {
-    getUserAPI();
-  }, []);
   useEffect(() => {
     if (current === 1 && newData.length > 1) setUser(newData);
   }, [current]);
-
+  useEffect(() => {
+    setUser(props.data);
+  }, []);
   // hide email and phone munber
   const maskEmail = (accountEmail) => {
     const [username, domain] = accountEmail.split("@");
@@ -424,7 +397,6 @@ const AddCouncilTable = (props) => {
               );
             },
           }}
-          loading={isLoading}
           footer={renderFooter}
         />
       </div>

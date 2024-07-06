@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { InputNumber, Button, Space, message } from "antd";
 import { configCancelHour } from "../../../services/api";
 
 const CancelTimeInput = ({ timeDefault }) => {
-  const [cancelTime, setCancelTime] = useState(timeDefault);
-  console.log('====================================');
-  console.log(timeDefault);
-  console.log('====================================');
+  const [cancelTime, setCancelTime] = useState("");
   const handleCancelTimeChange = (value) => {
     setCancelTime(value);
   };
-
+  useEffect(() => {
+    setCancelTime(timeDefault);
+  });
   const handleSubmit = async () => {
     try {
       const res = await configCancelHour({

@@ -216,7 +216,7 @@ const TrackProject = () => {
                                 ? "error"
                                 : "wait",
                             icon: <SolutionOutlined />,
-                            hidden: state === true ? false : true,
+                            hidden: state,
                           },
                           {
                             title:

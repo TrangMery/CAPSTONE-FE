@@ -43,8 +43,8 @@ const BypassSwitch = () => {
     <Space>
       <label>Trưởng phòng duyệt</label>
       <Switch
-        checkedChildren="Có duyệt"
-        unCheckedChildren="Bỏ qua"
+        checkedChildren="Bỏ qua"
+        unCheckedChildren="Có duyệt"
         checked={bypass}
         onChange={handleBypassChange}
         loading={loading}

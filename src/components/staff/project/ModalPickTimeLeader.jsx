@@ -13,6 +13,7 @@ import {
   Row,
   Steps,
   message,
+  notification,
 } from "antd";
 import { DatePicker } from "antd";
 import { useEffect, useState } from "react";
@@ -253,10 +254,10 @@ const ModalPickTimeLeader = (props) => {
         message.success("Lập hội đồng đánh giá thành công");
         navigate("/staff/upload-document");
       } else {
-        console.log("====================================");
-        console.log(res);
-        console.log("====================================");
-        message.error("Tạo hội đồng không thành công");
+        notification.error({
+          description: "Tạo hội đồng không thành công, vui lòng tạo lại sau",
+          message: "Tạo hội đồng",
+        });
       }
     } catch (error) {
       console.log("Lỗi tại tạo hội đồng: ", error.message);

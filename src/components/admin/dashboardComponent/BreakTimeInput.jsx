@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { InputNumber, Button, Space, message } from "antd";
 import { configBreakTimeAdmin } from "../../../services/api";
 
 const BreakTimeInput = ({ timeDefault }) => {
-  const [breakTime, setBreakTime] = useState(timeDefault);
+  const [breakTime, setBreakTime] = useState("");
 
   const handleBreakTimeChange = (value) => {
     setBreakTime(value);
   };
-
+  useEffect(()=> {
+    setBreakTime(timeDefault);
+  })
   const handleSubmit = async () => {
     try {
       const res = await configBreakTimeAdmin({

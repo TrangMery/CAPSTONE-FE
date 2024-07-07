@@ -585,3 +585,13 @@ export const configCancelHour = (param) => {
     `/api/configure/setting-cancel-meeting-min-time?${qs.stringify(param)}`
   );
 };
+
+//admin config coference room
+export const createMeetingRoom = (data) => {
+  return axios.get("/api/room", data);
+};
+
+//admin get coference room
+export const getMeetingRoom = () => {
+  return axios.get("/api/room");
+};

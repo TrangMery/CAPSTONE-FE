@@ -1,4 +1,4 @@
-import { CheckCircleFilled } from "@ant-design/icons";
+import { CheckCircleFilled, UploadOutlined } from "@ant-design/icons";
 import { MdAccessTime } from "react-icons/md";
 import { FaUserTie } from "react-icons/fa";
 import {
@@ -11,18 +11,20 @@ import {
   Modal,
   Radio,
   Row,
+  Select,
   Steps,
+  Upload,
   message,
   notification,
 } from "antd";
-import { DatePicker } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   councilConfigEarly,
   councilConfigFinalterm,
   councilConfigMidterm,
-  getAllHoliday,
+  getMeetingRoom,
+  uploadFile,
 } from "../../../services/api";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -48,7 +50,11 @@ const ModalPickTimeLeader = (props) => {
   const isModalOpen = props.isModalOpen;
   const [selectedLeader, setSelectedLeader] = useState(null);
   const [meetingDetails, setMeetingDetails] = useState("");
+  const [meetingRoom, setMeetingRoom] = useState("");
+  const [room, setRoom] = useState([]);
   const [council, setCouncil] = useState([]);
+  const [newTopicFiles, setFileList] = useState({});
+  const [errorMessage, setError] = useState("");
   const location = useLocation();
   let path = location.pathname.split("/");
   let topicId = path[4];
@@ -62,12 +68,77 @@ const ModalPickTimeLeader = (props) => {
     setSelectedLeader(itemId);
     setCouncil(updatedDataUser);
   };
-
+  const getMeetingRoomApi = async () => {
+    try {
+      const res = await getMeetingRoom();
+      if (res && res.statusCode === 200) {
+        const newData = res.data.map((item) => ({
+          value: item.roomId,
+          label: item.roomName,
+        }));
+        setRoom(newData);
+      }
+    } catch (error) {
+      console.log("Có lỗi tại getMeetingRoom: ", error);
+    }
+  };
   const handleDetailsChange = (e) => {
     setMeetingDetails(e.target.value);
   };
+  const handleRoomChange = (data) => {
+    setMeetingRoom(data);
+  };
+  const translate = (key) => {
+    const item = room.find((item) => item.value === key);
+    return item ? item.label : undefined;
+  };
   const meetingStartTime = dayjs.utc(props.meetingTime.meetingStartTime);
   const meetingEndTime = dayjs.utc(props.meetingTime.meetingEndTime);
+  const propsUpload = {
+    name: "file",
+    multiple: false,
+    maxCount: 1,
+    customRequest: async ({ file, onSuccess, onError }) => {
+      try {
+        const isCompressedFile =
+          file.type ===
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+          file.type === "application/pdf";
+        if (!isCompressedFile) {
+          message.error("Chỉ được phép tải lên các file docx hoặc pdf!");
+          setError("Chỉ được phép tải lên các file docx hoặc pdf!");
+          onError(file);
+          return;
+        }
+        const response = await uploadFile(file);
+        if (response.data.fileLink === null) {
+          onError(response, file);
+          message.error(`${file.name} file tải lên không thành công!.`);
+        } else {
+          setFileList({
+            fileName: response.data.fileName,
+            fileLink: response.data.fileLink,
+          });
+          // Gọi onSuccess để xác nhận rằng tải lên đã thành công
+          onSuccess(response, file);
+          // Hiển thị thông báo thành công
+          message.success(`${file.name} tải lên thành công.`);
+        }
+      } catch (error) {
+        // Gọi onError để thông báo lỗi nếu có vấn đề khi tải lên
+        onError(error);
+        // Hiển thị thông báo lỗi
+        message.error(`${file.name} file tải lên thất bại.`);
+      }
+    },
+    onRemove: (file) => {
+      setFileList({});
+      setError("");
+    },
+    onDrop(e) {
+      console.log("Dropped files", e.dataTransfer.files);
+    },
+  };
   const steps = [
     {
       title: "Lựa chọn chủ tịch hội đồng",
@@ -136,6 +207,21 @@ const ModalPickTimeLeader = (props) => {
                 </div>
               </Col>
               <Col span={24}>
+                <p>Chọn phòng họp</p>
+                <Select
+                  style={{ width: 200 }}
+                  onChange={handleRoomChange}
+                  options={room}
+                />
+              </Col>
+              <Col span={24}>
+                <p>Chỉ hỗ trợ cái file như docx hoặc pdf</p>
+                <Upload {...propsUpload}>
+                  <Button icon={<UploadOutlined />}>Tải file minh chứng </Button>
+                </Upload>
+                {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+              </Col>
+              <Col span={24}>
                 <Form.Item
                   name="details"
                   label="Chi tiết"
@@ -187,7 +273,9 @@ const ModalPickTimeLeader = (props) => {
                 {meetingStartTime.format("HH:mm")} -{" "}
                 {meetingEndTime.format("HH:mm")}
               </p>
-
+              <p style={{ fontSize: "18px", marginBottom: "8px" }}>
+                Phòng họp: {translate(meetingRoom)}
+              </p>
               <p style={{ fontSize: "18px", marginBottom: "8px" }}>
                 Chi tiết: {meetingDetails}
               </p>
@@ -206,6 +294,9 @@ const ModalPickTimeLeader = (props) => {
     } else if (current === 1 && meetingDetails === "") {
       message.error("Vui lòng chọn ngày và nhập chi tiết trước khi tiếp tục.");
       return;
+    } else if (current === 1 && meetingRoom === "") {
+      message.error("Vui lòng chọn phòng họp trước khi tiếp tục.");
+      return;
     }
     setCurrent(current + 1);
   };
@@ -219,6 +310,7 @@ const ModalPickTimeLeader = (props) => {
   const handleCancel = () => {
     props.setIsModalOpen(false);
   };
+
   const handleSubmit = async () => {
     const councilArray = council.map((user) => ({
       councilId: user.id,
@@ -231,7 +323,10 @@ const ModalPickTimeLeader = (props) => {
       councils: councilArray,
       meetingDetail: meetingDetails,
       meetingDuration: props.meetingDuration,
+      creationCouncilDirectiveFile: newTopicFiles.fileLink,
+      roomId: meetingRoom,
     };
+    console.log(data);
     let res;
     try {
       if (checkTerm === "earlyterm") {
@@ -263,6 +358,9 @@ const ModalPickTimeLeader = (props) => {
       console.log("Lỗi tại tạo hội đồng: ", error.message);
     }
   };
+  useEffect(() => {
+    getMeetingRoomApi();
+  }, []);
 
   return (
     <>

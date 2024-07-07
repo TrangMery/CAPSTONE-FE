@@ -71,9 +71,6 @@ const CollapseTopic = ({
         feedbackFileLink: fileLink,
         isAccepted: status,
       };
-      console.log('====================================');
-      console.log(data);
-      console.log('====================================');
       const res = await chairmanMakeFinalDecision(data);
       if (res && res.statusCode === 200) {
         if (status === true) {

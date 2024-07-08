@@ -485,7 +485,7 @@ const ProjectManagerFinalTerm = () => {
           showTotal: (total, range) => {
             return (
               <div>
-                {range[0]} - {range[1]} on {total} rows
+                {range[0]} - {range[1]} tên {total} hàng
               </div>
             );
           },

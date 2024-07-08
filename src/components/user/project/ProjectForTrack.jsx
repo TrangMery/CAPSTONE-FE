@@ -1,12 +1,14 @@
+import { FundViewOutlined, SearchOutlined } from "@ant-design/icons";
 import {
-  CheckOutlined,
-  CloseOutlined,
-  FundViewOutlined,
-  InfoCircleOutlined,
-  ScheduleOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import { Badge, Button, ConfigProvider, Input, Space, Table, Tabs } from "antd";
+  Badge,
+  Button,
+  ConfigProvider,
+  Input,
+  Space,
+  Table,
+  Tabs,
+  Tag,
+} from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import "../../staff/project/project.scss";
@@ -24,13 +26,16 @@ const ProjectForTrack = () => {
   const navigate = useNavigate();
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  // const [status, setStatus] = useState(true);  
   const [dataTopicForMember, setdataTopicForMember] = useState([]);
   const getProjectProcess = async () => {
     try {
       const res = await getTopicByUserId({
         userId: sessionStorage.getItem("userId"),
+        status: true,
       });
       if (res && res.isSuccess) {
+        console.log(res);
         setdataTopicForMember(res.data);
       }
     } catch (error) {
@@ -157,6 +162,30 @@ const ProjectForTrack = () => {
       key: "createdAt",
     },
     {
+      title: "Trạng thái",
+      sorter: (a, b) => {
+        if (a.status < b.status) return -1;
+        if (a.status > b.status) return 1;
+        return 0;
+      },
+      render: (text, record, index) => {
+        const content = record.status === true ? "Đang thực hiện" : "Bị hủy đề tài";
+        const color = record.status === true ? "green" : "red";
+        return (
+          <Tag
+            style={{
+              fontSize: "13px",
+            }}
+            color={color}
+          >
+            {content}
+          </Tag>
+        );
+        return;
+      },
+    },
+
+    {
       title: "Hành động",
       render: (text, record, index) => {
         const style1 = {
@@ -169,7 +198,9 @@ const ProjectForTrack = () => {
           <div>
             <FundViewOutlined
               onClick={() => {
-                navigate(`/user/track/track-topic/${record.topicId}`);
+                navigate(`/user/track/track-topic/${record.topicId}`, {
+                  state: { title: record.topicName },
+                });
               }}
               style={style1}
             />
@@ -206,6 +237,13 @@ const ProjectForTrack = () => {
   useEffect(() => {
     getProjectProcess();
   }, []);
+  const locale = {
+    // Tùy chỉnh thông báo sắp xếp
+    sortTitle: 'Sắp xếp theo trạng thái đề tài',
+    triggerDesc: "Đang thực hiện",
+    triggerAsc: "Bị hủy đề tài",
+    cancelSort: "Hủy sắp xếp",
+  };
   return (
     <>
       <h2 style={{ fontWeight: "bold", fontSize: "30px", color: "#303972" }}>
@@ -229,11 +267,12 @@ const ProjectForTrack = () => {
             showTotal: (total, range) => {
               return (
                 <div>
-                  {range[0]} - {range[1]} on {total} rows
+                  {range[0]} - {range[1]} tên {total} hàng
                 </div>
               );
             },
           }}
+          locale={locale}
         />
       </ConfigProvider>
     </>

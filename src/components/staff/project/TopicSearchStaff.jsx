@@ -18,7 +18,6 @@ import { getAllUserAdmin, stateProject } from "../../../services/api";
 const TopicSearchFormStaff = (props) => {
   const [year, setYear] = useState(dayjs().year());
   const [searchText, setSearchText] = useState("");
-  const [listUser, setListUser] = useState([]);
   const [listState, setListState] = useState([]);
   const { token } = theme.useToken();
   const [form] = Form.useForm();
@@ -35,18 +34,6 @@ const TopicSearchFormStaff = (props) => {
   };
   const onChangeYear = (date, dateString) => {
     setYear(dayjs(date).format("YYYY"));
-  };
-  const getUser = async () => {
-    try {
-      const res = await getAllUserAdmin();
-      if (res && res?.data) {
-        setListUser(res?.data);
-      }
-    } catch (error) {
-      console.log("====================================");
-      console.log("Error: ", error);
-      console.log("====================================");
-    }
   };
   const getStateProject = async () => {
     try {
@@ -71,15 +58,6 @@ const TopicSearchFormStaff = (props) => {
       console.log("====================================");
     }
   };
-  const options = listUser.map((user) => ({
-    value: user.accountEmail,
-    label: (
-      <div>
-        {user.fullName} <br />
-        <small>{user.accountEmail}</small>
-      </div>
-    ),
-  }));
 
   const filteredOptions =
     searchText.length >= 3
@@ -88,6 +66,13 @@ const TopicSearchFormStaff = (props) => {
         )
       : [];
   const onFinish = (values) => {
+    const translations = {
+      0: "Đánh giá sơ bộ",
+      1: "Báo cáo đề cương",
+      2: "Báo cáo giữa kỳ",
+      3: "Báo cáo cuối kỳ",
+      4: "Giai đoạn kết thúc",
+    };
     let query = "";
     if (values.Email) {
       query += `&Email=${values.Email}`;
@@ -102,13 +87,13 @@ const TopicSearchFormStaff = (props) => {
     }
     if (values.State !== null && values.State !== undefined) {
       query += `&State=${values.State}`;
+      props.handleState(translations[values.State])
     }
     if (query) {
       props.handleSearchTopic(query);
     }
   };
   useEffect(() => {
-    getUser();
     getStateProject();
   }, []);
   return (
@@ -150,7 +135,6 @@ const TopicSearchFormStaff = (props) => {
           <Col span={6}>
             <Form.Item name="CompleteYear" label="Năm hoàn thành">
               <DatePicker
-                defaultValue={dayjs()}
                 disabledDate={disabledYear}
                 onChange={onChangeYear}
                 picker="year"

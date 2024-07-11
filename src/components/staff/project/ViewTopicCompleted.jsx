@@ -11,6 +11,9 @@ const ViewTopic = () => {
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [filters, setFilters] = useState("");
+  const [total, setTotal] = useState(0);
+  const [subTotal, setSubTotal] = useState(0);
+  const [state, setState] = useState("");
   const getAllTopic = async () => {
     try {
       setLoading(true);
@@ -18,6 +21,12 @@ const ViewTopic = () => {
       if (res && res.statusCode === 200) {
         setListTopic(res.data);
         setLoading(false);
+        if (filters === "") {
+          setTotal(res.data.length);
+          setSubTotal(0);
+        } else {
+          setSubTotal(res.data.length);
+        }
       }
     } catch (error) {
       console.log("====================================");
@@ -84,6 +93,9 @@ const ViewTopic = () => {
   ];
   const handleSearchTopic = (query) => {
     setFilters(query);
+  };
+  const handleState = (state) => {
+    setState(state);
   };
   const exportFile = async () => {
     if (listTopic.length > 0) {
@@ -186,9 +198,15 @@ const ViewTopic = () => {
           Xuất file
         </Button>
       </div>
+      {subTotal === 0 ? (
+        <p style={{ fontSize: "large" }}>Có tổng số {total} đề tài </p>
+      ) : (
+        <p style={{ fontSize: "large" }}>
+          Có {subTotal} đề tài trên tổng số {total} đề tài ở giai đoạn {state}
+        </p>
+      )}
     </div>
   );
-
   useEffect(() => {
     getAllTopic();
   }, [filters]);
@@ -203,7 +221,7 @@ const ViewTopic = () => {
   };
   const locale = {
     // Tùy chỉnh thông báo sắp xếp
-    sortTitle: 'Sắp xếp theo loại đề tài',
+    sortTitle: "Sắp xếp theo loại đề tài",
     triggerDesc: "Đề tài Nội Khoa",
     triggerAsc: "Đề tài Ngoại Khoa",
     cancelSort: "Hủy sắp xếp",
@@ -212,7 +230,10 @@ const ViewTopic = () => {
     <>
       <Row gutter={[24, 24]}>
         <Col span={24}>
-          <TopicSearchFormStaff handleSearchTopic={handleSearchTopic} />
+          <TopicSearchFormStaff
+            handleSearchTopic={handleSearchTopic}
+            handleState={handleState}
+          />
         </Col>
         <Col span={24}>
           <Table

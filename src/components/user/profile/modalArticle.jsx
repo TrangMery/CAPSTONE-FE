@@ -228,7 +228,7 @@ const ArticalModal = (props) => {
                       },
                     ]}
                   >
-                    <Search
+                    <Tìm kiếm
                       onSearch={onChangeLink}
                       enterButton="Tìm kiếm"
                       size="large"

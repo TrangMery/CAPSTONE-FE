@@ -43,9 +43,6 @@ const CollapseTopic = ({
       return <LoadingOutlined style={{ color: "blue" }} />;
     }
   };
-  console.log('====================================');
-  console.log(data);
-  console.log('====================================');
   const chairmanApproved = async () => {
     try {
       const res = await chairmanApprove({
@@ -117,7 +114,7 @@ const CollapseTopic = ({
               File góp ý
             </a>
           </p>
-          {items.isAccepted === null && role === "Chairman" ? (
+          {items.isAccepted === null || role === "Chairman" ? (
             <>
               <Divider />
               <p>Quyết định:</p>
@@ -162,7 +159,7 @@ const CollapseTopic = ({
       style: panelStyle,
     }));
     setItemsCollapse(newData);
-  }, [data.length]);
+  }, [data]);
   return (
     <>
       <Collapse

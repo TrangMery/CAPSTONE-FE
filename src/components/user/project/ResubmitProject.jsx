@@ -10,9 +10,9 @@ dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
 const ResubmitProject = () => {
   const userId = sessionStorage.getItem("userId");
-  const [dataReviewDocument, setDataReviewDocument] = useState([]);
+  const [dataReviewDocument, setDataReviewDocument] = useState({});
   const [dataReviewDocumentMiddle, setDataReviewDocumentMiddle] = useState([]);
-  const [dataReviewDocumentFinal, setDataReviewDocumentFinal] = useState([]);
+  const [dataReviewDocumentFinal, setDataReviewDocumentFinal] = useState({});
   const [role, setRole] = useState("");
   const [status, setStatus] = useState(false);
   const location = useLocation();
@@ -26,34 +26,38 @@ const ResubmitProject = () => {
       topicId: topicId,
     });
     if (res && res?.data) {
-      const dataEarly = {
-        state: 1,
-        deadline: dayjs(res.data.reviewEarlyDocument.resubmitDeadline).format(
-          dateFormat
-        ),
-        decisionOfCouncil: res.data.reviewEarlyDocument.decisionOfCouncil,
-        resultFileLink: res.data.reviewEarlyDocument.resultFileLink,
-        documents:
-          res.data.reviewEarlyDocument.documents.length > 0
-            ? res.data.reviewEarlyDocument.documents
-            : [],
-      };
-      const dataFinal = {
-        state: 3,
-        deadline: dayjs(res.data.reviewFinalDocument.resubmitDeadline).format(
-          dateFormat
-        ),
-        decisionOfCouncil: res.data.reviewFinalDocument.decisionOfCouncil,
-        resultFileLink: res.data.reviewFinalDocument.resultFileLink,
-        documents:
-          res.data.reviewFinalDocument.documents.length > 0
-            ? res.data.reviewFinalDocument.documents
-            : [],
-      };
-      setRole(res.data.role);
-      setDataReviewDocument(dataEarly);
+      if (res.data.reviewEarlyDocument !== null) {
+        const dataEarly = {
+          state: 1,
+          deadline: dayjs(res.data.reviewEarlyDocument.resubmitDeadline).format(
+            dateFormat
+          ),
+          decisionOfCouncil: res.data.reviewEarlyDocument.decisionOfCouncil,
+          resultFileLink: res.data.reviewEarlyDocument.resultFileLink,
+          documents:
+            res.data.reviewEarlyDocument.documents.length > 0
+              ? res.data.reviewEarlyDocument.documents
+              : [],
+        };
+        setDataReviewDocument(dataEarly);
+      }
       setDataReviewDocumentMiddle(res.data.reviewMiddleDocuments);
-      setDataReviewDocumentFinal(dataFinal);
+      if (res.data.reviewFinalDocument !== null) {
+        const dataFinal = {
+          state: 3,
+          deadline: dayjs(res.data.reviewFinalDocument.resubmitDeadline).format(
+            dateFormat
+          ),
+          decisionOfCouncil: res.data.reviewFinalDocument.decisionOfCouncil,
+          resultFileLink: res.data.reviewFinalDocument.resultFileLink,
+          documents:
+            res.data.reviewFinalDocument.documents.length > 0
+              ? res.data.reviewFinalDocument.documents
+              : [],
+        };
+        setDataReviewDocumentFinal(dataFinal);
+      }
+      setRole(res.data.role);
     }
   };
   useEffect(() => {
@@ -81,13 +85,22 @@ const ResubmitProject = () => {
           role={role}
           setStatus={setStatus}
           topicId={topicId}
+          active={status}
         />
-        <ResubmitComponent
-          data={dataReviewDocumentFinal}
-          role={role}
-          setStatus={setStatus}
-          topicId={topicId}
-        />
+        {dataReviewDocumentFinal ? (
+          <>
+            <ResubmitComponent
+              data={dataReviewDocumentFinal}
+              role={role}
+              setStatus={setStatus}
+              topicId={topicId}
+              active={status}
+            />
+          </>
+        ) : (
+          <></>
+        )}
+
         <div style={{ marginTop: "10px" }}>
           <Button type="primary" onClick={() => navigate(-1)}>
             Quay lại

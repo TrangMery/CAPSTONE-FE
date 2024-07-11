@@ -24,6 +24,7 @@ import UploadFileFinal from "./modalUploadFinal";
 import ModalUploadResubmit from "./ModalResubmit";
 import TrackResubmitModal from "./TrackResubmitModal";
 import RejectTopic from "./RejectTopic";
+import ResultComplete from "./ResultCompleted";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD-MM-YYYY";
 const TrackProject = () => {
@@ -125,7 +126,9 @@ const TrackProject = () => {
       </h2>
       <Space direction="vertical">
         {dataProcess?.preliminaryReviewProcess?.waitingForDean === "Reject" ? (
-          <RejectTopic/>
+          <RejectTopic />
+        ) : dataProcess?.progress === "Completed" ? (
+          <ResultComplete />
         ) : (
           <>
             {currentStep !== "" ? (
@@ -274,8 +277,10 @@ const TrackProject = () => {
                                         "Edit" &&
                                         dataProcess?.earlyTermReportProcess
                                           .resubmitProcesses.length === 0) ||
-                                      dataProcess?.progress ===
-                                        "WaitingForDocumentEditing"
+                                      (dataProcess?.progress ===
+                                        "WaitingForDocumentEditing" &&
+                                        dataProcess?.state ===
+                                          "EarlyTermReport")
                                     ? "Nộp lại tài liệu đã chỉnh sửa"
                                     : dataProcess?.progress ===
                                       "WaitingForCouncilDecision"
@@ -291,14 +296,20 @@ const TrackProject = () => {
                                         "Edit" &&
                                         dataProcess?.earlyTermReportProcess
                                           .resubmitProcesses.length === 0) ||
-                                      dataProcess?.progress ===
-                                        "WaitingForDocumentEditing"
+                                      (dataProcess?.progress ===
+                                        "WaitingForDocumentEditing" &&
+                                        dataProcess?.state ===
+                                          "EarlyTermReport")
                                     ? "error"
                                     : dataProcess?.progress ===
                                       "WaitingForCouncilDecision"
                                     ? "process"
                                     : dataProcess?.earlyTermReportProcess
-                                        ?.waitingForContractSigning === "Done"
+                                        ?.waitingForContractSigning ===
+                                        "Done" ||
+                                      dataProcess?.earlyTermReportProcess
+                                        ?.waitingForContractSigning ===
+                                        "OnGoing"
                                     ? "finish"
                                     : "wait",
                                 icon: <CloudUploadOutlined />,
@@ -689,15 +700,19 @@ const TrackProject = () => {
           </>
         )}
       </Space>
-      <Button
-        shape="round"
-        type="primary"
-        danger
-        onClick={() => navigate(-1)}
-        style={{ margin: "10px 0" }}
-      >
-        Quay về
-      </Button>
+      {dataProcess?.progress === "Completed" ? (
+        <></>
+      ) : (
+        <Button
+          type="primary"
+          danger
+          onClick={() => navigate(-1)}
+          style={{ margin: "10px 0" }}
+        >
+          Quay về
+        </Button>
+      )}
+
       <TrackResubmitModal
         isModalOpen={isModalResubmitOpen}
         setIsModalOpen={setIsModalResubmitOpen}

@@ -1,130 +1,80 @@
-import React, { useEffect, useState } from "react";
-import { Table, Tag, Card, Layout, Row, Col, Tabs } from "antd";
+import { useEffect, useState } from "react";
+import Dashboard from "../../components/staff/project/Dashboard";
 import {
-  getTopicHadConfig,
-  getTopicInCompletedConference,
+  getAllTopics,
+  getTopicCompleted,
+  getTopicInComplete,
+  getTopicPending,
 } from "../../services/api";
-const { Header, Content } = Layout;
-
-
 const StaffPage = () => {
-  const [projects, setProjects] = useState([]);
-  const columns = [
-    {
-        title: "Mã đề tài",
-        dataIndex: "code",
-        key: "code",
-      },
-    {
-      title: "Tên đề tài",
-      dataIndex: "topicName",
-      key: "name",
-    },
-    {
-      title: "Giai đoạn",
-      dataIndex: "state",
-      key: "state",
-      render: (text, record, index) => {
-        return (
-          <>
-            {record.state === "EarlytermReport"
-              ? "Đăng ký đề tài"
-              : record.state === "MidtermReport"
-              ? "Báo cáo giữa kỳ"
-              : "Báo cáo cuối kỳ"}
-          </>
-        );
-      },
-    },
-  ];
-  const items = [
-    {
-      key: "0",
-      label: `Đã thêm hội đồng`,
-      children: (
-        <>
-          <Col span={24}>
-            <Card title="Đề tài đã thêm hội đồng" bordered={false}>
-              <Table
-                dataSource={projects}
-                columns={columns}
-                pagination={false}
-                rowKey="id"
-              />
-            </Card>
-          </Col>
-        </>
-      ),
-    },
-    {
-      key: "1",
-      label: `Chưa tạo hội đồng`,
-      children: (
-        <>
-          <Col span={24}>
-            <Card title="Đề tài chưa tạo hội đồng" bordered={false}>
-              <Table
-                dataSource={projects}
-                columns={columns}
-                pagination={false}
-                rowKey="id"
-              />
-            </Card>
-          </Col>
-        </>
-      ),
-    },
-  ];
+  const [completedProjects, setCompletedProjects] = useState(0);
+  const [runningProjects, setRunningProject] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [incompletedProjects, setInompletedProjects] = useState(0);
 
-  const getTopicHasConfig = async () => {
+  const getAllProjects = async () => {
     try {
-      const res = await getTopicHadConfig();
+      const res = await getAllTopics();
       if (res && res.statusCode === 200) {
-        setProjects(res.data);
+        setTotal(res.data.length);
       }
     } catch (error) {
-      console.log("Có lỗi tại getTopicHasConfig", error);
+      console.log("====================================");
+      console.log("có lỗi tại getAllProjects", error);
+      console.log("====================================");
     }
   };
-  const getTopicHasNotConfig = async () => {
+  const getCompleteProjects = async () => {
     try {
-      const res = await getTopicInCompletedConference();
+      const res = await getTopicCompleted();
       if (res && res.statusCode === 200) {
-        setProjects(res.data);
+        setCompletedProjects(res.data.total);
       }
     } catch (error) {
-      console.log("Có lỗi tại getTopicHasConfig", error);
+      console.log("====================================");
+      console.log("có lỗi tại getAllProjects", error);
+      console.log("====================================");
+    }
+  };
+  const getIncompleteProjects = async () => {
+    try {
+      const res = await getTopicInComplete();
+      if (res && res.statusCode === 200) {
+        setInompletedProjects(res.data.total);
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("có lỗi tại getAllProjects", error);
+      console.log("====================================");
+    }
+  };
+  const getRunningProjects = async () => {
+    try {
+      const res = await getTopicPending();
+      if (res && res.statusCode === 200) {
+        setRunningProject(res.data.total);
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("có lỗi tại getAllProjects", error);
+      console.log("====================================");
     }
   };
   useEffect(() => {
-    getTopicHasConfig();
+    getAllProjects();
+    getCompleteProjects();
+    getRunningProjects();
+    getIncompleteProjects();
   }, []);
   return (
-    <>
-      <Layout>
-        <Header
-          style={{ color: "white", textAlign: "center", fontSize: "24px" }}
-        >
-          Thống kê đề tài
-        </Header>
-        <Content style={{ padding: "20px" }}>
-          <Tabs
-            defaultActiveKey="0"
-            items={items}
-            onChange={(value) => {
-              if (value === "0") {
-                getTopicHasConfig();
-              } else if (value === "1") {
-                getTopicHasNotConfig();
-              }
-            }}
-            centered
-          />
-          <Row gutter={[20, 20]}></Row>
-        </Content>
-      </Layout>
-      ;
-    </>
+    <div style={{backgroundColor : "#f0f2f5"}}>
+      <Dashboard
+        totalProjects={total}
+        runningProjects={runningProjects}
+        completedProjects={completedProjects}
+        rejectedProjects={incompletedProjects}
+      />
+    </div>
   );
 };
 

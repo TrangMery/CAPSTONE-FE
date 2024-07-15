@@ -6,6 +6,7 @@ import {
   UsergroupAddOutlined,
 } from "@ant-design/icons";
 import {
+  Badge,
   Button,
   ConfigProvider,
   Input,
@@ -31,6 +32,7 @@ import {
   getTopicWaitingMember,
   staffCancelCouncil,
   topicWaitingMeeting,
+  preAndEarlyAmount,
 } from "../../../services/api";
 import ModalTimeCouncil from "./modalTimeCouncil";
 import { ConfigAppContext } from "../ConfigAppContext";
@@ -44,11 +46,17 @@ const ProjectManager = () => {
   const [dataPro, setDataPro] = useState({});
   const [isModalInforOpen, setIsModalInforOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [amoutNotYet, setAmoutNotYet] = useState(0);
+  const [amoutWait, setAmoutWait] = useState(0);
   const navigate = useNavigate();
   const items = [
     {
       key: "notyet",
-      label: `Chưa duyệt`,
+      label: (
+        <Badge offset={[15, -2]} count={amoutNotYet}>
+          Chưa duyệt
+        </Badge>
+      ),
       children: <></>,
     },
     {
@@ -58,7 +66,12 @@ const ProjectManager = () => {
     },
     {
       key: "chohoidong",
-      label: `Tạo hội đồng xem xét`,
+      label: (
+        <Badge offset={[15, 2]} count={amoutWait}>
+          {" "}
+          Tạo hội đồng xem xét
+        </Badge>
+      ),
       children: <></>,
     },
     {
@@ -135,7 +148,10 @@ const ProjectManager = () => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase().trim()),
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -207,7 +223,8 @@ const ProjectManager = () => {
       render: (text, record, index) => {
         const content =
           record.topicType === "Internal" ? "Nội Khoa" : "Ngoại Khoa";
-        const color = record.topicType === "Internal" ? "green" : "blue";
+        const color =
+          record.topicType === "Internal" ? "success" : "processing";
         return (
           <Tag
             style={{
@@ -381,8 +398,20 @@ const ProjectManager = () => {
       console.log("có lỗi tại getTopicForCouncil: " + error);
     }
   };
+  const preAndEarlyAmountApi = async () => {
+    try {
+      const res = await preAndEarlyAmount();
+      if (res && res.statusCode === 200) {
+        setAmoutNotYet(res.data.preTopicWaitingCouncilFormation);
+        setAmoutWait(res.data.earlyTopicWaitingCouncilFormation);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
   useEffect(() => {
     getTopicMemberApproval();
+    preAndEarlyAmountApi();
   }, []);
   const renderHeader = () => (
     <div>

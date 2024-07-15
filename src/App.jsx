@@ -29,6 +29,7 @@ import ExportFile from "./components/admin/exportFile.jsx";
 import AddCouncil from "./components/staff/project/AddCouncil.jsx";
 import ViewTopic from "./components/staff/project/ViewTopicCompleted.jsx";
 import RegisterProject from "./components/user/registerProject/RegisterProject";
+import ManagerSyndicate from "./pages/syndicate/index.jsx";
 
 const Layout = () => {
   return <LoginPage />;
@@ -217,6 +218,10 @@ function App() {
         },
       ],
     },
+    {
+      path:"/syndicate",
+      element: <ManagerSyndicate />
+    }
   ]);
   return (
     <>

@@ -7,6 +7,7 @@ import {
   UsergroupAddOutlined,
 } from "@ant-design/icons";
 import {
+  Badge,
   Button,
   ConfigProvider,
   Input,
@@ -26,6 +27,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
 import {
+  finalAmount,
   getFinalTerm,
   getFinalTermReport,
   getTopicHasSubmitFileMoney,
@@ -48,11 +50,18 @@ const ProjectManagerFinalTerm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalFinalOpen, setIsModalFinalOpen] = useState(false);
   const [isModalCouncilOpen, setIsModalCouncilOpen] = useState(false);
-
+  const [amoutNotYet, setAmoutNotYet] = useState(0);
+  const [amoutWait, setAmoutWait] = useState(0);
+  const [amoutFinal, setAmoutFinal] = useState(0);
   const items = [
     {
       key: "notyet",
-      label: `Chưa tạo lịch báo cáo`,
+      label: (
+        <Badge offset={[15, -2]} count={amoutNotYet}>
+          {" "}
+          Chưa tạo lịch báo cáo{" "}
+        </Badge>
+      ),
       children: <></>,
     },
     {
@@ -62,7 +71,12 @@ const ProjectManagerFinalTerm = () => {
     },
     {
       key: "taohoidong",
-      label: `Thêm thành viên hội đồng`,
+      label: (
+        <Badge offset={[15, -2]} count={amoutWait}>
+          {" "}
+          Thêm thành viên hội đồng{" "}
+        </Badge>
+      ),
       children: <></>,
     },
     {
@@ -72,7 +86,12 @@ const ProjectManagerFinalTerm = () => {
     },
     {
       key: "tongket",
-      label: `Tổng kết đề tài`,
+      label: (
+        <Badge offset={[15, -2]} count={amoutFinal}>
+          {" "}
+          Tổng kết đề tài{" "}
+        </Badge>
+      ),
       children: <></>,
     },
   ];
@@ -144,7 +163,10 @@ const ProjectManagerFinalTerm = () => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase().trim()),
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -224,7 +246,8 @@ const ProjectManagerFinalTerm = () => {
       render: (text, record, index) => {
         const content =
           record.topicType === "Internal" ? "Nội Khoa" : "Ngoại Khoa";
-        const color = record.topicType === "Internal" ? "green" : "blue";
+        const color =
+          record.topicType === "Internal" ? "success" : "processing";
         return (
           <Tag
             style={{
@@ -406,8 +429,21 @@ const ProjectManagerFinalTerm = () => {
       console.log("có lỗi tại getTopicForCouncil: " + error);
     }
   };
+  const finalAmountApi = async () => {
+    try {
+      const res = await finalAmount();
+      if (res && res.statusCode === 200) {
+        setAmoutNotYet(res.data.topicWaitingMakeReviewSchedule);
+        setAmoutWait(res.data.topicWaitingConfigureConference);
+        setAmoutFinal(res.data.endingTopicWaitingUploadContract);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
   useEffect(() => {
     getTopicFinalTerm();
+    finalAmountApi();
   }, [isModalOpen]);
   const renderHeader = () => (
     <div>
@@ -442,7 +478,7 @@ const ProjectManagerFinalTerm = () => {
     setSearchText(selectedKeys[0].trim());
     setSearchedColumn(dataIndex);
   };
-const handleReset = (clearFilters, confirm) => {
+  const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
     confirm();
@@ -459,7 +495,7 @@ const handleReset = (clearFilters, confirm) => {
   };
   const locale = {
     // Tùy chỉnh thông báo sắp xếp
-    sortTitle: 'Sắp xếp theo loại đề tài',
+    sortTitle: "Sắp xếp theo loại đề tài",
     triggerDesc: "Đề tài Nội Khoa",
     triggerAsc: "Đề tài Ngoại Khoa",
     cancelSort: "Hủy sắp xếp",

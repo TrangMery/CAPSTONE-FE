@@ -61,7 +61,7 @@ const ViewTopic = () => {
       render: (text, record, index) => {
         const content =
           record.topicType === "Internal" ? "Nội Khoa" : "Ngoại Khoa";
-        const color = record.topicType === "Internal" ? "green" : "blue";
+        const color = record.topicType === "Internal" ? "success" : "processing";
         return (
           <Tag
             style={{

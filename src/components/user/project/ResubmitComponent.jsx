@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import "./card.scss";
 import {
   CheckOutlined,
+  CloseCircleOutlined,
   CloseOutlined,
   LoadingOutlined,
+  SyncOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -11,6 +13,7 @@ import {
   ConfigProvider,
   Divider,
   Space,
+  Tag,
   message,
   theme,
 } from "antd";
@@ -21,7 +24,13 @@ import {
 } from "../../../services/api";
 import ModalChairmanReject from "./ModalChairmanReject";
 import { FaAward } from "react-icons/fa";
-const ResubmitComponent = ({ data, role, setStatus, topicId, getReviewDoc }) => {
+const ResubmitComponent = ({
+  data,
+  role,
+  setStatus,
+  topicId,
+  getReviewDoc,
+}) => {
   const [itemsCollapse, setItemsCollapse] = useState([]);
   const [isModalOpenR, setIsModalOpenR] = useState(false);
   const { token } = theme.useToken();
@@ -33,11 +42,11 @@ const ResubmitComponent = ({ data, role, setStatus, topicId, getReviewDoc }) => 
   };
   const renderExtra = (state) => {
     if (state === true) {
-      return <FaAward style={{ color: "green" }} />;
+      return <FaAward style={{ color: "green", fontSize: "20px" }} />;
     } else if (state === false) {
-      return <CloseOutlined style={{ color: "red" }} />;
+      return <CloseOutlined style={{ color: "red", fontSize: "20px" }} />;
     } else {
-      return <LoadingOutlined style={{ color: "blue" }} />;
+      return <LoadingOutlined style={{ color: "blue", fontSize: "20px" }} />;
     }
   };
   const chairmanApproved = async () => {
@@ -46,7 +55,7 @@ const ResubmitComponent = ({ data, role, setStatus, topicId, getReviewDoc }) => 
         topicId: topicId,
       });
       if (res && res.statusCode === 200) {
-        getReviewDoc()
+        getReviewDoc();
       }
     } catch (error) {
       console.log("====================================");
@@ -63,7 +72,7 @@ const ResubmitComponent = ({ data, role, setStatus, topicId, getReviewDoc }) => 
       };
       const res = await chairmanMakeFinalDecision(data);
       if (res && res.statusCode === 200) {
-        getReviewDoc()
+        getReviewDoc();
       } else {
         message.error("Vui lòng thử lại sau");
       }
@@ -87,7 +96,32 @@ const ResubmitComponent = ({ data, role, setStatus, topicId, getReviewDoc }) => 
       </>
     );
   };
-
+  const color = (items) => {
+    return items.isAccepted
+      ? "green"
+      : items.isAccepted === null
+      ? "processing"
+      : "error";
+  };
+  const icon = (items) => {
+    return items.isAccepted ? (
+      <FaAward />
+    ) : items.isAccepted === null ? (
+      <SyncOutlined spin />
+    ) : (
+      <CloseCircleOutlined />
+    );
+  };
+  const content = (items) => {
+    return items.isAccepted
+      ? "Thông qua"
+      : items.isAccepted === null
+      ? "Chưa đánh giá"
+      : "Không đồng ý";
+  };
+  console.log('====================================');
+  console.log("check role: ", role);
+  console.log('====================================');
   useEffect(() => {
     if (Object.keys(data).length === 0) return;
     const newData = data?.documents.map((items, index) => ({
@@ -107,11 +141,17 @@ const ResubmitComponent = ({ data, role, setStatus, topicId, getReviewDoc }) => 
           </div>
           <p>
             Quyết định của chủ tịch hội đồng:{" "}
-            {items.isAccepted
-              ? "Thông qua"
-              : items.isAccepted === null
-              ? "Chưa đánh giá"
-              : "Không đồng ý"}
+            {
+              <Tag
+                style={{
+                  fontSize: "13px",
+                }}
+                icon={icon(items)}
+                color={color(items)}
+              >
+                {content(items)}
+              </Tag>
+            }
             <br />
             <a target="_blank" href={items.feedbackFileLink}>
               File góp ý

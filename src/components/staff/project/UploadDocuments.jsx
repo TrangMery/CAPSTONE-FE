@@ -5,7 +5,16 @@ import {
   SearchOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { Button, Input, Space, Table, Tabs, Tooltip, message } from "antd";
+import {
+  Badge,
+  Button,
+  Input,
+  Space,
+  Table,
+  Tabs,
+  Tooltip,
+  message,
+} from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import "./project.scss";
@@ -16,6 +25,7 @@ import {
   getTopicUploadDoc,
   getTopicWaitingResubmit,
   moveToMiddleReport,
+  uploadAmount,
 } from "../../../services/api";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -33,7 +43,8 @@ const UploadDocument = () => {
   const [isModalContractOpen, setIsModalContractOpen] = useState(false);
   const [dataTopic, setDataTopic] = useState([]);
   const [checkTab, setCheckTab] = useState("confirm");
-
+  const [amoutConfirm, setAmoutConfirm] = useState(0);
+  const [amoutSubmitted, setAmoutSubmitted] = useState(0);
   const navigate = useNavigate();
   const getTopicUpload = async () => {
     try {
@@ -69,7 +80,12 @@ const UploadDocument = () => {
   const items = [
     {
       key: "confirm",
-      label: `Chờ biên bản`,
+      label: (
+        <Badge offset={[15, -2]} count={amoutConfirm}>
+          {" "}
+          Chờ biên bản{" "}
+        </Badge>
+      ),
       children: <></>,
     },
     {
@@ -79,7 +95,12 @@ const UploadDocument = () => {
     },
     {
       key: "submitted",
-      label: `Chờ hợp đồng`,
+      label: (
+        <Badge offset={[15, -2]} count={amoutSubmitted}>
+          {" "}
+          Chờ hợp đồng{" "}
+        </Badge>
+      ),
       children: <></>,
     },
   ];
@@ -151,7 +172,10 @@ const UploadDocument = () => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase().trim()),
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -296,7 +320,7 @@ const UploadDocument = () => {
     setSearchText(selectedKeys[0].trim());
     setSearchedColumn(dataIndex);
   };
-const handleReset = (clearFilters, confirm) => {
+  const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
     confirm();
@@ -311,8 +335,20 @@ const handleReset = (clearFilters, confirm) => {
     }
     console.log("parms: ", pagination, filters, sorter, extra);
   };
+  const uploadAmountApi = async () => {
+    try {
+      const res = await uploadAmount();
+      if (res && res.statusCode === 200) {
+        setAmoutConfirm(res.data.topicWaitingUploadContract);
+        setAmoutSubmitted(res.data.topicWaitingUploadMeetingMinutes);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
   useEffect(() => {
     getTopicUpload();
+    uploadAmountApi();
   }, []);
   return (
     <div>

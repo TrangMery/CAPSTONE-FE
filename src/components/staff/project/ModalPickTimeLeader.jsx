@@ -56,6 +56,8 @@ const ModalPickTimeLeader = (props) => {
   const [newTopicFiles, setFileList] = useState({});
   const [errorMessage, setError] = useState("");
   const location = useLocation();
+  const meetingStartTime = dayjs.utc(props.meetingTime.meetingStartTime);
+  const meetingEndTime = dayjs.utc(props.meetingTime.meetingEndTime);
   let path = location.pathname.split("/");
   let topicId = path[4];
   let checkTerm = path[2];
@@ -70,7 +72,10 @@ const ModalPickTimeLeader = (props) => {
   };
   const getMeetingRoomApi = async () => {
     try {
-      const res = await getMeetingRoom();
+      const res = await getMeetingRoom({
+        startTime: meetingStartTime,
+        endTime: meetingEndTime,
+      });
       if (res && res.statusCode === 200) {
         const newData = res.data.map((item) => ({
           value: item.roomId,
@@ -92,8 +97,7 @@ const ModalPickTimeLeader = (props) => {
     const item = room.find((item) => item.value === key);
     return item ? item.label : undefined;
   };
-  const meetingStartTime = dayjs.utc(props.meetingTime.meetingStartTime);
-  const meetingEndTime = dayjs.utc(props.meetingTime.meetingEndTime);
+
   const propsUpload = {
     name: "file",
     multiple: false,

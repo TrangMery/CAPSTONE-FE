@@ -592,6 +592,46 @@ export const createMeetingRoom = (data) => {
 };
 
 //admin get coference room
-export const getMeetingRoom = () => {
-  return axios.get("/api/room");
+export const getMeetingRoom = (param) => {
+  return axios.get(`/api/room?${qs.stringify(param)}`);
+};
+
+// staff get pre-and-early-statistic
+export const preAndEarlyStatistic = () => {
+  return axios.get("/api/topic/pre-and-early-statistic");
+};
+
+// staff get middle-statistic
+export const middleStatistic = () => {
+  return axios.get("/api/topic/middle-statistic");
+};
+
+// staff get middle-statistic
+export const finalStatistic = () => {
+  return axios.get("/api/topic/final-statistic");
+};
+
+// staff get middle-statistic
+export const endingStatistic = () => {
+  return axios.get("/api/topic/ending-phase-statistic");
+};
+
+// staff get pre-and-early-amout
+export const preAndEarlyAmount = () => {
+  return axios.get("/api/topic/pre-and-early-processed-amount");
+};
+
+// staff get middle-amout
+export const middleAmount = () => {
+  return axios.get("/api/topic/middle-processed-amount");
+};
+
+// staff get final-amout
+export const finalAmount = () => {
+  return axios.get("/api/topic/final-and-ending-processed-amount");
+};
+
+// staff get pre-and-early-amout
+export const uploadAmount = () => {
+  return axios.get("/api/topic/upload-paper-processed-amount");
 };

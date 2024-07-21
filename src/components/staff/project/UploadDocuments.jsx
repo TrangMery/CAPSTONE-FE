@@ -81,7 +81,7 @@ const UploadDocument = () => {
     {
       key: "confirm",
       label: (
-        <Badge offset={[15, -2]} count={amoutConfirm}>
+        <Badge offset={[15, -2]} count={amoutSubmitted}>
           {" "}
           Chờ biên bản{" "}
         </Badge>
@@ -96,7 +96,7 @@ const UploadDocument = () => {
     {
       key: "submitted",
       label: (
-        <Badge offset={[15, -2]} count={amoutSubmitted}>
+        <Badge offset={[15, -2]} count={amoutConfirm}>
           {" "}
           Chờ hợp đồng{" "}
         </Badge>

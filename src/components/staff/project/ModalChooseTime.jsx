@@ -72,7 +72,7 @@ const ModalTime = (props) => {
   const error = () => {
     Modal.error({
       title: "Tạo thành viên không thành công",
-      content: "Số lượng nhà không học không đủ để tạo hội đồng",
+      content: "Số lượng nhà khoa học không đủ để tạo hội đồng",
     });
   };
   const handleSubmit = async () => {

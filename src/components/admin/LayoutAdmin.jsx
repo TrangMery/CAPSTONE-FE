@@ -1,6 +1,7 @@
 import {
   AppstoreOutlined,
   CalendarOutlined,
+  ClusterOutlined,
   DownOutlined,
   FileOutlined,
   FolderAddOutlined,
@@ -61,6 +62,11 @@ const items = [
         label: <Link to="/admin/contract">Hợp đồng</Link>,
         key: "contract",
         icon: <FolderOutlined />,
+      },
+      {
+        label: <Link to="/admin/meeting-room">Phòng họp</Link>,
+        key: "meeting-room",
+        icon: <ClusterOutlined />,
       },
     ],
   },

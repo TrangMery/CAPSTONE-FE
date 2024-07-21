@@ -30,6 +30,7 @@ import AddCouncil from "./components/staff/project/AddCouncil.jsx";
 import ViewTopic from "./components/staff/project/ViewTopicCompleted.jsx";
 import RegisterProject from "./components/user/registerProject/RegisterProject";
 import ManagerSyndicate from "./pages/syndicate/index.jsx";
+import ManagerMeetingRoom from "./components/admin/ManagerMeetingRoom.jsx";
 
 const Layout = () => {
   return <LoginPage />;
@@ -207,6 +208,10 @@ function App() {
         {
           path: "contract",
           element: <ManagerContractType />,
+        },
+        {
+          path: "meeting-room",
+          element: <ManagerMeetingRoom/>,
         },
         {
           path: "add-holiday",

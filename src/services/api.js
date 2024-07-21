@@ -588,7 +588,7 @@ export const configCancelHour = (param) => {
 
 //admin config coference room
 export const createMeetingRoom = (data) => {
-  return axios.get("/api/room", data);
+  return axios.post("/api/room", data);
 };
 
 //admin get coference room

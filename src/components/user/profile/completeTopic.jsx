@@ -126,7 +126,7 @@ const CompletedTopic = () => {
         <h2 style={{ fontWeight: "bold", fontSize: "20px", color: "#303972" }}>
           Danh sách các đề tài đã hoàn thành
         </h2>
-        <ConfigProvider
+        {/* <ConfigProvider
           theme={{
             token: {
               colorPrimary: "#55E6A0",
@@ -141,7 +141,7 @@ const CompletedTopic = () => {
           >
             Xuất hồ sơ cá nhân
           </Button>
-        </ConfigProvider>
+        </ConfigProvider> */}
       </div>
     </div>
   );

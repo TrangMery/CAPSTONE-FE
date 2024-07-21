@@ -59,7 +59,7 @@ const Login = () => {
               onFinish={onFinish}
               className="sign-in-form"
             >
-              <h2 className="title">SRMS</h2>
+              <h2 className="title">RMS</h2>
               <Form.Item
                 name="email"
                 rules={[
@@ -98,7 +98,7 @@ const Login = () => {
           <div className="panel left-panel">
             <div className="content">
               <p>
-                Hệ thống SRMS là hệ thống đăng ký, quản lí đề tài và lưu trữ
+                Hệ thống RMS là hệ thống đăng ký, quản lí đề tài và lưu trữ
                 thông tin.
               </p>
             </div>

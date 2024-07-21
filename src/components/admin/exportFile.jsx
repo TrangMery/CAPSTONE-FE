@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tooltip, Tag } from "antd";
-import { ExportOutlined } from "@ant-design/icons";
-import { getTopicCompleted } from "../../services/api";
-
+import { Table, Tooltip, message, Row, Col } from "antd";
+import { CloudDownloadOutlined, ExportOutlined } from "@ant-design/icons";
+import { exportFileAmdin, getTopicCompleted } from "../../services/api";
+import TopicSearchForm from "./TopicSearch";
 const ExportFile = () => {
   const [loading, setLoading] = useState(false);
   const [listTopic, setListTopic] = useState();
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-
+  const [filters, setFilters] = useState("");
   const getTopicComplete = async () => {
     try {
       setLoading(true);
-      const res = await getTopicCompleted();
-      console.log(res);
+      const res = await getTopicCompleted(filters);
       if (res && res.statusCode === 200) {
         setListTopic(res.data.topics);
         setLoading(false);
@@ -27,19 +26,25 @@ const ExportFile = () => {
 
   // edit working process
   const handleExport = async (topicId) => {
+    setLoading(true);
     try {
-      const data = {
+      const res = await exportFileAmdin({
         topicId: topicId,
-      };
-      // const res = await assignDeanByAdmin(data);
-      // if (res && res.statusCode === 200) {
-      //   message.success("Xuất file thành công");
-      //   getTopicComplete();
-      // }
+      });
+      if (res && res.statusCode === 200) {
+        setLoading(false);
+        const link = document.createElement("a");
+        link.href = res.data;
+        link.setAttribute("download", "");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } else {
+        setLoading(false);
+        message.error("Vui lòng thử lại sau");
+      }
     } catch (error) {
-      console.log("====================================");
-      console.log("Có lỗi tại đăng kí dean");
-      console.log("====================================");
+      console.log("Error tại xuất file admin: ", error);
     }
   };
   const columns = [
@@ -52,14 +57,12 @@ const ExportFile = () => {
       dataIndex: "topicName",
     },
     {
-      title: "Loại đề tài",
-      dataIndex: "categoryName",
+      title: "Chủ nhiệm đề tài",
+      dataIndex: "leaderName",
     },
     {
-      title: "Trạng thái",
-      render: (text, record, index) => {
-        return <Tag color="green">Đã hoàn thành</Tag>;
-      },
+      title: "Lĩnh vực ",
+      dataIndex: "categoryName",
     },
     {
       title: "Hành động",
@@ -73,7 +76,7 @@ const ExportFile = () => {
         return (
           <div>
             <Tooltip placement="top" title="Xuất file tổng kết">
-              <ExportOutlined
+              <CloudDownloadOutlined
                 onClick={() => handleExport(record.topicId)}
                 style={style1}
               />
@@ -84,6 +87,9 @@ const ExportFile = () => {
       align: "center",
     },
   ];
+  const handleSearchTopic = (query) => {
+    setFilters(query);
+  };
   const renderHeader = () => (
     <div>
       <div
@@ -93,8 +99,7 @@ const ExportFile = () => {
           alignItems: "center",
         }}
       >
-        {" "}
-        <h2 style={{ fontWeight: "bold", fontSize: "30px", color: "#303972" }}>
+        <h2 style={{ fontWeight: "bold", fontSize: "20px", color: "#303972" }}>
           Danh sách đề tài đã hoàn thành
         </h2>
       </div>
@@ -103,7 +108,7 @@ const ExportFile = () => {
 
   useEffect(() => {
     getTopicComplete();
-  }, []);
+  }, [filters]);
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination.current !== current) {
       setCurrent(pagination.current);
@@ -112,31 +117,37 @@ const ExportFile = () => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
-    console.log("parms: ", pagination, filters, sorter, extra);
   };
   return (
-    <div>
-      <Table
-        title={renderHeader}
-        columns={columns}
-        dataSource={listTopic}
-        loading={loading}
-        onChange={onChange}
-        pagination={{
-          current: current,
-          pageSize: pageSize,
-          showSizeChanger: true,
-          pageSizeOptions: ["7", "10", "15"],
-          showTotal: (total, range) => {
-            return (
-              <div>
-                {range[0]} - {range[1]} on {total} rows
-              </div>
-            );
-          },
-        }}
-      />
-    </div>
+    <>
+      <Row gutter={[24, 24]}>
+        <Col span={24}>
+          <TopicSearchForm handleSearchTopic={handleSearchTopic} />
+        </Col>
+        <Col span={24}>
+          <Table
+            title={renderHeader}
+            columns={columns}
+            dataSource={listTopic}
+            loading={loading}
+            onChange={onChange}
+            pagination={{
+              current: current,
+              pageSize: pageSize,
+              showSizeChanger: true,
+              pageSizeOptions: ["7", "10", "15"],
+              showTotal: (total, range) => {
+                return (
+                  <div>
+                    {range[0]} - {range[1]} tên {total} hàng
+                  </div>
+                );
+              },
+            }}
+          />
+        </Col>
+      </Row>
+    </>
   );
 };
 export default ExportFile;

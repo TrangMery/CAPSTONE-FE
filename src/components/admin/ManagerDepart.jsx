@@ -19,7 +19,7 @@ import {
 import { updateDepartmentByAdmin, getAllDepartment } from "../../services/api";
 import DepartmentModal from "./departmentModal";
 import "./department.scss";
-import * as XLSX from "xlsx";
+import * as ExcelJS from "exceljs";
 const EditableCell = ({
   editing,
   dataIndex,
@@ -107,15 +107,72 @@ const ManagerDepartment = () => {
       console.log("====================================");
     }
   };
+
   const handleDelete = () => {};
-  const exportFile = () => {
+  const exportFile = async () => {
     if (listDepartment.length > 0) {
-      const worksheet = XLSX.utils.json_to_sheet(listDepartment);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-      //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
-      //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
-      XLSX.writeFile(workbook, "Department.xlsx");
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Sheet1");
+
+      // Định dạng cho header
+      const headerStyle = {
+        font: { bold: true, color: { argb: "FFFFFFFF" } },
+        fill: {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF42BC81" },
+        },
+        alignment: { horizontal: "center", vertical: "middle" },
+        border: {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        },
+      };
+
+      // Các tiêu đề
+      const headers = ["Mã khoa", "Tên khoa"];
+
+      // Áp dụng tiêu đề và định dạng
+      worksheet.addRow(headers).eachCell((cell, colNumber) => {
+        cell.font = headerStyle.font;
+        cell.fill = headerStyle.fill;
+        cell.alignment = headerStyle.alignment;
+        cell.border = headerStyle.border;
+      });
+      worksheet.columns = [
+        { header: "Mã khoa", key: "acronym", width: 10 },
+        { header: "Tên khoa", key: "departmentName", width: 30 },
+      ];
+      listDepartment.forEach((data, index) => {
+        const rowIndex = index + 2; // Bắt đầu từ hàng thứ hai (sau header)
+        worksheet.addRow({
+          acronym: data.acronym,
+          departmentName: data.departmentName,
+        });
+      });
+
+      const file = await workbook.xlsx.writeBuffer();
+
+      // Xuất file ra
+      const downloadLink = document.createElement("a");
+      downloadLink.download = "Danh_sach_cac_khoa.xlsx"; // File name
+      downloadLink.href = window.URL.createObjectURL(
+        new Blob([file], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        })
+      );
+      downloadLink.style.display = "none";
+
+      // Add the link to DOM
+      document.body.appendChild(downloadLink);
+
+      // "Click" the link
+      downloadLink.click();
+
+      // Remove the link from the DOM
+      downloadLink.remove();
     } else {
       message.error("Không có dữ liệu để xuất");
     }
@@ -123,8 +180,7 @@ const ManagerDepartment = () => {
   const columns = [
     {
       title: "Mã Khoa",
-      dataIndex: "departmentId",
-      width: "30%",
+      dataIndex: "acronym",
     },
     {
       title: "Khoa",
@@ -262,7 +318,7 @@ const ManagerDepartment = () => {
             showTotal: (total, range) => {
               return (
                 <div>
-                  {range[0]} - {range[1]} on {total} rows
+                  {range[0]} - {range[1]} tên {total} hàng
                 </div>
               );
             },

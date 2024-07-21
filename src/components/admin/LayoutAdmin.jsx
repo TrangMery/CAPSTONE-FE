@@ -1,4 +1,5 @@
 import {
+  AppstoreOutlined,
   CalendarOutlined,
   DownOutlined,
   FileOutlined,
@@ -42,19 +43,26 @@ const items = [
   //   icon: <CalendarOutlined />,
   // },
   {
-    label: <Link to="/admin/add-department">Quản lý các khoa</Link>,
-    key: "add-department",
-    icon: <SolutionOutlined />,
-  },
-  {
-    label: <Link to="/admin/file">Quản lý tài liệu</Link>,
-    key: "file",
-    icon: <FileOutlined />,
-  },
-  {
-    label: <Link to="/admin/contract">Quản lý hợp đồng</Link>,
-    key: "contract",
-    icon: <FolderOutlined />,
+    label: <span>Quản lý</span>,
+    key: "manager",
+    icon: <AppstoreOutlined />,
+    children: [
+      {
+        label: <Link to="/admin/file">Tài liệu</Link>,
+        key: "file",
+        icon: <CalendarOutlined />,
+      },
+      {
+        label: <Link to="/admin/add-department">Các khoa</Link>,
+        key: "add-department",
+        icon: <SolutionOutlined />,
+      },
+      {
+        label: <Link to="/admin/contract">Hợp đồng</Link>,
+        key: "contract",
+        icon: <FolderOutlined />,
+      },
+    ],
   },
   {
     label: <Link to="/admin/export-file">Xuất file báo cáo</Link>,
@@ -73,18 +81,10 @@ const LayoutAdmin = () => {
     message.success("Đăng xuất thành công");
     navigate("/login");
     localStorage.removeItem("token");
-    localStorage.removeItem("userId");
+    sessionStorage.removeItem("userId");
   };
   const name = jwtDecode(localStorage.getItem("token")).role;
   const itemDropdown = [
-    {
-      label: <label>Account Manager</label>,
-      key: "account",
-    },
-    {
-      label: <a href="/">Trang chủ</a>,
-      key: "homepage",
-    },
     {
       label: (
         <label style={{ cursor: "pointer" }} onClick={() => handleLogout()}>

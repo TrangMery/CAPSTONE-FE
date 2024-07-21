@@ -101,7 +101,7 @@ const FileModal = (props) => {
                     },
                     {
                       value: "1",
-                      label: "Đầu kỳ",
+                      label: "Đề cương",
                     },
                     {
                       value: "2",

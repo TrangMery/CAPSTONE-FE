@@ -20,7 +20,7 @@ const ModalReject = (props) => {
   const [isSubmit, setIsSubmit] = useState(false);
   const location = useLocation();
   const data = props.data;
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const handleOk = () => {
     form.submit();
   };

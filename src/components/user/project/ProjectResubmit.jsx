@@ -1,13 +1,11 @@
 import {
-  CheckOutlined,
-  CloseOutlined,
+  EyeOutlined,
   FileSyncOutlined,
-  FundViewOutlined,
+  FormOutlined,
   InfoCircleOutlined,
-  ScheduleOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Button, Input, Space, Table, Tabs, Tag } from "antd";
+import { Badge, Button, Input, Space, Table, Tabs, Tag, Tooltip } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import "../../staff/project/project.scss";
@@ -20,10 +18,7 @@ import {
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import ModalInfor from "./ModalInfor";
-import ModalInforMeeting from "./ModalMeeting";
 dayjs.extend(customParseFormat);
-const dateFormat = "DD/MM/YYYY";
-// import ModalInfor from "../../modalInfor.jsx";
 const ProjectResubmit = () => {
   const navigate = useNavigate();
   const [current, setCurrent] = useState(1);
@@ -31,10 +26,9 @@ const ProjectResubmit = () => {
   const [data, setDataUser] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalInforOpen, setIsModalInforOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("notyet");
-  const [dataTopicDoneForCouncil, setdataTopicDoneForCouncil] = useState([]);
   const [dataTopicForCouncil, setdataTopicForCouncil] = useState([]);
+  const userId = sessionStorage.getItem("userId");
   const items = [
     {
       key: "notyet",
@@ -63,7 +57,6 @@ const ProjectResubmit = () => {
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -84,16 +77,16 @@ const ProjectResubmit = () => {
               width: 90,
             }}
           >
-            Search
+            Tìm kiếm
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{
               width: 90,
             }}
           >
-            Reset
+            Xóa
           </Button>
           <Button
             type="link"
@@ -102,7 +95,7 @@ const ProjectResubmit = () => {
               close();
             }}
           >
-            close
+            Đóng
           </Button>
         </Space>
       </div>
@@ -115,7 +108,7 @@ const ProjectResubmit = () => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -158,8 +151,8 @@ const ProjectResubmit = () => {
       render: (text, record, index) => {
         return (
           <>
-            {record.state === "EarlytermReport"
-              ? "Đăng kí đề tài"
+            {record.state === "EarlyTermReport"
+              ? "Đăng ký đề tài"
               : record.state === "MidtermReport"
               ? "Báo cáo giữa kỳ"
               : "Báo cáo cuối kỳ"}
@@ -168,11 +161,9 @@ const ProjectResubmit = () => {
       },
     },
     {
-      title: "Ngày",
-      render: (text, record, index) => {
-        return <div>{dayjs(record.createdAt).format(dateFormat)}</div>;
-      },
-      key: "createdAt",
+      title: "Chủ tịch hội đồng",
+      dataIndex: "chairmanName",
+      key: "chairmanName",
     },
     {
       title: "Hành động",
@@ -188,6 +179,12 @@ const ProjectResubmit = () => {
           margin: "0 10px",
           cursor: "pointer",
         };
+        const style3 = {
+          color: "blue",
+          fontSize: "1.7em",
+          margin: "0 10px",
+          cursor: "pointer",
+        };
         const color = record.ChairmanDecision ? "green" : "red";
         const status = record.ChairmanDecision ? "Đồng ý" : "Từ chối";
         return (
@@ -199,37 +196,51 @@ const ProjectResubmit = () => {
                 setDataUser(record);
               }}
             />
-            <ScheduleOutlined
-              onClick={() => {
-                setIsModalInforOpen(true);
-                setDataUser(record);
-              }}
-              style={style2}
-            />
             {record.hasResultFile && (
-              <FileSyncOutlined
-                onClick={() => {
-                  navigate(`/user/review/review-topic/${record.topicId}`);
-                }}
-                style={style1}
-              />
-            )}
-            {activeTab == "done" &&
-              dataTopicDoneForCouncil &&
-              dataTopicDoneForCouncil.length > 0 && (
-                <>
-                  <Tag
-                    style={{
-                      marginLeft: "10px",
-                      fontSize: "13px",
-                      padding: "5px 8px",
-                    }}
-                    color={color}
+              <Tooltip
+                title={
+                  record.isChairman === true
+                    ? "Phê duyệt tài liệu chỉnh sửa"
+                    : "Xem đề tài"
+                }
+              >
+                {record.isChairman === true ? (
+                  <Badge
+                    dot={record.hasResultFile}
+                    status="processing"
+                    offset={[-2, -1]}
                   >
-                    {status}
-                  </Tag>
-                </>
-              )}
+                    <FormOutlined
+                      onClick={() => {
+                        navigate(`/user/review/review-topic/${record.topicId}`);
+                      }}
+                      style={style2}
+                    />
+                  </Badge>
+                ) : (
+                  <EyeOutlined
+                    onClick={() => {
+                      navigate(`/user/review/review-topic/${record.topicId}`);
+                    }}
+                    style={style3}
+                  />
+                )}
+              </Tooltip>
+            )}
+            {activeTab == "done" && (
+              <>
+                <Tag
+                  style={{
+                    marginLeft: "10px",
+                    fontSize: "13px",
+                    padding: "5px 8px",
+                  }}
+                  color={color}
+                >
+                  {status}
+                </Tag>
+              </>
+            )}
           </div>
         );
       },
@@ -255,36 +266,50 @@ const ProjectResubmit = () => {
     </div>
   );
   const getTopicForCouncil = async () => {
-    const res = await getTopicForCouncilMeeting({
-      councilId: "7dc9eb1d-3b80-434b-9b7e-85dd78e5011d", // Lâm Văn Q
-    });
-    if (res && res?.data) {
-      setdataTopicForCouncil(res.data);
+    try {
+      setIsLoading(true);
+      const res = await getTopicForCouncilMeeting({
+        councilId: userId,
+      });
+      if (res && res.statusCode === 200) {
+        setIsLoading(false);
+        const newData = res.data.map((items) => {
+          return { ...items, isChairman: items.chairmanId === userId };
+        });
+        setdataTopicForCouncil(newData);
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("có lỗi tại getTopicForCouncil", error);
+      console.log("====================================");
     }
   };
   const getTopicDoneForCouncil = async () => {
-    const res = await getReviewDocumentsDone({
-      councilId: "7dc9eb1d-3b80-434b-9b7e-85dd78e5011d", // Lâm Văn Q
-    });
-    if (res && res?.data) {
-      setdataTopicDoneForCouncil(res.data);
-    }
+    try {
+      const res = await getReviewDocumentsDone({
+        councilId: userId,
+      });
+      if (res && res?.data) {
+        setdataTopicForCouncil(res.data);
+      }
+    } catch (error) {}
   };
   useEffect(() => {
     getTopicForCouncil();
-  }, [activeTab]);
+  }, []);
   //search
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    setSearchText(selectedKeys[0]);
+    setSearchText(selectedKeys[0].trim());
     setSearchedColumn(dataIndex);
   };
-  const handleReset = (clearFilters) => {
+const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
+    confirm();
   };
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination.current !== current) {
@@ -299,7 +324,7 @@ const ProjectResubmit = () => {
   return (
     <div>
       <h2 style={{ fontWeight: "bold", fontSize: "30px", color: "#303972" }}>
-        Theo dõi góp ý đề tài
+        Đề tài đang tham gia hội đồng
       </h2>
       <Table
         rowClassName={(record, index) =>
@@ -315,13 +340,6 @@ const ProjectResubmit = () => {
           pageSize: pageSize,
           showSizeChanger: true,
           pageSizeOptions: ["5", "10", "15"],
-          showTotal: (total, range) => {
-            return (
-              <div>
-                {range[0]} - {range[1]} on {total} rows
-              </div>
-            );
-          },
         }}
         title={renderHeader}
         loading={isLoading}
@@ -330,11 +348,6 @@ const ProjectResubmit = () => {
         data={data}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
-      />
-      <ModalInforMeeting
-        data={data}
-        isModalOpen={isModalInforOpen}
-        setIsModalOpen={setIsModalInforOpen}
       />
     </div>
   );

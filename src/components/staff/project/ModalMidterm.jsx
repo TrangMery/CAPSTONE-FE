@@ -66,7 +66,7 @@ const ModalMidTerm = (props) => {
       console.log("====================================");
     }
   };
-  
+
   const propsUpload = {
     name: "file",
     multiple: false,
@@ -128,10 +128,10 @@ const ModalMidTerm = (props) => {
       return true;
     }
     // Get today's date
-    const mindate = dayjs().add(1, "day");
+    const mindate = dayjs();
 
     // Disable dates before today
-    if (current.isBefore(mindate, "day")) {
+    if (current.isBefore(mindate, "day") || current.isSame(mindate, "day")) {
       return true;
     }
     // Disable holidays

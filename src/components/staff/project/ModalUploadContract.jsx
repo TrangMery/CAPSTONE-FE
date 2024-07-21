@@ -88,7 +88,8 @@ const ModalUploadContract = (props) => {
       try {
         const isCompressedFile =
           file.type === "application/x-rar-compressed" ||
-          file.type === "application/x-zip-compressed";
+          file.type === "application/x-zip-compressed" ||
+          file.type === "application/x-compressed";
         if (!isCompressedFile) {
           message.error(
             "Chỉ được phép tải lên các file đã nén (zip hoặc rar)!"

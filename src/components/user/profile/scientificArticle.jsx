@@ -9,7 +9,7 @@ const ScientificArticle = () => {
   const [listProduct, setListProduct] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
-  const UserId = localStorage.getItem("userId");
+  const UserId = sessionStorage.getItem("userId");
   const [currentPage, setCurrentPage] = useState(1);
   const [product, setProduct] = useState();
   const itemsPerPage = 3;
@@ -50,7 +50,7 @@ const ScientificArticle = () => {
       {listProduct?.length === 0 ? (
         <Empty
           style={{ marginTop: 100 }}
-          description={<span>Chưa có bài báo khoa học</span>}
+          description={<span>Chưa có bài báo chuyên đề</span>}
         />
       ) : (
         <Col md={18} xs={24}>

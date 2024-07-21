@@ -4,14 +4,14 @@ import ScientificArticle from "./scientificArticle";
 import CompletedTopic from "./completeTopic";
 const ProductPage = () => {
   const items = [
+    // {
+    //   key: "1",
+    //   label: "Bài báo và báo cáo",
+    //   children: <ScientificArticle />,
+    // },
     {
       key: "1",
-      label: "Bài báo khoa học",
-      children: <ScientificArticle />,
-    },
-    {
-      key: "2",
-      label: "Đề tài đã tham gia",
+      label: "Đề tài đã hoàn thành",
       children: <CompletedTopic/>,
     },
   ];

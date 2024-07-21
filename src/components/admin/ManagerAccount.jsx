@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button, Space, Table, Tabs, Tag, Tooltip, message } from "antd";
+import { Button, Table, Tooltip, message } from "antd";
 import { CloudDownloadOutlined, EditOutlined } from "@ant-design/icons";
-import {
-  assignDeanByAdmin,
-  getAllUserAdmin,
-} from "../../services/api";
+import { assignDeanByAdmin, getAllUserAdmin } from "../../services/api";
 import UploadByFile from "./modalUploadUser";
 
 const ManagerAccount = () => {
@@ -13,12 +10,13 @@ const ManagerAccount = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-
+  const [totalUsers, setTotalUsers] = useState(0);
   const getUser = async () => {
     try {
       setLoading(true);
       const res = await getAllUserAdmin();
       if (res && res.statusCode === 200) {
+        setTotalUsers(res.data.length);
         setListUser(res.data);
         setLoading(false);
       }
@@ -51,10 +49,7 @@ const ManagerAccount = () => {
       title: "Email",
       dataIndex: "accountEmail",
     },
-    {
-      title: "Khoa",
-      dataIndex: "departmentName",
-    },
+
     {
       title: "Họ và tên",
       dataIndex: "fullName",
@@ -62,6 +57,10 @@ const ManagerAccount = () => {
     {
       title: "Số điện thoại",
       dataIndex: "phoneNumber",
+    },
+    {
+      title: "Khoa",
+      dataIndex: "departmentName",
     },
     {
       title: "Vai trò",
@@ -115,6 +114,13 @@ const ManagerAccount = () => {
           Nhập người dùng
         </Button>
       </div>
+      {totalUsers === 0 ? (
+        <p style={{ fontSize: "large" }}> Chưa có tài khoản nào </p>
+      ) : (
+        <p style={{ fontSize: "large" }}>
+          Có {totalUsers} tài khoản đang hoạt động
+        </p>
+      )}
     </div>
   );
 
@@ -147,7 +153,7 @@ const ManagerAccount = () => {
           showTotal: (total, range) => {
             return (
               <div>
-                {range[0]} - {range[1]} on {total} rows
+                {range[0]} - {range[1]} tên {total} hàng
               </div>
             );
           },

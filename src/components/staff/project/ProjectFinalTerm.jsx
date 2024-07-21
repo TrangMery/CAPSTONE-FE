@@ -1,17 +1,21 @@
 import {
   CalendarOutlined,
   InfoCircleOutlined,
+  MinusCircleOutlined,
   SearchOutlined,
   UploadOutlined,
   UsergroupAddOutlined,
 } from "@ant-design/icons";
 import {
+  Badge,
   Button,
   ConfigProvider,
   Input,
+  Popconfirm,
   Space,
   Table,
   Tabs,
+  Tag,
   Tooltip,
 } from "antd";
 import React, { useEffect, useRef, useState } from "react";
@@ -23,10 +27,13 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
 import {
+  finalAmount,
   getFinalTerm,
   getFinalTermReport,
   getTopicHasSubmitFileMoney,
+  staffCancelCouncil,
   topicFinalTearmCreatedDeadline,
+  topicWaitingMeeting,
 } from "../../../services/api";
 import ModalMidTerm from "./ModalMidterm";
 import { useNavigate } from "react-router-dom";
@@ -43,12 +50,18 @@ const ProjectManagerFinalTerm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalFinalOpen, setIsModalFinalOpen] = useState(false);
   const [isModalCouncilOpen, setIsModalCouncilOpen] = useState(false);
-
-  const navigate = useNavigate();
+  const [amoutNotYet, setAmoutNotYet] = useState(0);
+  const [amoutWait, setAmoutWait] = useState(0);
+  const [amoutFinal, setAmoutFinal] = useState(0);
   const items = [
     {
       key: "notyet",
-      label: `Chưa tạo lịch báo cáo`,
+      label: (
+        <Badge offset={[15, -2]} count={amoutNotYet}>
+          {" "}
+          Chưa tạo lịch báo cáo{" "}
+        </Badge>
+      ),
       children: <></>,
     },
     {
@@ -58,12 +71,27 @@ const ProjectManagerFinalTerm = () => {
     },
     {
       key: "taohoidong",
-      label: `Thêm thành viên hội đồng`,
+      label: (
+        <Badge offset={[15, -2]} count={amoutWait}>
+          {" "}
+          Thêm thành viên hội đồng{" "}
+        </Badge>
+      ),
+      children: <></>,
+    },
+    {
+      key: "dataohoidong",
+      label: `Đã tạo hội đồng`,
       children: <></>,
     },
     {
       key: "tongket",
-      label: `Tổng kết đề tài`,
+      label: (
+        <Badge offset={[15, -2]} count={amoutFinal}>
+          {" "}
+          Tổng kết đề tài{" "}
+        </Badge>
+      ),
       children: <></>,
     },
   ];
@@ -83,7 +111,7 @@ const ProjectManagerFinalTerm = () => {
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Tìm kiếm`}
           value={selectedKeys[0]}
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -104,16 +132,16 @@ const ProjectManagerFinalTerm = () => {
               width: 90,
             }}
           >
-            Search
+            Tìm kiếm
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{
               width: 90,
             }}
           >
-            Reset
+            Xóa tìm kiếm
           </Button>
           <Button
             type="link"
@@ -122,7 +150,7 @@ const ProjectManagerFinalTerm = () => {
               close();
             }}
           >
-            close
+            Đóng
           </Button>
         </Space>
       </div>
@@ -135,7 +163,10 @@ const ProjectManagerFinalTerm = () => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -178,7 +209,11 @@ const ProjectManagerFinalTerm = () => {
     },
     {
       title:
-        checkTab === "notyet" ? "Ngày kết thúc giữa kỳ" : "Hạn nộp tài liệu",
+        checkTab === "notyet"
+          ? "Ngày kết thúc giữa kỳ"
+          : checkTab === "dataohoidong"
+          ? "Ngày họp"
+          : "Hạn nộp tài liệu",
       render: (text, record, index) => {
         if (checkTab === "notyet") {
           return <div>{dayjs(record.uploadEvaluateAt).format(dateFormat)}</div>;
@@ -188,6 +223,10 @@ const ProjectManagerFinalTerm = () => {
               {dayjs(record.supplementationDeadline).format(dateFormat)}
             </div>
           );
+        } else if (checkTab === "dataohoidong") {
+          return (
+            <div>{dayjs(record.meetingTime).format("DD/MM/YYYY HH:mm")}</div>
+          );
         }
         return (
           <div>
@@ -196,6 +235,31 @@ const ProjectManagerFinalTerm = () => {
         );
       },
       key: "createdAt",
+    },
+    {
+      title: "Loại đề tài",
+      sorter: (a, b) => {
+        if (a.topicType < b.topicType) return -1;
+        if (a.topicType > b.topicType) return 1;
+        return 0;
+      },
+      render: (text, record, index) => {
+        const content =
+          record.topicType === "Internal" ? "Nội Khoa" : "Ngoại Khoa";
+        const color =
+          record.topicType === "Internal" ? "success" : "processing";
+        return (
+          <Tag
+            style={{
+              fontSize: "13px",
+            }}
+            color={color}
+          >
+            {content}
+          </Tag>
+        );
+      },
+      align: "center",
     },
     {
       title: "Hành động",
@@ -249,6 +313,26 @@ const ProjectManagerFinalTerm = () => {
                     Tạo hội đồng
                   </UsergroupAddOutlined>
                 </Tooltip>
+              )}
+              {checkTab === "dataohoidong" && (
+                <Popconfirm
+                  title="Hủy hội đồng"
+                  description="Bạn có chắc chắn hủy hội đồng"
+                  onConfirm={() => cancelCouncil(record.topicId)}
+                  okText="Hủy"
+                  cancelText="Quay lại"
+                >
+                  <Tooltip placement="bottom" title={"Hủy hội đồng"}>
+                    <MinusCircleOutlined
+                      style={{
+                        fontSize: "20px",
+                        color: "red",
+                        margin: "0 10px",
+                      }}
+                      type="primary"
+                    />
+                  </Tooltip>
+                </Popconfirm>
               )}
               {checkTab === "tongket" && (
                 <>
@@ -320,13 +404,52 @@ const ProjectManagerFinalTerm = () => {
       console.log("có lỗi tại getTopicFinalTerm: " + error);
     }
   };
+  const getTopicHadCreateCouncil = async () => {
+    try {
+      const res = await topicWaitingMeeting({
+        state: 3,
+      });
+      if (res && res?.data) {
+        setData(res.data);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
+  const cancelCouncil = async (topicId) => {
+    try {
+      const data = {
+        topicId: topicId,
+      };
+      const res = await staffCancelCouncil(data);
+      if (res && res.statusCode === 200) {
+        setCheckTab("taohoidong");
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
+  const finalAmountApi = async () => {
+    try {
+      const res = await finalAmount();
+      if (res && res.statusCode === 200) {
+        setAmoutNotYet(res.data.topicWaitingMakeReviewSchedule);
+        setAmoutWait(res.data.topicWaitingConfigureConference);
+        setAmoutFinal(res.data.endingTopicWaitingUploadContract);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
   useEffect(() => {
     getTopicFinalTerm();
+    finalAmountApi();
   }, [isModalOpen]);
   const renderHeader = () => (
     <div>
       <Tabs
         defaultActiveKey="notyet"
+        activeKey={checkTab}
         items={items}
         onChange={(value) => {
           setCheckTab(value);
@@ -336,6 +459,8 @@ const ProjectManagerFinalTerm = () => {
             getHasCreateDeadline();
           } else if (value === "tongket") {
             getTopicSumarizeTerm();
+          } else if (value === "dataohoidong") {
+            getTopicHadCreateCouncil();
           } else {
             getTopicWaitCouncil();
           }
@@ -350,12 +475,13 @@ const ProjectManagerFinalTerm = () => {
   const searchInput = useRef(null);
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    setSearchText(selectedKeys[0]);
+    setSearchText(selectedKeys[0].trim());
     setSearchedColumn(dataIndex);
   };
-  const handleReset = (clearFilters) => {
+  const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
+    confirm();
   };
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination.current !== current) {
@@ -366,6 +492,13 @@ const ProjectManagerFinalTerm = () => {
       setCurrent(1);
     }
     console.log("parms: ", pagination, filters, sorter, extra);
+  };
+  const locale = {
+    // Tùy chỉnh thông báo sắp xếp
+    sortTitle: "Sắp xếp theo loại đề tài",
+    triggerDesc: "Đề tài Nội Khoa",
+    triggerAsc: "Đề tài Ngoại Khoa",
+    cancelSort: "Hủy sắp xếp",
   };
   return (
     <div>
@@ -389,13 +522,14 @@ const ProjectManagerFinalTerm = () => {
           showTotal: (total, range) => {
             return (
               <div>
-                {range[0]} - {range[1]} on {total} rows
+                {range[0]} - {range[1]} tên {total} hàng
               </div>
             );
           },
         }}
         title={renderHeader}
         loading={isLoading}
+        locale={locale}
       />
 
       <ModalInfor

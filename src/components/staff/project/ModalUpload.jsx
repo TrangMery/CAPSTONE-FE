@@ -13,6 +13,7 @@ import {
   message,
   Radio,
   Space,
+  Checkbox,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -33,8 +34,9 @@ dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
 
 const ModalUpload = (props) => {
+  const data = props.data;
   const isModalOpen = props.isModalOpen;
-  const today = dayjs().add(1, "day");
+  const today = dayjs(data.meetingTime).add(1, "day");
   const maxDate = dayjs().add(14, "day");
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
@@ -43,9 +45,9 @@ const ModalUpload = (props) => {
   const [reviewMidtearm, setReviewMidtearm] = useState(null);
   const [meetingDate, setMeetingDate] = useState(today);
   const [errorMessage, setError] = useState("");
-  const data = props.data;
   const state = data.state === "MidtermReport" ? true : false;
   const navigate = useNavigate();
+  const plainOptions = ["Lý do nộp lại", "Nội dung yêu cầu chỉnh sửa"];
   const handleOk = () => {
     form.submit();
   };
@@ -55,7 +57,6 @@ const ModalUpload = (props) => {
     setFileList({});
     form.resetFields();
   };
-
   const onSubmit = async (values) => {
     if (Object.values(newTopicFiles).length === 0) {
       message.error("Xin hãy tải biên bản cuộc họp lên");
@@ -185,6 +186,9 @@ const ModalUpload = (props) => {
   const handleDateChange = (date) => {
     setMeetingDate(date);
   };
+  const onChange = (checkedValues) => {
+    console.log("checked = ", checkedValues);
+  };
   return (
     <>
       <Modal
@@ -293,6 +297,16 @@ const ModalUpload = (props) => {
                 {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
               </Form.Item>
             </Col>
+            {review === "2" && (
+              <Col span={24}>
+                   <h4>Xác nhận nội dung yêu cầu chỉnh sửa:</h4>
+                  <Checkbox.Group
+                    style={{ display: "flex", flexDirection: "column" }}
+                    options={plainOptions}
+                    onChange={onChange}
+                  />{" "}
+              </Col>
+            )}
             <Col
               span={24}
               hidden={data.state === "MidtermReport" ? false : true}

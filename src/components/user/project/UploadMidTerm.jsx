@@ -133,13 +133,13 @@ const UploadMidTerm = (props) => {
   };
   useEffect(() => {
     listFileType();
-  }, [props.state]);
+  }, [props.isModalOpen]);
   return (
     <>
       <Modal
         title={
           props.state === "2"
-            ? "Đăng kí báo cáo giữa kỳ"
+            ? "Đăng ký báo cáo giữa kỳ"
             : "Nộp tài liệu cuối kỳ"
         }
         centered
@@ -176,7 +176,7 @@ const UploadMidTerm = (props) => {
               <>
                 <Col span={24}>
                   <p>File mẫu tham khảo: </p>
-                  <a href="https://srms.sgp1.cdn.digitaloceanspaces.com/template-20240404003752374.zip">
+                  <a href="https://srms2.sgp1.cdn.digitaloceanspaces.com/3.Baocaogiuky-20240614002445317.rar">
                     Ấn để tải
                   </a>
                 </Col>

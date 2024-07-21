@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
+  Checkbox,
   Col,
   ConfigProvider,
   Divider,
@@ -13,55 +14,75 @@ import {
   message,
   notification,
 } from "antd";
-import {  UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 // import { uploadFileSingle, uploadResult } from "../../../services/api";
 import { useNavigate } from "react-router-dom";
-import { uploadFile, uploadResubmit } from "../../../services/api";
-import { useForm } from "antd/es/form/Form";
+import {
+  getReviewDocuments,
+  resubmitFinalDocument,
+  uploadFile,
+  uploadResubmit,
+} from "../../../services/api";
 
-const ModalUpload = (props) => {
+const ModalUploadResubmit = (props) => {
   const isModalOpen = props.isModalOpen;
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
-  const [newTopicFiles, setFileList] = useState([]);
-  const data = props.data;
-  const navigate = useNavigate();
+  const [newTopicFiles, setFileList] = useState({});
+  const [checked, setChecked] = useState(true);
+  const [dataResubmit, setDataResubmit] = useState({});
+  const plainOptions = ["Lý do nộp lại", "Nội dung yêu cầu chỉnh sửa"];
   const handleOk = () => {
     form.submit();
   };
-  console.log('====================================');
-  console.log(newTopicFiles);
-  console.log('====================================');
+  let checkEnd;
   const handleCancel = () => {
-    props.setDataUser({});
     props.setIsModalOpen(false);
     setFileList([]);
     form.resetFields();
   };
-  console.log("day la data modal resubmit", data);
+  const getReviewDoc = async () => {
+    const res = await getReviewDocuments({
+      userId: props.userId,
+      topicId: props.topicId,
+    });
+    if (res && res?.data) {
+      if (parseInt(props.currentStep) === 1) {
+        setDataResubmit(res.data.reviewEarlyDocument);
+      } else if (parseInt(props.currentStep) === 3) {
+        setDataResubmit(res.data.reviewFinalDocument);
+      }
+    }
+  };
   const onSubmit = async () => {
-    // if (newTopicFiles[0]?.topicFileLink == null) {
-    //   message.error("Xin hãy tải bản chỉnh sửa");
-    //   return;
-    // }
-    const updatedFileFilter = newTopicFiles.map(({ uid, ...rest }) => rest);
+    if (Object.values(newTopicFiles).length === 0) {
+      message.error("Xin hãy tải file lên");
+      return;
+    }
     const param = {
-      topicId: data[0].topicId,
-      // fileLink: newTopicFiles[0],
-      // fileName: newTopicFiles[0].fileName,
-      newFiles: updatedFileFilter
+      topicId: props.topicId,
+      newFile: {
+        fileName: newTopicFiles.fileName,
+        fileLink: newTopicFiles.fileLink,
+      },
     };
-    console.log('====================================');
-    console.log(param);
-    console.log('====================================');
     try {
-      const res = await uploadResubmit(param);
-      console.log(res);
       setIsSubmit(true);
+      let res;
+      if (parseInt(props.currentStep) === 1) {
+        res = await uploadResubmit(param);
+      } else if (parseInt(props.currentStep) === 3) {
+        res = await resubmitFinalDocument(param);
+      }
       if (res && res.isSuccess) {
         setIsSubmit(false);
-        message.success("Tải biên bản lên thành công");
-        navigate("/user");
+        message.success("Tải file chỉnh sửa thành công");
+        handleCancel();
+        if (props.status) {
+          props.setStatus(false);
+        } else {
+          props.setStatus(true);
+        }
       }
     } catch (error) {
       console.log("====================================");
@@ -71,23 +92,31 @@ const ModalUpload = (props) => {
   };
   const propsUpload = {
     name: "file",
-    multiple: true,
+    multiple: false,
+    maxCount: 1,
+    newTopicFiles,
     customRequest: async ({ file, onSuccess, onError }) => {
       try {
-        // Thực hiện tải lên file thông qua API của bạn
+        const isCompressedFile =
+          file.type === "application/x-rar-compressed" ||
+          file.type === "application/x-zip-compressed" ||
+          file.type === "application/x-compressed";
+        if (!isCompressedFile) {
+          message.error(
+            "Chỉ được phép tải lên các file đã nén (zip hoặc rar)!"
+          );
+          onError(file);
+          return;
+        }
         const response = await uploadFile(file);
-        if (response.data[0].fileLink === null) {
+        if (response.data.fileLink === null) {
           onError(response, file);
-          message.error(`${file.name} file uploaded unsuccessfully.`);
+          message.error(`${file.name} file tải lên không thành công.`);
         } else {
-          setFileList((fileList) => [
-            ...fileList,
-            {
-              uid: file.uid,
-              fileName: response.data[0].fileName,
-              fileLink: response.data[0].fileLink,
-            },
-          ]);
+          setFileList({
+            fileName: response.data.fileName,
+            fileLink: response.data.fileLink,
+          });
           // Gọi onSuccess để xác nhận rằng tải lên đã thành công
           onSuccess(response, file);
           // Hiển thị thông báo thành công
@@ -101,54 +130,24 @@ const ModalUpload = (props) => {
       }
     },
     onRemove: (file) => {
-      const fileFilter = newTopicFiles.filter((x) => x.uid !== file.uid);
-      setFileList(fileFilter);
+      setFileList({});
     },
     onDrop(e) {
       console.log("Dropped files", e.dataTransfer.files);
     },
   };
-  // const propsUpload = {
-  //   name: "file",
-  //   multiple: false,
-  //   maxCount: 1,
-  //   customRequest: async ({ file, onSuccess, onError }) => {
-  //     try {
-  //       const response = await uploadFileSingle(file);
-  //       if (response.data.fileLink === null) {
-  //         onError(response, file);
-  //         message.error(`${file.name} file uploaded unsuccessfully.`);
-  //       } else {
-  //         setFileList(() => [
-  //           {
-  //             topicFileName: response.data.fileName,
-  //             topicFileLink: response.data.fileLink,
-  //           },
-  //         ]);
-  //         // Gọi onSuccess để xác nhận rằng tải lên đã thành công
-  //         onSuccess(response, file);
-  //         // Hiển thị thông báo thành công
-  //         message.success(`${file.name} file uploaded successfully.`);
-  //       }
-  //     } catch (error) {
-  //       // Gọi onError để thông báo lỗi nếu có vấn đề khi tải lên
-  //       onError(error);
-  //       // Hiển thị thông báo lỗi
-  //       message.error(`${file.name} file upload failed.`);
-  //     }
-  //   },
-  //   onRemove: (file) => {
-  //     setFileList([]);
-  //   },
-  //   onDrop(e) {
-  //     console.log("Dropped files", e.dataTransfer.files);
-  //   },
-  // };
 
-  // set up initial value for the form
+  if (Object.values(dataResubmit).length !== 0) {
+    checkEnd = dataResubmit?.resultFileLink.endsWith(".docx");
+  }
+  const onChange = (checkedValues) => {
+    console.log("checked = ", checkedValues);
+  };
   useEffect(() => {
-    form.setFieldsValue(data[0]);
-  }, [data]);
+    if (isModalOpen === true) {
+      getReviewDoc();
+    }
+  }, [isModalOpen]);
   return (
     <>
       <Modal
@@ -179,32 +178,54 @@ const ModalUpload = (props) => {
         <Divider />
         <Form form={form} name="basic" onFinish={onSubmit}>
           <Row gutter={20}>
-            <Col span={12}>
-              <Form.Item name="deadline" label="Hạn nộp" labelCol={{ span: 24 }}>
-                <Input disabled />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
+            <Col span={24}>
               <Form.Item
-                name="state"
-                label="Giai đoạn"
+                name="document"
+                label="File đánh giá của hội đồng"
                 labelCol={{ span: 24 }}
               >
-                <Input disabled />
+                <span>
+                  <a
+                    href={
+                      checkEnd
+                        ? `https://view.officeapps.live.com/op/view.aspx?src=` +
+                          dataResubmit?.resultFileLink
+                        : dataResubmit?.resultFileLink
+                    }
+                    target="_blank"
+                    rel={dataResubmit?.resultFileLink}
+                    onClick={() => setChecked(false)}
+                  >
+                    {dataResubmit?.resultFileLink}
+                  </a>
+                </span>
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
-                name="comment"
-                label="Biên bản góp ý"
+                name="upload"
+                label="Tải lên tài liệu đã chỉnh sửa"
                 labelCol={{ span: 24 }}
               >
+                <p>
+                  {checkEnd === true
+                    ? "Vui lòng đọc file góp ý trước khi tải lên"
+                    : ""}
+                </p>
                 <Upload {...propsUpload}>
-                  <Button icon={<UploadOutlined />}>
-                    Ấn vào để tải tài liệu lên
+                  <Button disabled={checked} icon={<UploadOutlined />}>
+                    Tải lên tài liệu
                   </Button>
                 </Upload>
               </Form.Item>
+            </Col>
+            <Col span={24}>
+              <h4>Xác nhận nội dung chỉnh sửa theo:</h4>
+              <Checkbox.Group
+                style={{ display: "flex", flexDirection: "column" }}
+                options={plainOptions}
+                onChange={onChange}
+              />{" "}
             </Col>
           </Row>
         </Form>
@@ -212,4 +233,4 @@ const ModalUpload = (props) => {
     </>
   );
 };
-export default ModalUpload;
+export default ModalUploadResubmit;

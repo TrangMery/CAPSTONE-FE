@@ -20,7 +20,6 @@ import {
   uploadFile,
   uploadFinalContract,
 } from "../../../services/api";
-import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -38,7 +37,6 @@ const ModalFinal = (props) => {
   if (data !== null) {
     form.setFieldsValue(data);
   }
-  const navigate = useNavigate();
   const handleOk = () => {
     form.submit();
   };

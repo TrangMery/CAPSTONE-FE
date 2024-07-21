@@ -42,8 +42,10 @@ const RegisterProject = () => {
   const [newTopicFiles, setFileList] = useState({});
   const [addMember, setAddMember] = useState([]);
   const [data, setData] = useState({});
+  const [cvLink, setCvLink] = useState([]);
   const [error, setError] = useState(null);
-  const userId = localStorage.getItem("userId");
+  const [uploadType, setUploadType] = useState("");
+  const userId = sessionStorage.getItem("userId");
   const showUserModal = () => {
     setOpen(true);
   };
@@ -71,7 +73,17 @@ const RegisterProject = () => {
         width: 104,
       }}
     >
-      <Option value="VND">triệu VND</Option>
+      <Option value="VND">VND</Option>
+    </Select>
+  );
+  const selectMonth = (
+    <Select
+      defaultValue={"Tháng"}
+      style={{
+        width: 104,
+      }}
+    >
+      <Option value="Tháng">Tháng</Option>
     </Select>
   );
   const [form] = Form.useForm();
@@ -84,14 +96,23 @@ const RegisterProject = () => {
       try {
         // Thực hiện tải lên file thông qua API của bạn
         const isCompressedFile =
-          file.type === "application/x-rar-compressed" ||
-          file.type === "application/x-zip-compressed" ||
-          file.type === "application/x-compressed";
+          uploadType === "document"
+            ? file.type === "application/x-rar-compressed" ||
+              file.type === "application/x-zip-compressed" ||
+              file.type === "application/x-compressed"
+            : file.type ===
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // sửa thành file word
         if (!isCompressedFile) {
           message.error(
-            "Chỉ được phép tải lên các file đã nén (zip hoặc rar)!"
+            uploadType === "document"
+              ? "Chỉ được phép tải lên các file đã nén (zip hoặc rar)!"
+              : "Vui lòng upload cv bằng file word!"
           );
-          setError("Chỉ được phép tải lên các file đã nén (zip hoặc rar)!");
+          setError(
+            uploadType === "document"
+              ? "Chỉ được phép tải lên các file đã nén (zip hoặc rar)!"
+              : "Vui lòng upload cv bằng file word!"
+          );
           onError(file);
           return;
         }
@@ -100,10 +121,14 @@ const RegisterProject = () => {
           onError(response, file);
           message.error(`${file.name} không tải lên thành công.`);
         } else {
-          setFileList({
-            fileName: response.data.fileName,
-            fileLink: response.data.fileLink,
-          });
+          if (uploadType === "document") {
+            setFileList({
+              fileName: response.data.fileName,
+              fileLink: response.data.fileLink,
+            });
+          } else if (uploadType === "cv") {
+            setCvLink(response.data.fileLink);
+          }
           // Gọi onSuccess để xác nhận rằng tải lên đã thành công
           onSuccess(response, file);
           // Hiển thị thông báo thành công
@@ -117,11 +142,23 @@ const RegisterProject = () => {
       }
     },
     onRemove: (file) => {
-      setFileList([]);
+      if (uploadType === "document") {
+        setFileList([]);
+      } else {
+        setCvLink("");
+      }
       setError(null);
     },
     onDrop(e) {
       console.log("Dropped files", e.dataTransfer.files);
+    },
+    progress: {
+      strokeColor: {
+        "0%": "#108ee9",
+        "100%": "#87d068",
+      },
+      strokeWidth: 3,
+      format: (percent) => percent && `${parseFloat(percent.toFixed(2))}%`,
     },
   };
   const getCategory = async () => {
@@ -157,11 +194,15 @@ const RegisterProject = () => {
       return newItem;
     });
     const creatorId = userId;
-    if (Object.values(newTopicFiles).length === 0) {
+    if (Object.values(newTopicFiles).length === 0 || cvLink === "") {
       message.error("Xin hãy tải các tài liệu liên quan lên");
       return;
+    } else if (newData.length === 0) {
+      message.error("Xin hãy chọn thành viên thực hiện đề tài");
+      return;
     }
-    const { categoryId, topicName, description, budget, startTime } = values;
+
+    const { categoryId, topicName, description, budget, startTime, topicType, expectedNumberOfMonthToComplete } = values;
     const data = {
       categoryId: categoryId,
       creatorId: creatorId,
@@ -172,6 +213,9 @@ const RegisterProject = () => {
       topicFileName: newTopicFiles.fileName,
       topicFileLink: newTopicFiles.fileLink,
       startTime: dayjs(startTime).local().format(),
+      cvLink: cvLink,
+      topicType: parseInt(topicType),
+      expectedNumberOfMonthToComplete: expectedNumberOfMonthToComplete,
     };
     if (data !== null) {
       setOpenConfirm(true);
@@ -189,7 +233,7 @@ const RegisterProject = () => {
           marginBottom: "40px",
         }}
       >
-        Đăng kí đề tài
+        Đăng ký đề tài
       </h2>
       <Form form={form} name="basicForm" onFinish={onFinish}>
         <Row gutter={16}>
@@ -227,6 +271,42 @@ const RegisterProject = () => {
           </Col>
           <Col span={12}>
             <Form.Item
+              name="startTime"
+              label="Thời gian bắt đầu dự kiến: "
+              rules={[
+                {
+                  required: true,
+                  message: "Xin hãy chọn thời gian bắt đầu dự kiến",
+                },
+              ]}
+            >
+              <DatePicker
+                format={dateFormat}
+                minDate={today}
+                placeholder="Chọn ngày"
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="expectedNumberOfMonthToComplete"
+              label="Thời gian dự kiến làm: "
+              rules={[
+                {
+                  required: true,
+                  message: "Xin hãy chọn thời gian bắt đầu dự kiến",
+                },
+              ]}
+            >
+              <InputNumber
+                style={{ width: 230 }}
+                min={0}
+                addonAfter={selectMonth}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
               name="budget"
               label="Kinh Phí Dự Kiến"
               rules={[
@@ -235,7 +315,6 @@ const RegisterProject = () => {
                   message: "Xin hãy nhập kinh phí dự kiến",
                 },
               ]}
-              labelCol={{ span: 24 }}
             >
               <InputNumber
                 className="text-align-input"
@@ -248,24 +327,30 @@ const RegisterProject = () => {
               />
             </Form.Item>
           </Col>
+
           <Col span={12}>
             <Form.Item
-              name="categoryId"
-              label="Lĩnh vực nghiên cứu"
+              name="topicType"
+              label="Loại đề tài nghiên cứu"
               rules={[
                 {
                   required: true,
                   message: "Xin hãy chọn lĩnh vực nghiên cứu",
                 },
               ]}
-              labelCol={{ span: 24 }}
             >
               <Select
                 style={{ width: 200 }}
-                options={category.map((item) => ({
-                  value: item.categoryId,
-                  label: item.categoryName,
-                }))}
+                options={[
+                  {
+                    value: '0',
+                    label: 'Lĩnh vực nội khoa',
+                  },
+                  {
+                    value: '1',
+                    label: 'Lĩnh vực ngoại khoa',
+                  },
+                ]}
               />
             </Form.Item>
           </Col>
@@ -299,23 +384,42 @@ const RegisterProject = () => {
           </Col>
           <Col span={12}>
             <Form.Item
-              name="startTime"
-              label="Thời gian bắt đầu dự kiến: "
+              name="categoryId"
+              label="Lĩnh vực nghiên cứu:"
               rules={[
                 {
                   required: true,
-                  message: "Xin hãy chọn thời gian bắt đầu dự kiến",
+                  message: "Xin hãy chọn lĩnh vực nghiên cứu",
                 },
               ]}
             >
-              <DatePicker
-                format={dateFormat}
-                minDate={today}
-                placeholder="Chọn ngày"
+              <Select
+                style={{ width: 200 }}
+                options={category.map((item) => ({
+                  value: item.categoryId,
+                  label: item.categoryName,
+                }))}
               />
             </Form.Item>
           </Col>
-          <Col span={24}>
+          <Col span={12}>
+            <Form.Item label="Đính kèm tài cv cá nhân: " required={true}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Upload {...props} listType="picture">
+                  <Button
+                    onClick={() => setUploadType("cv")}
+                    icon={<InboxOutlined />}
+                  >
+                    Tải CV lên
+                  </Button>
+                </Upload>
+              </div>
+              {error && (
+                <p style={{ color: "red", marginLeft: "10px" }}>{error}</p>
+              )}
+            </Form.Item>
+          </Col>
+          <Col span={12}>
             <Form.List name="user">
               {(fields, { add, remove }) => (
                 <>
@@ -388,9 +492,20 @@ const RegisterProject = () => {
               )}
             </Form.List>
           </Col>
+
           <Col span={24}>
             <h3>Đính kèm tài liệu liên quan</h3>
-            <p>Chỉ hỗ trợ cái file như zip hoặc rar</p>
+            <p>
+              Chỉ hỗ trợ cái file như zip hoặc rar :{" "}
+              <a
+                onClick={(e) => e.stopPropagation()}
+                href="https://srms2.sgp1.cdn.digitaloceanspaces.com/1.xetduyetdetai-20240614002212615.rar"
+                download
+              >
+                Tải tập tin mẫu
+              </a>
+            </p>
+
             <Form.Item
               labelCol={{
                 span: 12,
@@ -401,7 +516,12 @@ const RegisterProject = () => {
                 listType="picture"
                 className="upload-list-inline"
               >
-                <Button icon={<InboxOutlined />}>Tải tài liệu lên</Button>
+                <Button
+                  onClick={() => setUploadType("document")}
+                  icon={<InboxOutlined />}
+                >
+                  Tải tài liệu lên
+                </Button>
               </Upload>
               {error && <p style={{ color: "red" }}>{error}</p>}
             </Form.Item>

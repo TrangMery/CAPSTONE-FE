@@ -13,47 +13,55 @@ import {
   message,
   notification,
 } from "antd";
-import {  UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 // import { uploadFileSingle, uploadResult } from "../../../services/api";
 import { useNavigate } from "react-router-dom";
-import {  uploadFile, chairmanReject } from "../../../services/api";
+import { uploadFile, chairmanReject } from "../../../services/api";
 
 const ModalChairmanReject = (props) => {
   const isModalOpen = props.isModalOpen;
+  const state = props.state;
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
-  const [newTopicFiles, setFileList] = useState([]);
-  const data = props.data;
+  const [newTopicFiles, setFileList] = useState({});
+  const [errorMessage, setError] = useState("");
   const navigate = useNavigate();
   const handleOk = () => {
     form.submit();
   };
-  console.log('====================================');
-  console.log(newTopicFiles[0]);
-  console.log('====================================');
   const handleCancel = () => {
-    props.setDataUser({});
     props.setIsModalOpen(false);
     setFileList([]);
     form.resetFields();
   };
-  console.log("day la data modal reject", data);
   const onSubmit = async () => {
+    if (Object.values(newTopicFiles).length === 0) {
+      message.error("Xin hãy tải file lên");
+      return;
+    }
     const param = {
-      topicId: data[0].topicId,
-      feedbackFileLink: newTopicFiles[0].topicFileLink,
+      topicId: props.topicId,
+      feedbackFileLink: newTopicFiles.topicFileLink,
     };
-    console.log('====================================');
-    console.log(param);
-    console.log('====================================');
     try {
-      const res = await chairmanReject(param);
-      console.log(res);
       setIsSubmit(true);
-      if (res && res.isSuccess) {
-        setIsSubmit(false);
-        message.success("Tải biên bản lên thành công");
-        navigate("/user");
+      if (state === 1) {
+        const res = await chairmanReject(param);
+        if (res.isSuccess) {
+          setIsSubmit(false);
+          message.success("Tải biên bản lên thành công");
+          navigate("/user/review");
+        }
+      } else if (state === 3) {
+        const res = props.chairmanFinalDecision(
+          false,
+          newTopicFiles.topicFileLink
+        );
+        if (res === true) {
+          setIsSubmit(false);
+          message.success("Tải biên bản lên thành công");
+          navigate("/user/review");
+        }
       }
     } catch (error) {
       console.log("====================================");
@@ -68,28 +76,22 @@ const ModalChairmanReject = (props) => {
     customRequest: async ({ file, onSuccess, onError }) => {
       try {
         const isCompressedFile =
-        file.type === "application/x-rar-compressed" ||
-        file.type === "application/x-zip-compressed" ||
-        file.type === "application/x-compressed";
-      if (!isCompressedFile) {
-        message.error(
-          "Chỉ được phép tải lên các file word!"
-        );
-        setError("Chỉ được phép tải lên các file word!")
-        onError(file);
-        return;
-      }
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        if (!isCompressedFile) {
+          message.error("Chỉ được phép tải lên các file word!");
+          setError("Chỉ được phép tải lên các file word!");
+          onError(file);
+          return;
+        }
         const response = await uploadFile(file);
         if (response.data.fileLink === null) {
           onError(response, file);
           message.error(`${file.name} file uploaded unsuccessfully.`);
         } else {
-          setFileList(() => [
-            {
-              topicFileName: response.data.fileName,
-              topicFileLink: response.data.fileLink,
-            },
-          ]);
+          setFileList({
+            topicFileName: response.data.fileName,
+            topicFileLink: response.data.fileLink,
+          });
           // Gọi onSuccess để xác nhận rằng tải lên đã thành công
           onSuccess(response, file);
           // Hiển thị thông báo thành công
@@ -103,17 +105,13 @@ const ModalChairmanReject = (props) => {
       }
     },
     onRemove: (file) => {
-      setFileList([]);
+      setFileList({});
     },
     onDrop(e) {
       console.log("Dropped files", e.dataTransfer.files);
     },
   };
 
-  // set up initial value for the form
-  useEffect(() => {
-    form.setFieldsValue(data[0]);
-  }, [data]);
   return (
     <>
       <Modal
@@ -136,7 +134,7 @@ const ModalChairmanReject = (props) => {
             }}
           >
             <Button type="primary" onClick={handleOk}>
-              Gửi
+              Xác nhận
             </Button>
           </ConfigProvider>,
         ]}
@@ -144,20 +142,6 @@ const ModalChairmanReject = (props) => {
         <Divider />
         <Form form={form} name="basic" onFinish={onSubmit}>
           <Row gutter={20}>
-            <Col span={12}>
-              <Form.Item name="deadline" label="Hạn nộp" labelCol={{ span: 24 }}>
-                <Input disabled />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="state"
-                label="Giai đoạn"
-                labelCol={{ span: 24 }}
-              >
-                <Input disabled />
-              </Form.Item>
-            </Col>
             <Col span={24}>
               <Form.Item
                 name="comment"
@@ -165,10 +149,9 @@ const ModalChairmanReject = (props) => {
                 labelCol={{ span: 24 }}
               >
                 <Upload {...propsUpload}>
-                  <Button icon={<UploadOutlined />}>
-                    Ấn vào để tải tài liệu lên
-                  </Button>
+                  <Button icon={<UploadOutlined />}>Tải lên biên bản</Button>
                 </Upload>
+                {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
               </Form.Item>
             </Col>
           </Row>

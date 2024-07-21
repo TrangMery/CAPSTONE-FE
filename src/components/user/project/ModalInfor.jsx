@@ -18,19 +18,22 @@ import {
 } from "../../../services/api";
 import { useLocation } from "react-router-dom";
 import ModalConfirm from "./ModalConfirm";
+import ReviewCvFile from "./ReviewCv";
 
 const ModalInfor = (props) => {
   const tab = props.checkTab;
   const isModalOpen = props.isModalOpen;
   const [form] = Form.useForm();
   const [topicLink, setTopicLink] = useState({});
+  const [cvLink, setCvLink] = useState();
   const [checked, setChecked] = useState(true);
   const [reason, setReason] = useState(null);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [plainText, setPlainText] = useState("");
   const [state, setState] = useState();
+  const [open, setOpen] = useState(false);
   const topicId = props.data.topicId;
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
   const { TextArea } = Input;
   let checkEnd;
   const location = useLocation();
@@ -66,6 +69,7 @@ const ModalInfor = (props) => {
             topicFileName: res.data.topicFileName,
             topicFileLink: res.data.topicFileLink,
           });
+          setCvLink(res.data.cvLink);
           checkEnd = res.data.topicFileLink.endsWith(".docx");
         }
         form.setFieldsValue(res.data);
@@ -215,9 +219,11 @@ const ModalInfor = (props) => {
 
   // set up initial value for the form
   useEffect(() => {
-    getTopicDetail();
-    if (tab === "tongket") {
-      getFinalFile();
+    if (isModalOpen === true) {
+      getTopicDetail();
+      if (tab === "tongket") {
+        getFinalFile();
+      }
     }
   }, [isModalOpen === true]);
 
@@ -280,7 +286,18 @@ const ModalInfor = (props) => {
                 <div dangerouslySetInnerHTML={{ __html: plainText }} />
               </Form.Item>
             </Col>
-            <Col span={24}>
+            <Col span={12}>
+              <Form.Item
+                name="cvLink"
+                label="Hồ sơ chủ nhiệm"
+                labelCol={{ span: 24 }}
+              >
+                <Button type="primary" onClick={() => setOpen(true)}>
+                  Xem cv
+                </Button>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
               {tab === "tongket" ? (
                 <>
                   {" "}
@@ -360,6 +377,7 @@ const ModalInfor = (props) => {
         approved={handleOnClickApprove}
         rejected={handleOnClickRejected}
       />
+      <ReviewCvFile open={open} setOpen={setOpen} url={cvLink} />
     </>
   );
 };

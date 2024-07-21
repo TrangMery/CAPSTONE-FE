@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button, ConfigProvider, Input, List, Space, Table } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import Highlighter from "react-highlight-words";
@@ -10,7 +10,10 @@ import {
 } from "@ant-design/icons";
 import { getMemberReview } from "../../../services/api";
 import ModalTime from "./ModalChooseTime.jsx";
+import dayjs from "dayjs";
+import { ConfigAppContext } from "../ConfigAppContext.jsx";
 const PickMember = (props) => {
+  const config = useContext(ConfigAppContext);
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -21,6 +24,7 @@ const PickMember = (props) => {
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [maxSelectedMembers, setMaxSelectedMembers] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [timeMeeting, setTimeMeeting] = useState([]);
   const location = useLocation();
   let checkPath = location.pathname.split("/");
   let topicID = checkPath[4];
@@ -34,12 +38,13 @@ const PickMember = (props) => {
   };
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    setSearchText(selectedKeys[0]);
+    setSearchText(selectedKeys[0].trim());
     setSearchedColumn(dataIndex);
   };
-  const handleReset = (clearFilters) => {
+const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
+    confirm();
   };
   // search in table
   const getColumnSearchProps = (dataIndex) => ({
@@ -58,7 +63,7 @@ const PickMember = (props) => {
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Tìm kiếm`}
           value={selectedKeys[0]}
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -79,16 +84,16 @@ const PickMember = (props) => {
               width: 90,
             }}
           >
-            Search
+            Tìm kiếm
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{
               width: 90,
             }}
           >
-            Reset
+            Xóa tìm kiếm
           </Button>
           <Button
             type="link"
@@ -97,7 +102,7 @@ const PickMember = (props) => {
               close();
             }}
           >
-            close
+            Đóng
           </Button>
         </Space>
       </div>
@@ -110,7 +115,7 @@ const PickMember = (props) => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -179,14 +184,28 @@ const PickMember = (props) => {
     {
       title: "Giờ họp ",
       dataIndex: "meetingShedules",
-      render: (_, record) => {
+      render: (text, record) => {
         if (record.meetingShedules.length === 0) {
-          return <div>Trống</div>;
+          return <div>Trống lịch</div>;
+        } else {
+          return (
+            <div>
+              {record.meetingShedules.map((element, index) => {
+                const fromTime = dayjs(element.from).format("HH:mm");
+                const toTime = dayjs(element.to).format("HH:mm");
+                return (
+                  <div key={index}>
+                    {fromTime} - {toTime} <br />
+                  </div>
+                );
+              })}
+            </div>
+          );
         }
       },
     },
     {
-      title: "Hành động",
+      title: "Xem thông tin",
       key: "action",
       render: (text, record) => (
         <Button
@@ -202,7 +221,6 @@ const PickMember = (props) => {
       ),
     },
   ];
-  console.log(location.state.meetingDate);
 
   const getUserAPI = async () => {
     try {
@@ -261,6 +279,7 @@ const PickMember = (props) => {
     onChange: (selectedRowKeys, selectedRows) => {
       setSelectedKeys(selectedRowKeys); // id của thành viên hội đồng
       setSelectedUser(selectedRows);
+      setTimeMeeting(selectedRows[0].meetingShedules);
       props.setFirstMenber(selectedRows);
     },
     hideSelectAll: true,
@@ -296,7 +315,6 @@ const PickMember = (props) => {
               shape="round"
               type="primary"
               onClick={() => {
-                // props.next();
                 setIsModalOpen(true);
               }}
             >
@@ -339,10 +357,13 @@ const PickMember = (props) => {
         />
       </div>
       <ModalTime
+        breakTime = {config.breakTimeInMinutes}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+        setData={props.setData}
         setTime={props.setTime}
         next={props.next}
+        timeMeeting={timeMeeting}
         setMeetingDateDuration={props.setMeetingDateDuration}
       />
     </div>

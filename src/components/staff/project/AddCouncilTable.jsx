@@ -17,27 +17,20 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import ModalPickTimeLeader from "./ModalPickTimeLeader";
-import {
-  getAllUserWithoutCreator,
-  getMemberReviewAvailabe,
-} from "../../../services/api";
 const AddCouncilTable = (props) => {
+  const firstMember = props.firstMember[0];
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
-  const [selectedUser, setSelectedUser] = useState([]);
+  const [selectedUser, setSelectedUser] = useState([firstMember]);
   const [user, setUser] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(7);
-  const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFullData, setShowFullData] = useState({});
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [maxSelectedMembers, setMaxSelectedMembers] = useState();
   const [newData, setNewData] = useState([]);
-  const location = useLocation();
-  let checkPath = location.pathname.split("/");
-  let topicID = checkPath[4];
   const isRowDisabled = (record) => {
     // Check if the row should be disabled based on the number of selected members
     return (
@@ -47,12 +40,13 @@ const AddCouncilTable = (props) => {
   };
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    setSearchText(selectedKeys[0]);
+    setSearchText(selectedKeys[0].trim());
     setSearchedColumn(dataIndex);
   };
-  const handleReset = (clearFilters) => {
+const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
+    confirm();
   };
   // search in table
   const getColumnSearchProps = (dataIndex) => ({
@@ -71,7 +65,7 @@ const AddCouncilTable = (props) => {
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Tìm kiếm`}
           value={selectedKeys[0]}
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -92,16 +86,16 @@ const AddCouncilTable = (props) => {
               width: 90,
             }}
           >
-            Search
+            Tìm kiếm
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{
               width: 90,
             }}
           >
-            Reset
+            Xóa tìm kiếm
           </Button>
           <Button
             type="link"
@@ -110,7 +104,7 @@ const AddCouncilTable = (props) => {
               close();
             }}
           >
-            close
+            Đóng
           </Button>
         </Space>
       </div>
@@ -123,7 +117,7 @@ const AddCouncilTable = (props) => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -206,36 +200,12 @@ const AddCouncilTable = (props) => {
       ),
     },
   ];
-  const getUserAPI = async () => {
-    try {
-      const res = await getMemberReviewAvailabe({
-        TopicId: topicID,
-        MeetingStartTime: props.time.meetingStartTime,
-        MeetingEndTime: props.time.meetingEndTime,
-      });
-      setIsLoading(true);
-      const id = props.firstMember[0].id;
-      if (res && res?.data) {
-        const newArray = res.data.filter((item) => item.id !== id);
-        let dataKey = newArray.map((item) => ({
-          ...item,
-          key: item.id,
-        }));
-        setUser(dataKey);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error("Error fetching get user:", error);
-    }
-  };
-  useEffect(() => {
-    getUserAPI();
-  }, []);
-
   useEffect(() => {
     if (current === 1 && newData.length > 1) setUser(newData);
   }, [current]);
-
+  useEffect(() => {
+    setUser(props.data);
+  }, []);
   // hide email and phone munber
   const maskEmail = (accountEmail) => {
     const [username, domain] = accountEmail.split("@");
@@ -277,8 +247,14 @@ const AddCouncilTable = (props) => {
         return 0;
       });
       setNewData(newData);
-      setSelectedKeys(selectedRowKeys); // id của thành viên hội đồng
-      setSelectedUser(selectedRows);
+      setSelectedKeys(selectedRowKeys);
+      const updatedSelection = selectedRows.includes(firstMember)
+        ? selectedRows
+        : [firstMember, ...selectedRows];
+
+      // Use a Set to ensure uniqueness
+      const newSelectedSet = new Set(updatedSelection);
+      setSelectedUser(Array.from(newSelectedSet));
     },
     hideSelectAll: true,
     selectedKeys,
@@ -298,42 +274,54 @@ const AddCouncilTable = (props) => {
   };
 
   const renderFooter = () => (
-    <div style={{ display: "flex", justifyContent: "flex-end" }}>
-      <Button
-        shape="round"
-        type="primary"
-        danger
-        onClick={() => props.prev()}
-        style={{ margin: "0 10px" }}
-      >
-        Quay về
-      </Button>
-      <ConfigProvider
-        theme={{
-          token: {
-            colorPrimary: "#55E6A0",
-          },
-        }}
-      >
-        {
-          (setMaxSelectedMembers(6),
-          (
-            <Button
-              disabled={
-                selectedUser.length < 4 || selectedUser.length % 2 !== 0
-              }
-              shape="round"
-              type="primary"
-              onClick={() => {
-                setIsModalOpen(true);
-                selectedUser.push(props.firstMember[0]);
-              }}
-            >
-              Thêm thành viên đánh giá
-            </Button>
-          ))
-        }
-      </ConfigProvider>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+      }}
+    >
+      {selectedUser.length < 5 || selectedUser.length % 2 === 0 ? (
+        <p style={{ color: "red", marginTop: "10px" }}>
+          Vui lòng chọn số thành viên là số lẻ
+        </p>
+      ) : null}
+      <div style={{ display: "flex", marginBottom: "10px" }}>
+        <Button
+          shape="round"
+          type="primary"
+          danger
+          onClick={() => props.prev()}
+          style={{ margin: "0 10px" }}
+        >
+          Quay về
+        </Button>
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: "#55E6A0",
+            },
+          }}
+        >
+          {
+            (setMaxSelectedMembers(6),
+            (
+              <Button
+                disabled={
+                  selectedUser.length < 5 || selectedUser.length % 2 === 0
+                }
+                shape="round"
+                type="primary"
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
+              >
+                Thêm thành viên đánh giá
+              </Button>
+            ))
+          }
+        </ConfigProvider>
+      </div>
     </div>
   );
   return (
@@ -361,7 +349,7 @@ const AddCouncilTable = (props) => {
           )}
         </div>
         {hasSelected ? (
-          <div style={{ maxWidth: "400px" }}>
+          <div style={{ maxWidth: "500px" }}>
             <List
               grid={{
                 sm: 2,
@@ -405,12 +393,11 @@ const AddCouncilTable = (props) => {
             showTotal: (total, range) => {
               return (
                 <div>
-                  {range[0]} - {range[1]} on {total} rows
+                  {range[0]} - {range[1]} tên {total} hàng
                 </div>
               );
             },
           }}
-          loading={isLoading}
           footer={renderFooter}
         />
       </div>
@@ -421,7 +408,7 @@ const AddCouncilTable = (props) => {
         setIsModalOpen={setIsModalOpen}
         dataUser={selectedUser}
         meetingDuration={props.meetingDuration}
-        meetingTime = {props.time}
+        meetingTime={props.time}
       />
     </div>
   );

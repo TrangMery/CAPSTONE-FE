@@ -6,6 +6,7 @@ import AddCouncilTable from "./AddCouncilTable";
 const AddCouncil = () => {
   const [current, setCurrent] = useState(0);
   const [firstMember, setFirstMenber] = useState();
+  const [data, setData] = useState();
   const [time, setTime] = useState();
   const [meetingDuration, setMeetingDateDuration] = useState();
   const next = () => {
@@ -22,6 +23,7 @@ const AddCouncil = () => {
           next={next}
           setFirstMenber={setFirstMenber}
           setTime={setTime}
+          setData={setData}
           setMeetingDateDuration={setMeetingDateDuration}
         />
       ),
@@ -32,6 +34,7 @@ const AddCouncil = () => {
         <AddCouncilTable
           prev={prev}
           firstMember={firstMember}
+          data={data}
           time={time}
           meetingDuration={meetingDuration}
         />

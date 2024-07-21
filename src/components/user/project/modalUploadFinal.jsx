@@ -185,7 +185,9 @@ const UploadFileFinal = (props) => {
     },
   };
   useEffect(() => {
-    getAllMenber();
+    if (props.isModalOpen === true) {
+      getAllMenber();
+    }
   }, [props.isModalOpen]);
   return (
     <>
@@ -224,9 +226,6 @@ const UploadFileFinal = (props) => {
             <>
               <Col span={24}>
                 <p>File mẫu tham khảo (file đã tích hợp công thức tính):</p>
-                {/* <a href="https://srms1.sgp1.cdn.digitaloceanspaces.com/thu_lao_NCKH-20240504000432756.xlsx">
-                  Ấn để tải
-                </a> */}
                 <Button onClick={handleExport}>Xuất file thành viên</Button>
               </Col>
             </>

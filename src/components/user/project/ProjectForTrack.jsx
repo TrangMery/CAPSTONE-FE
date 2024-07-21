@@ -1,12 +1,14 @@
+import { FundViewOutlined, SearchOutlined } from "@ant-design/icons";
 import {
-  CheckOutlined,
-  CloseOutlined,
-  FundViewOutlined,
-  InfoCircleOutlined,
-  ScheduleOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import { Badge, Button, ConfigProvider, Input, Space, Table, Tabs } from "antd";
+  Badge,
+  Button,
+  ConfigProvider,
+  Input,
+  Space,
+  Table,
+  Tabs,
+  Tag,
+} from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import "../../staff/project/project.scss";
@@ -24,15 +26,16 @@ const ProjectForTrack = () => {
   const navigate = useNavigate();
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  // const [status, setStatus] = useState(true);  
   const [dataTopicForMember, setdataTopicForMember] = useState([]);
-  const [isModalInforOpen, setIsModalInforOpen] = useState(false);
-  const [data, setDataUser] = useState({});
   const getProjectProcess = async () => {
     try {
       const res = await getTopicByUserId({
-        userId: localStorage.getItem("userId"),
+        userId: sessionStorage.getItem("userId"),
+        status: true,
       });
       if (res && res.isSuccess) {
+        console.log(res);
         setdataTopicForMember(res.data);
       }
     } catch (error) {
@@ -57,7 +60,7 @@ const ProjectForTrack = () => {
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Tìm kiếm`}
           value={selectedKeys[0]}
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -78,16 +81,16 @@ const ProjectForTrack = () => {
               width: 90,
             }}
           >
-            Search
+            Tìm kiếm
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{
               width: 90,
             }}
           >
-            Reset
+            Xóa tìm kiếm
           </Button>
           <Button
             type="link"
@@ -96,7 +99,7 @@ const ProjectForTrack = () => {
               close();
             }}
           >
-            close
+            Đóng
           </Button>
         </Space>
       </div>
@@ -109,7 +112,7 @@ const ProjectForTrack = () => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -133,10 +136,10 @@ const ProjectForTrack = () => {
 
   const columns = [
     {
-      title: "STT",
-      key: "index",
-      render: (text, record, index) => index + 1,
+      title: "Mã đề tài",
+      key: "code",
       color: "red",
+      dataIndex: "code",
       width: "10%",
     },
     {
@@ -152,23 +155,41 @@ const ProjectForTrack = () => {
       key: "categoryName",
     },
     {
-      title: "Ngày tạo",
+      title: "Ngày nộp",
       render: (text, record, index) => {
         return <div>{dayjs(record.createdAt).format(dateFormat)}</div>;
       },
       key: "createdAt",
     },
     {
+      title: "Trạng thái",
+      sorter: (a, b) => {
+        if (a.status < b.status) return -1;
+        if (a.status > b.status) return 1;
+        return 0;
+      },
+      render: (text, record, index) => {
+        const content = record.status === true ? "Đang thực hiện" : "Bị hủy đề tài";
+        const color = record.status === true ? "green" : "red";
+        return (
+          <Tag
+            style={{
+              fontSize: "13px",
+            }}
+            color={color}
+          >
+            {content}
+          </Tag>
+        );
+        return;
+      },
+    },
+
+    {
       title: "Hành động",
       render: (text, record, index) => {
-        const style2 = {
-          color: "green",
-          fontSize: "20px",
-          margin: "0 10px",
-          cursor: "pointer",
-        };
         const style1 = {
-          color: "black",
+          color: "green",
           fontSize: "20px",
           cursor: "pointer",
           paddingTop: "2px",
@@ -177,19 +198,12 @@ const ProjectForTrack = () => {
           <div>
             <FundViewOutlined
               onClick={() => {
-                navigate(`/user/track/track-topic/${record.topicId}`);
+                navigate(`/user/track/track-topic/${record.topicId}`, {
+                  state: { title: record.topicName },
+                });
               }}
               style={style1}
             />
-            <Badge dot offset={[-10, 0]}>
-              <ScheduleOutlined
-                onClick={() => {
-                  setDataUser(record);
-                  setIsModalInforOpen(true);
-                }}
-                style={style2}
-              />
-            </Badge>
           </div>
         );
       },
@@ -203,12 +217,13 @@ const ProjectForTrack = () => {
   const searchInput = useRef(null);
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    setSearchText(selectedKeys[0]);
+    setSearchText(selectedKeys[0].trim());
     setSearchedColumn(dataIndex);
   };
-  const handleReset = (clearFilters) => {
+const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
+    confirm();
   };
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination.current !== current) {
@@ -223,6 +238,13 @@ const ProjectForTrack = () => {
   useEffect(() => {
     getProjectProcess();
   }, []);
+  const locale = {
+    // Tùy chỉnh thông báo sắp xếp
+    sortTitle: 'Sắp xếp theo trạng thái đề tài',
+    triggerDesc: "Đang thực hiện",
+    triggerAsc: "Bị hủy đề tài",
+    cancelSort: "Hủy sắp xếp",
+  };
   return (
     <>
       <h2 style={{ fontWeight: "bold", fontSize: "30px", color: "#303972" }}>
@@ -246,18 +268,14 @@ const ProjectForTrack = () => {
             showTotal: (total, range) => {
               return (
                 <div>
-                  {range[0]} - {range[1]} on {total} rows
+                  {range[0]} - {range[1]} tên {total} hàng
                 </div>
               );
             },
           }}
+          locale={locale}
         />
       </ConfigProvider>
-      <ModalMeetingInfor
-        data={data}
-        isModalOpen={isModalInforOpen}
-        setIsModalOpen={setIsModalInforOpen}
-      />
     </>
   );
 };

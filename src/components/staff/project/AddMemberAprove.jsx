@@ -40,12 +40,13 @@ const AddMemberApprove = () => {
   };
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    setSearchText(selectedKeys[0]);
+    setSearchText(selectedKeys[0].trim());
     setSearchedColumn(dataIndex);
   };
-  const handleReset = (clearFilters) => {
+const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
+    confirm();
   };
   // search in table
   const getColumnSearchProps = (dataIndex) => ({
@@ -64,7 +65,7 @@ const AddMemberApprove = () => {
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Tìm kiếm`}
           value={selectedKeys[0]}
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -85,16 +86,16 @@ const AddMemberApprove = () => {
               width: 90,
             }}
           >
-            Search
+            Tìm kiếm
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{
               width: 90,
             }}
           >
-            Reset
+            Xóa tìm kiếm
           </Button>
           <Button
             type="link"
@@ -103,7 +104,7 @@ const AddMemberApprove = () => {
               close();
             }}
           >
-            close
+            Đóng
           </Button>
         </Space>
       </div>
@@ -116,7 +117,7 @@ const AddMemberApprove = () => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -392,7 +393,7 @@ const AddMemberApprove = () => {
             showTotal: (total, range) => {
               return (
                 <div>
-                  {range[0]} - {range[1]} on {total} rows
+                  {range[0]} - {range[1]} tên {total} hàng
                 </div>
               );
             },

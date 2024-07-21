@@ -201,7 +201,7 @@ const ManagerFileType = () => {
     },
     {
       key: "1",
-      label: `Đầu kỳ`,
+      label: `Đề cương`,
       children: <></>,
     },
     {
@@ -311,7 +311,7 @@ const ManagerFileType = () => {
             showTotal: (total, range) => {
               return (
                 <div>
-                  {range[0]} - {range[1]} on {total} rows
+                  {range[0]} - {range[1]} tên {total} hàng
                 </div>
               );
             },

@@ -1,19 +1,23 @@
 import {
   InfoCircleOutlined,
+  MinusCircleOutlined,
   SearchOutlined,
   UserAddOutlined,
   UsergroupAddOutlined,
 } from "@ant-design/icons";
 import {
+  Badge,
   Button,
   ConfigProvider,
   Input,
+  Popconfirm,
   Space,
   Table,
   Tabs,
+  Tag,
   Tooltip,
 } from "antd";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import "./project.scss";
 import { useNavigate } from "react-router-dom";
@@ -26,11 +30,14 @@ import {
   getTopicForCouncil,
   getTopicForMemberApproval,
   getTopicWaitingMember,
+  staffCancelCouncil,
+  topicWaitingMeeting,
+  preAndEarlyAmount,
 } from "../../../services/api";
 import ModalTimeCouncil from "./modalTimeCouncil";
+import { ConfigAppContext } from "../ConfigAppContext";
 const ProjectManager = () => {
-  //staff ID để test
-  const staffId = "2D5E2220-EEEF-4FDC-8C98-1B5C5012319C";
+  const config = useContext(ConfigAppContext);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,11 +46,17 @@ const ProjectManager = () => {
   const [dataPro, setDataPro] = useState({});
   const [isModalInforOpen, setIsModalInforOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [amoutNotYet, setAmoutNotYet] = useState(0);
+  const [amoutWait, setAmoutWait] = useState(0);
   const navigate = useNavigate();
   const items = [
     {
       key: "notyet",
-      label: `Chưa duyệt`,
+      label: (
+        <Badge offset={[15, -2]} count={amoutNotYet}>
+          Chưa duyệt
+        </Badge>
+      ),
       children: <></>,
     },
     {
@@ -53,7 +66,17 @@ const ProjectManager = () => {
     },
     {
       key: "chohoidong",
-      label: `Xem xét`,
+      label: (
+        <Badge offset={[15, 2]} count={amoutWait}>
+          {" "}
+          Tạo hội đồng xem xét
+        </Badge>
+      ),
+      children: <></>,
+    },
+    {
+      key: "dataohoidong",
+      label: `Đã tạo hội đồng`,
       children: <></>,
     },
   ];
@@ -73,7 +96,7 @@ const ProjectManager = () => {
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Tìm `}
           value={selectedKeys[0]}
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -94,16 +117,16 @@ const ProjectManager = () => {
               width: 90,
             }}
           >
-            Search
+            Tìm
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{
               width: 90,
             }}
           >
-            Reset
+            Xóa tìm kiếm
           </Button>
           <Button
             type="link"
@@ -112,7 +135,7 @@ const ProjectManager = () => {
               close();
             }}
           >
-            close
+            Đóng
           </Button>
         </Space>
       </div>
@@ -125,7 +148,10 @@ const ProjectManager = () => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -168,10 +194,19 @@ const ProjectManager = () => {
       key: "categoryName",
     },
     {
-      title: checkTab === "notyet" ? "Ngày nộp" : "Ngày Kết Thúc Sơ Duyệt ",
+      title:
+        checkTab === "notyet"
+          ? "Ngày nộp"
+          : checkTab === "dataohoidong"
+          ? "Ngày họp"
+          : "Ngày Kết Thúc Sơ Duyệt ",
       render: (text, record, index) => {
         if (checkTab === "notyet") {
           return <div>{dayjs(record.createdAt).format(dateFormat)}</div>;
+        } else if (checkTab === "dataohoidong") {
+          return (
+            <div>{dayjs(record.meetingTime).format("DD/MM/YYYY HH:mm")}</div>
+          );
         }
         return <div>{dayjs(record.reviewEndDate).format(dateFormat)}</div>;
       },
@@ -179,8 +214,39 @@ const ProjectManager = () => {
       align: "center",
     },
     {
+      title: "Loại đề tài",
+      sorter: (a, b) => {
+        if (a.topicType < b.topicType) return -1;
+        if (a.topicType > b.topicType) return 1;
+        return 0;
+      },
+      render: (text, record, index) => {
+        const content =
+          record.topicType === "Internal" ? "Nội Khoa" : "Ngoại Khoa";
+        const color =
+          record.topicType === "Internal" ? "success" : "processing";
+        return (
+          <Tag
+            style={{
+              fontSize: "13px",
+            }}
+            color={color}
+          >
+            {content}
+          </Tag>
+        );
+      },
+      align: "center",
+    },
+    {
       title: "Hành động",
       render: (text, record, index) => {
+        const differenceInMinutes = dayjs(record.meetingTime).diff(
+          dayjs(),
+          "minute"
+        );
+        const checkOverTime =
+          differenceInMinutes >= config.cancelMeetingMinTimeInMinutes;
         return (
           <div style={{ textAlign: "center" }}>
             <ConfigProvider
@@ -231,6 +297,42 @@ const ProjectManager = () => {
                 </Tooltip>
               )}
             </ConfigProvider>
+            {checkTab === "dataohoidong" && (
+              <>
+                {checkOverTime !== true ? (
+                  <Tooltip placement="bottom" title={"Đã qua thời gian hủy"}>
+                    <MinusCircleOutlined
+                      style={{
+                        fontSize: "20px",
+                        color: "gray",
+                        margin: "0 10px",
+                      }}
+                      disabled
+                      type="primary"
+                    />
+                  </Tooltip>
+                ) : (
+                  <Popconfirm
+                    title="Hủy hội đồng"
+                    description="Bạn có chắc chắn hủy hội đồng"
+                    onConfirm={() => cancelCouncil(record.topicId)}
+                    okText="Hủy"
+                    cancelText="Quay lại"
+                  >
+                    <Tooltip placement="bottom" title={"Hủy hội đồng"}>
+                      <MinusCircleOutlined
+                        style={{
+                          fontSize: "20px",
+                          color: "red",
+                          margin: "0 10px",
+                        }}
+                        type="primary"
+                      />
+                    </Tooltip>
+                  </Popconfirm>
+                )}
+              </>
+            )}
           </div>
         );
       },
@@ -240,9 +342,7 @@ const ProjectManager = () => {
 
   const getTopicMemberApproval = async () => {
     try {
-      const res = await getTopicForMemberApproval({
-        staffId: staffId,
-      });
+      const res = await getTopicForMemberApproval();
       setIsLoading(true);
       if (res && res?.data) {
         setData(res.data);
@@ -254,9 +354,7 @@ const ProjectManager = () => {
   };
   const getTopicCoucil = async () => {
     try {
-      const res = await getTopicForCouncil({
-        staffId: staffId,
-      });
+      const res = await getTopicForCouncil();
       if (res && res?.data) {
         setData(res.data);
       }
@@ -267,8 +365,18 @@ const ProjectManager = () => {
 
   const getMemberApprovalTopic = async () => {
     try {
-      const res = await getTopicWaitingMember({
-        staffId: staffId,
+      const res = await getTopicWaitingMember();
+      if (res && res?.data) {
+        setData(res.data);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
+  const getTopicHadCreateCouncil = async () => {
+    try {
+      const res = await topicWaitingMeeting({
+        state: 1,
       });
       if (res && res?.data) {
         setData(res.data);
@@ -277,13 +385,39 @@ const ProjectManager = () => {
       console.log("có lỗi tại getTopicForCouncil: " + error);
     }
   };
+  const cancelCouncil = async (topicId) => {
+    try {
+      const data = {
+        topicId: topicId,
+      };
+      const res = await staffCancelCouncil(data);
+      if (res && res.statusCode === 200) {
+        setCheckTab("chohoidong");
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
+  const preAndEarlyAmountApi = async () => {
+    try {
+      const res = await preAndEarlyAmount();
+      if (res && res.statusCode === 200) {
+        setAmoutNotYet(res.data.preTopicWaitingCouncilFormation);
+        setAmoutWait(res.data.earlyTopicWaitingCouncilFormation);
+      }
+    } catch (error) {
+      console.log("có lỗi tại getTopicForCouncil: " + error);
+    }
+  };
   useEffect(() => {
     getTopicMemberApproval();
+    preAndEarlyAmountApi();
   }, []);
   const renderHeader = () => (
     <div>
       <Tabs
         defaultActiveKey="notyet"
+        activeKey={checkTab}
         items={items}
         onChange={(value) => {
           setCheckTab(value);
@@ -293,6 +427,8 @@ const ProjectManager = () => {
             getTopicCoucil();
           } else if (value === "wait") {
             getMemberApprovalTopic();
+          } else if (value === "dataohoidong") {
+            getTopicHadCreateCouncil();
           }
         }}
         style={{ overflowX: "auto", marginLeft: "30px" }}
@@ -305,12 +441,13 @@ const ProjectManager = () => {
   const searchInput = useRef(null);
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    setSearchText(selectedKeys[0]);
+    setSearchText(selectedKeys[0].trim());
     setSearchedColumn(dataIndex);
   };
-  const handleReset = (clearFilters) => {
+  const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
+    confirm();
   };
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination.current !== current) {
@@ -321,6 +458,13 @@ const ProjectManager = () => {
       setCurrent(1);
     }
     console.log("parms: ", pagination, filters, sorter, extra);
+  };
+  const locale = {
+    // Tùy chỉnh thông báo sắp xếp
+    sortTitle: "Sắp xếp theo loại đề tài",
+    triggerDesc: "Đề tài Nội Khoa",
+    triggerAsc: "Đề tài Ngoại Khoa",
+    cancelSort: "Hủy sắp xếp",
   };
   return (
     <div>
@@ -344,13 +488,14 @@ const ProjectManager = () => {
           showTotal: (total, range) => {
             return (
               <div>
-                {range[0]} - {range[1]} on {total} rows
+                {range[0]} - {range[1]} tên {total} hàng
               </div>
             );
           },
         }}
         title={renderHeader}
         loading={isLoading}
+        locale={locale}
       />
 
       <ModalInfor

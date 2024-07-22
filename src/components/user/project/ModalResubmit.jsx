@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
+  Checkbox,
   Col,
   ConfigProvider,
   Divider,
@@ -30,6 +31,7 @@ const ModalUploadResubmit = (props) => {
   const [newTopicFiles, setFileList] = useState({});
   const [checked, setChecked] = useState(true);
   const [dataResubmit, setDataResubmit] = useState({});
+  const plainOptions = ["Lý do nộp lại", "Nội dung yêu cầu chỉnh sửa"];
   const handleOk = () => {
     form.submit();
   };
@@ -138,7 +140,9 @@ const ModalUploadResubmit = (props) => {
   if (Object.values(dataResubmit).length !== 0) {
     checkEnd = dataResubmit?.resultFileLink.endsWith(".docx");
   }
-
+  const onChange = (checkedValues) => {
+    console.log("checked = ", checkedValues);
+  };
   useEffect(() => {
     if (isModalOpen === true) {
       getReviewDoc();
@@ -214,6 +218,14 @@ const ModalUploadResubmit = (props) => {
                   </Button>
                 </Upload>
               </Form.Item>
+            </Col>
+            <Col span={24}>
+              <h4>Xác nhận nội dung chỉnh sửa theo:</h4>
+              <Checkbox.Group
+                style={{ display: "flex", flexDirection: "column" }}
+                options={plainOptions}
+                onChange={onChange}
+              />{" "}
             </Col>
           </Row>
         </Form>

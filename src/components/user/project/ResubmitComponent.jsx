@@ -20,7 +20,8 @@ import {
   chairmanMakeFinalDecision,
 } from "../../../services/api";
 import ModalChairmanReject from "./ModalChairmanReject";
-const ResubmitComponent = ({ data, role, setStatus, topicId, active }) => {
+import { FaAward } from "react-icons/fa";
+const ResubmitComponent = ({ data, role, setStatus, topicId, getReviewDoc }) => {
   const [itemsCollapse, setItemsCollapse] = useState([]);
   const [isModalOpenR, setIsModalOpenR] = useState(false);
   const { token } = theme.useToken();
@@ -32,7 +33,7 @@ const ResubmitComponent = ({ data, role, setStatus, topicId, active }) => {
   };
   const renderExtra = (state) => {
     if (state === true) {
-      return <CheckOutlined style={{ color: "green" }} />;
+      return <FaAward style={{ color: "green" }} />;
     } else if (state === false) {
       return <CloseOutlined style={{ color: "red" }} />;
     } else {
@@ -45,11 +46,7 @@ const ResubmitComponent = ({ data, role, setStatus, topicId, active }) => {
         topicId: topicId,
       });
       if (res && res.statusCode === 200) {
-        if (active === true) {
-          setStatus(false);
-        } else {
-          setStatus(true);
-        }
+        getReviewDoc()
       }
     } catch (error) {
       console.log("====================================");
@@ -66,11 +63,7 @@ const ResubmitComponent = ({ data, role, setStatus, topicId, active }) => {
       };
       const res = await chairmanMakeFinalDecision(data);
       if (res && res.statusCode === 200) {
-        if (status === true) {
-          setStatus(false);
-        } else {
-          setStatus(true);
-        }
+        getReviewDoc()
       } else {
         message.error("Vui lòng thử lại sau");
       }
@@ -124,7 +117,7 @@ const ResubmitComponent = ({ data, role, setStatus, topicId, active }) => {
               File góp ý
             </a>
           </p>
-          {items.isAccepted === null || role === "Chairman" ? (
+          {items.isAccepted === null && role === "Chairman" ? (
             <>
               <Divider />
               <p>Quyết định:</p>

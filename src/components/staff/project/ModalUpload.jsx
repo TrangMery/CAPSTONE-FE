@@ -13,6 +13,7 @@ import {
   message,
   Radio,
   Space,
+  Checkbox,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -46,6 +47,7 @@ const ModalUpload = (props) => {
   const [errorMessage, setError] = useState("");
   const state = data.state === "MidtermReport" ? true : false;
   const navigate = useNavigate();
+  const plainOptions = ["Lý do nộp lại", "Nội dung yêu cầu chỉnh sửa"];
   const handleOk = () => {
     form.submit();
   };
@@ -184,6 +186,9 @@ const ModalUpload = (props) => {
   const handleDateChange = (date) => {
     setMeetingDate(date);
   };
+  const onChange = (checkedValues) => {
+    console.log("checked = ", checkedValues);
+  };
   return (
     <>
       <Modal
@@ -292,6 +297,16 @@ const ModalUpload = (props) => {
                 {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
               </Form.Item>
             </Col>
+            {review === "2" && (
+              <Col span={24}>
+                   <h4>Xác nhận nội dung yêu cầu chỉnh sửa:</h4>
+                  <Checkbox.Group
+                    style={{ display: "flex", flexDirection: "column" }}
+                    options={plainOptions}
+                    onChange={onChange}
+                  />{" "}
+              </Col>
+            )}
             <Col
               span={24}
               hidden={data.state === "MidtermReport" ? false : true}

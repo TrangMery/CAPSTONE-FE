@@ -86,8 +86,9 @@ const ResubmitProject = () => {
           setStatus={setStatus}
           topicId={topicId}
           active={status}
+          getReviewDoc={getReviewDoc}
         />
-        {dataReviewDocumentFinal ? (
+        {Object.values(dataReviewDocumentFinal).length > 0 ? (
           <>
             <ResubmitComponent
               data={dataReviewDocumentFinal}
@@ -95,6 +96,7 @@ const ResubmitProject = () => {
               setStatus={setStatus}
               topicId={topicId}
               active={status}
+              getReviewDoc={getReviewDoc}
             />
           </>
         ) : (

@@ -9,6 +9,8 @@ import {
   Col,
   Space,
   Divider,
+  InputNumber,
+  Form,
 } from "antd";
 import axios from "axios";
 import { CheckCircleOutlined } from "@ant-design/icons";
@@ -18,20 +20,14 @@ const { Panel } = Collapse;
 const Stage4 = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [responseData, setResponseData] = useState("");
-  const [inputNumber, setInputNumber] = useState("");
   const [successPanel, setSuccessPanel] = useState({});
-  const handleInputChange = (e) => {
-    setInputNumber(e.target.value);
-  };
 
-  const callApi = async (endpoint, index) => {
+  const handleSubmit = async (values, endpoint, index) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post(`${endpoint}${inputNumber}`);
+      const response = await axios.post(`${endpoint}${values.topicNumber}`);
       if (response.status === 200) {
-        setInputNumber(0);
         setSuccessPanel({ ...successPanel, [index]: true });
       }
     } catch (error) {
@@ -42,16 +38,25 @@ const Stage4 = () => {
 
   const apiEndpoints = [
     {
+      key: "1",
       name: "Trưởng nhóm nộp file tính ngày công",
-      endpoint: "http://localhost:5132/api/mock/submit-remuneration?numberOfTopic=",
+      endpoint:
+        "http://localhost:5132/api/mock/submit-remuneration?numberOfTopic=",
+      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
     },
     {
+      key: "2",
       name: "Tải lên quyết định",
-      endpoint: "http://localhost:5132/api/mock/censorship-remuneration?numberOfTopic=",
+      endpoint:
+        "http://localhost:5132/api/mock/censorship-remuneration?numberOfTopic=",
+      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
     },
     {
+      key: "3",
       name: "Tải lên biên bản kết thúc hợp đồng",
-      endpoint: "http://localhost:5132/api/mock/final-upload-contract?numberOfTopic=",
+      endpoint:
+        "http://localhost:5132/api/mock/final-upload-contract?numberOfTopic=",
+      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
     },
   ];
   return (
@@ -59,22 +64,32 @@ const Stage4 = () => {
       <Space direction="vertical" style={{ width: "100%" }} size="large">
         {apiEndpoints.map((api, index) => (
           <Collapse key={index}>
-            <Panel header={api.name} key={index}>
-              <Row gutter={[16, 16]} align="middle">
-                <Col span={12}>
-                  <Input
-                    type="number"
-                    value={inputNumber}
-                    onChange={handleInputChange}
-                    placeholder="Nhập số lượng"
-                  />
-                </Col>
-                <Col span={6}>
-                  <Button onClick={() => callApi(api.endpoint, index)}>
+            <Panel header={api.name} key={api.key}>
+              <Form
+                onFinish={(values) => handleSubmit(values, api.endpoint, index)}
+                layout="vertical"
+              >
+                {api.fields.map((field) => (
+                  <Form.Item
+                    key={field.name}
+                    name={field.key}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Xin hãy nhập số!",
+                      },
+                    ]}
+                    label={field.name}
+                  >
+                    <InputNumber style={{ width: "20%" }} />
+                  </Form.Item>
+                ))}
+                <Form.Item>
+                  <Button type="primary" htmlType="submit">
                     Thực thi
                   </Button>
-                </Col>
-              </Row>
+                </Form.Item>
+              </Form>
               {loading && <Spin />}
               {error && <Alert message={`Lỗi: ${error}`} type="error" />}
               <Divider />

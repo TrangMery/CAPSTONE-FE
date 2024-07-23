@@ -9,6 +9,8 @@ import {
   Col,
   Space,
   Divider,
+  Form,
+  InputNumber,
 } from "antd";
 import axios from "axios";
 import { CheckCircleOutlined } from "@ant-design/icons";
@@ -18,20 +20,30 @@ const { Panel } = Collapse;
 const Stage3 = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [responseData, setResponseData] = useState("");
-  const [inputNumber, setInputNumber] = useState("");
   const [successPanel, setSuccessPanel] = useState({});
-  const handleInputChange = (e) => {
-    setInputNumber(e.target.value);
-  };
 
-  const callApi = async (endpoint, index) => {
+  const handleSubmit = async (values, url, index) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post(`${endpoint}${inputNumber}`);
+      let response;
+      if (index === 3) {
+        response = await axios.post(
+          `${url}${
+            "numberOfApprove=" +
+            values.numberOfApprove +
+            "&numberOfReject=" +
+            values.numberOfReject +
+            "&numberOfEdit=" +
+            values.numberOfEdit
+          }`
+        );
+      } else if (index === 2) {
+        response = await axios.post(`${url}`);
+      } else {
+        response = await axios.post(`${url}${values.topicNumber}`);
+      }
       if (response.status === 200) {
-        setInputNumber(0);
         setSuccessPanel({ ...successPanel, [index]: true });
       }
     } catch (error) {
@@ -42,28 +54,46 @@ const Stage3 = () => {
 
   const apiEndpoints = [
     {
+      key: "1",
       name: "Tạo lịch nộp tài liệu",
       endpoint: "http://localhost:5132/api/mock/final-schedule?numberOfTopic=",
+      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
     },
     {
+      key: "2",
       name: "Trưởng nhóm nộp tài liệu",
-      endpoint: "http://localhost:5132/api/mock/final-supplementation?numberOfTopic=",
+      endpoint:
+        "http://localhost:5132/api/mock/final-supplementation?numberOfTopic=",
+      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
     },
     {
+      key: "3",
       name: "Tạo hội đồng phê duyệt",
-      endpoint: "http://localhost:5132/api/mock/final-config?numberOfTopic=",
+      endpoint: "http://localhost:5132/api/mock/final-config",
+      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
     },
     {
+      key: "4",
       name: "Hội đồng phê duyệt đánh giá",
-      endpoint: "http://localhost:5132/api/mock/final-upload-meeting-result?numberOfTopic=",
+      endpoint: "http://localhost:5132/api/mock/final-upload-meeting-result?",
+      fields: [
+        { name: "Số lượng đề tài thông qua", key: "numberOfApprove" },
+        { name: "Số lượng đề tài nộp lại", key: "numberOfReject" },
+        { name: "Số lượng đề tài bị loại", key: "numberOfEdit" },
+      ],
     },
     {
+      key: "5",
       name: "Trưởng nhóm nộp lại tài liệu",
       endpoint: "http://localhost:5132/api/mock/final-resubmit?numberOfTopic=",
+      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
     },
     {
+      key: "6",
       name: "Chủ tịch hội đồng đánh giá",
-      endpoint: "http://localhost:5132/api/mock/final-chairman-make-decision?numberOfTopic=",
+      endpoint:
+        "http://localhost:5132/api/mock/final-chairman-make-decision?numberOfTopic=",
+      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
     },
   ];
   return (
@@ -71,22 +101,35 @@ const Stage3 = () => {
       <Space direction="vertical" style={{ width: "100%" }} size="large">
         {apiEndpoints.map((api, index) => (
           <Collapse key={index}>
-            <Panel header={api.name} key={index}>
-              <Row gutter={[16, 16]} align="middle">
-                <Col span={12}>
-                  <Input
-                    type="number"
-                    value={inputNumber}
-                    onChange={handleInputChange}
-                    placeholder="Nhập số lượng"
-                  />
-                </Col>
-                <Col span={6}>
-                  <Button onClick={() => callApi(api.endpoint, index)}>
+            <Panel header={api.name} key={api.key}>
+              <Form
+                onFinish={(values) => handleSubmit(values, api.endpoint, index)}
+                layout="vertical"
+              >
+                {api.fields.map((field) => (
+                  <Form.Item
+                    key={field.name}
+                    name={field.key}
+                    rules={[
+                      {
+                        required: index !== 2 ? true : false,
+                        message: "Xin hãy nhập số!",
+                      },
+                    ]}
+                    label={field.name}
+                  >
+                    <InputNumber
+                      disabled={index === 2}
+                      style={{ width: "20%" }}
+                    />
+                  </Form.Item>
+                ))}
+                <Form.Item>
+                  <Button type="primary" htmlType="submit">
                     Thực thi
                   </Button>
-                </Col>
-              </Row>
+                </Form.Item>
+              </Form>
               {loading && <Spin />}
               {error && <Alert message={`Lỗi: ${error}`} type="error" />}
               <Divider />

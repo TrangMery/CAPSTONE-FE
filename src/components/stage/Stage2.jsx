@@ -11,6 +11,7 @@ import {
   Divider,
   InputNumber,
   Form,
+  Select,
 } from "antd";
 import axios from "axios";
 import { CheckCircleOutlined, CheckOutlined } from "@ant-design/icons";
@@ -33,16 +34,24 @@ const Stage2 = () => {
             "numberOfMoveOn=" +
             values.numberOfMoveOn +
             "&numberOfReportAgain=" +
-            values.numberOfReportAgain
+            values.numberOfReportAgain +
+            "&numberOfReport=" +
+            values.numberOfReport
           }`
         );
       } else if (index === 3) {
-        response = await axios.post(`${url}`);
-      } else {
-        console.log(
-          `${url}${values.topicNumber}`
+        response = await axios.post(
+          `${url}${"numberOfReport=" + values.numberOfReport}`
         );
-        response = await axios.post(`${url}${values.topicNumber}`);
+      } else {
+        response = await axios.post(
+          `${url}${
+            "numberOfTopic=" +
+            values.numberOfTopic +
+            "&numberOfReport=" +
+            values.numberOfReport
+          }`
+        );
       }
 
       if (response.status === 200) {
@@ -59,27 +68,35 @@ const Stage2 = () => {
     {
       key: 1,
       name: "Tạo lịch nộp tài liệu",
-      endpoint: "http://localhost:5132/api/mock/middle-schedule?numberOfTopic=",
-      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
+      endpoint: "http://localhost:5132/api/mock/middle-schedule?",
+      fields: [
+        { name: "Số lượng đề tài", key: "numberOfTopic" },
+        { name: "Trạng thái", key: "numberOfReport" },
+      ],
     },
     {
       key: 2,
       name: "Trưởng nhóm nộp tài liệu",
-      endpoint:
-        "http://localhost:5132/api/mock/middle-supplementation?numberOfTopic=",
-      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
+      endpoint: "http://localhost:5132/api/mock/middle-supplementation?",
+      fields: [
+        { name: "Số lượng đề tài", key: "numberOfTopic" },
+        { name: "Trạng thái", key: "numberOfReport" },
+      ],
     },
     {
       key: 3,
       name: "Tạo hội đồng phê duyệt",
-      endpoint: "http://localhost:5132/api/mock/middle-config",
-      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
+      endpoint: "http://localhost:5132/api/mock/middle-config?",
+      fields: [{ name: "Trạng thái", key: "numberOfReport" }],
     },
     {
       key: 4,
       name: "Hội đồng phê duyệt đánh giá",
-      endpoint: "http://localhost:5132/api/mock/middle-evaluate?numberOfTopic=",
-      fields: [{ name: "Số lượng đề tài", key: "topicNumber" }],
+      endpoint: "http://localhost:5132/api/mock/middle-evaluate?",
+      fields: [
+        { name: "Số lượng đề tài", key: "numberOfTopic" },
+        { name: "Trạng thái", key: "numberOfReport" },
+      ],
     },
     {
       key: 5,
@@ -88,14 +105,15 @@ const Stage2 = () => {
       fields: [
         { name: "Số lượng đề tài thông qua", key: "numberOfMoveOn" },
         { name: "Số lượng đề tài báo cáo lại", key: "numberOfReportAgain" },
+        { name: "Trạng thái", key: "numberOfReport" },
       ],
     },
   ];
   return (
     <div>
       <Space direction="vertical" style={{ width: "100%" }} size="large">
-        {apiEndpoints.map((api, index) => (
-          <Collapse key={index}>
+        {apiEndpoints.map((api) => (
+          <Collapse key={api.key}>
             <Panel
               header={
                 <div
@@ -117,33 +135,36 @@ const Stage2 = () => {
               }}
             >
               <Form
-                onFinish={(values) => handleSubmit(values, api.endpoint, api.key)}
+                onFinish={(values) =>
+                  handleSubmit(values, api.endpoint, api.key)
+                }
                 layout="vertical"
               >
-                 {api.key === 3 ? (
-                  <></>
-                ) : (
-                  <>
-                    {api.fields.map((field) => (
-                      <Form.Item
-                        key={field.name}
-                        name={field.key}
-                        rules={[
-                          {
-                            required: index !== 4 ? true : false,
-                            message: "Xin hãy nhập số!",
-                          },
-                        ]}
-                        label={field.name}
-                      >
-                        <InputNumber
-                          disabled={index === 4}
-                          style={{ width: "20%" }}
-                        />
-                      </Form.Item>
-                    ))}
-                  </>
-                )}
+                {api.fields.map((field) => (
+                  <Form.Item
+                    key={field.key}
+                    name={field.key}
+                    rules={[
+                      {
+                        required: true,
+                        message: `Xin hãy nhập ${
+                          field.name === "Trạng thái" ? "trạng thái" : "số"
+                        }!`,
+                      },
+                    ]}
+                    label={field.name}
+                  >
+                    {field.name === "Trạng thái" ? (
+                      <Select placeholder="Chọn trạng thái" style={{ width: "20%" }}>
+                        <Option value="1">Báo cáo lần 1</Option>
+                        <Option value="2">Báo cáo lần 2</Option>
+                        <Option value="3">Báo cáo nhiều hơn 2 lần</Option>
+                      </Select>
+                    ) : (
+                      <InputNumber style={{ width: "20%" }} />
+                    )}
+                  </Form.Item>
+                ))}
                 <Form.Item>
                   <Button type="primary" htmlType="submit">
                     Thực thi

@@ -1,9 +1,10 @@
-import { Button, Col, Divider, Form, Input, Row } from "antd";
+import { Button, Col, Divider, Form, Input, message, Row, Space } from "antd";
 import React, { useEffect, useState } from "react";
 import "./basicProfile.scss";
 import { getAllDepartment, getUserInformation } from "../../../services/api";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import axios from "axios";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
 
@@ -11,6 +12,8 @@ const BasicProfile = () => {
   const { TextArea } = Input;
   const [form] = Form.useForm();
   const [departMent, setDepartMent] = useState([]);
+  const [bankName, setBankName] = useState([{}]);
+  const [isEdit, setIsEdit] = useState(true);
   const userId = sessionStorage.getItem("userId");
   const getDepartment = async () => {
     try {
@@ -52,8 +55,25 @@ const BasicProfile = () => {
       console.log("====================================");
     }
   };
+  const editAccount = async () => {
+    message.success("alalalla");
+    setIsEdit(true);
+  };
+  const getBankName = async () => {
+    try {
+      const res = await axios.get("https://api.vietqr.io/v2/banks");
+      if (res.data && res.status === 200) {
+        setBankName(res.data.data);
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("có lỗi tại get bank name", error);
+      console.log("====================================");
+    }
+  };
   useEffect(() => {
     getDepartment();
+    getBankName();
   }, []);
   if (departMent.length) {
     getAccountInfor();
@@ -70,7 +90,38 @@ const BasicProfile = () => {
       >
         <h3>Thông tin cá nhân</h3>
       </div>
+      <div>
+        <Space
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          {isEdit === true ? (
+            <></>
+          ) : (
+            <>
+              {" "}
+              <Button type="primary" danger onClick={() => setIsEdit(true)}>
+                Hủy
+              </Button>
+            </>
+          )}
 
+          <Button
+            type="primary"
+            onClick={() => {
+              setIsEdit(false);
+              if (isEdit !== true) {
+                editAccount();
+              }
+            }}
+          >
+            {isEdit === true ? "Chỉnh sửa" : "Xác nhận"}
+          </Button>
+        </Space>
+      </div>
       <Divider />
       <div className="parent-container">
         <div className="form-container">
@@ -78,12 +129,22 @@ const BasicProfile = () => {
             <Row gutter={10}>
               <Col span={12}>
                 <Form.Item name="fullName" label="Họ và Tên">
-                  <Input />
+                  <Input disabled={isEdit} />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item name="birthday" label="Ngày tháng năm sinh">
                   <Input />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="bank" label="Ngân hàng sử dụng">
+                  <Input disabled={isEdit} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="bankAccountNumber" label="Số tài khoản">
+                  <Input disabled={isEdit} />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -149,16 +210,6 @@ const BasicProfile = () => {
               </Col>
               <Col span={12}>
                 <Form.Item name="taxCode" label="Mã số thuế">
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="bank" label="Ngân hàng sử dụng">
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="bankAccountNumber" label="Số tài khoản">
                   <Input />
                 </Form.Item>
               </Col>

@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import {
   Button,
   Col,
-  DatePicker,
   Divider,
   Form,
   Input,
   Modal,
   Row,
-  Select,
   notification,
 } from "antd";
 import { updateArticle } from "../../../services/api";
@@ -25,9 +23,6 @@ const ArticalEditModal = (props) => {
   const onSubmit = async (values) => {
     try {
       const res = await updateArticle(values);
-      console.log("====================================");
-      console.log(res);
-      console.log("====================================");
       if (res && res.statusCode === 200) {
         notification.success({
           message: "Thông báo",
@@ -77,76 +72,30 @@ const ArticalEditModal = (props) => {
           onFinish={onSubmit}
         >
           <Row gutter={20}>
-            <Col span={12}>
+            <Col span={24}>
               <Form.Item
-                name="articleName"
-                label="Tên sản phẩm"
+                name="newsName"
+                label="Tên bài báo khoa học"
                 labelCol={{ span: 24 }}
                 rules={[
                   {
                     required: true,
-                    message: "Xin hãy nhập vào tên chứng chỉ!",
+                    message: "Xin hãy thêm tên bài báo khoa học",
                   },
                 ]}
               >
                 <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="authorName"
-                label="Tên tác giả"
-                labelCol={{ span: 24 }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Xin hãy điền tên tác giả!",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="publishYear"
-                label="Năm xuất bản"
-                labelCol={{ span: 24 }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Xin hãy chọn năm xuất bản",
-                  },
-                ]}
-              >
-                <Input type="number" />
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                name="numberOfPages"
-                label="Số trang"
-                labelCol={{ span: 24 }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Xin hãy chọn số trang",
-                  },
-                ]}
-              >
-                <Input type="number" />
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
-                name="fileLink"
-                label="Đường dẫn bài báo"
+                name="link"
+                label="Link bài báo khoa học"
                 labelCol={{ span: 24 }}
                 rules={[
                   {
                     required: true,
-                    message: "Xin hãy thêm đường dẫn bài báo",
+                    message: "Xin hãy nhập link bài báo",
                   },
                 ]}
               >

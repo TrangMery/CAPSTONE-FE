@@ -44,7 +44,7 @@ const ArticalModal = (props) => {
       <Modal
         maskClosable={false}
         open={props.openModal}
-        title="Thêm mới các bài báo hoặc báo cáo chuyên đề"
+        title="Thêm mới bài báo khoa học"
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
@@ -80,13 +80,13 @@ const ArticalModal = (props) => {
           <Row gutter={20}>
             <Col span={24}>
               <Form.Item
-                name="fileLink"
-                label="Đường dẫn bài báo"
+                name="newsName"
+                label="Tên bài báo khoa học"
                 labelCol={{ span: 24 }}
                 rules={[
                   {
                     required: true,
-                    message: "Xin hãy thêm đường dẫn bài báo",
+                    message: "Xin hãy thêm tên bài báo khoa học",
                   },
                 ]}
               >

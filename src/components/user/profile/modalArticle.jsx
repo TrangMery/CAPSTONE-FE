@@ -4,16 +4,20 @@ import {
   Col,
   ConfigProvider,
   Divider,
+  DatePicker,
   Form,
   Input,
   Modal,
   Row,
   notification,
 } from "antd";
+import dayjs from "dayjs";
 import { createArticle } from "../../../services/api";
 const ArticalModal = (props) => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const userId = sessionStorage.getItem("userId");
+  const { YearPicker } = DatePicker;
   const handleOk = () => {
     form.submit();
   };
@@ -22,7 +26,12 @@ const ArticalModal = (props) => {
   };
   const onSubmit = async (values) => {
     try {
-      const data = {};
+      const data = {
+        userId: userId,
+        achievementName: values.achievementName,
+        publishYear: dayjs(values.publishYear).format("YYYY"),
+        articleLink: values.articleLink,
+      };
       const res = await createArticle(data);
       setLoading(true);
       if (res && res.statusCode === 200) {
@@ -78,9 +87,9 @@ const ArticalModal = (props) => {
           onFinish={onSubmit}
         >
           <Row gutter={20}>
-            <Col span={24}>
+            <Col span={12}>
               <Form.Item
-                name="newsName"
+                name="achievementName"
                 label="Tên bài báo khoa học"
                 labelCol={{ span: 24 }}
                 rules={[
@@ -93,9 +102,26 @@ const ArticalModal = (props) => {
                 <Input />
               </Form.Item>
             </Col>
+            <Col span={12}>
+              <Form.Item
+                name="publishYear"
+                label="Năm báo cáo"
+                labelCol={{ span: 24 }}
+                rules={[
+                  { required: true, message: "Xin hãy chọn năm báo cáo" },
+                ]}
+              >
+                <YearPicker
+                  style={{ width: "100%" }}
+                  placeholder="Chọn năm xuất bản"
+                  picker="year"
+                  format="YYYY"
+                />
+              </Form.Item>
+            </Col>
             <Col span={24}>
               <Form.Item
-                name="link"
+                name="articleLink"
                 label="Link bài báo khoa học"
                 labelCol={{ span: 24 }}
                 rules={[

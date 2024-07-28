@@ -14,7 +14,7 @@ import {
   Select,
 } from "antd";
 import axios from "axios";
-import { CheckCircleOutlined, CheckOutlined } from "@ant-design/icons";
+import { CheckOutlined } from "@ant-design/icons";
 
 const { Panel } = Collapse;
 
@@ -28,8 +28,9 @@ const Stage2 = () => {
     setError(null);
     try {
       let response;
-      if (index === 5) {
-        response = await axios.post(
+      let response2;
+      if (index === 4) {
+        response2 = await axios.post(
           `${url}${
             "numberOfMoveOn=" +
             values.numberOfMoveOn +
@@ -39,6 +40,18 @@ const Stage2 = () => {
             values.numberOfReport
           }`
         );
+
+        if (response2.status === 200) {
+          const link = "http://localhost:5132/api/mock/move-to-final?";
+          response = await axios.post(
+            `${link}${
+              "numberOfTopic=" +
+              values.numberOfTopic +
+              "&numberOfReport=" +
+              values.numberOfReport
+            }`
+          );
+        }
       } else if (index === 3) {
         response = await axios.post(
           `${url}${"numberOfReport=" + values.numberOfReport}`
@@ -95,14 +108,6 @@ const Stage2 = () => {
       endpoint: "http://localhost:5132/api/mock/middle-evaluate?",
       fields: [
         { name: "Số lượng đề tài", key: "numberOfTopic" },
-        { name: "Trạng thái", key: "numberOfReport" },
-      ],
-    },
-    {
-      key: 5,
-      name: "Chuyển trạng thái đề tài",
-      endpoint: "http://localhost:5132/api/mock/move-to-final?",
-      fields: [
         { name: "Số lượng đề tài thông qua", key: "numberOfMoveOn" },
         { name: "Số lượng đề tài báo cáo lại", key: "numberOfReportAgain" },
         { name: "Trạng thái", key: "numberOfReport" },
@@ -140,31 +145,38 @@ const Stage2 = () => {
                 }
                 layout="vertical"
               >
-                {api.fields.map((field) => (
-                  <Form.Item
-                    key={field.key}
-                    name={field.key}
-                    rules={[
-                      {
-                        required: true,
-                        message: `Xin hãy nhập ${
-                          field.name === "Trạng thái" ? "trạng thái" : "số"
-                        }!`,
-                      },
-                    ]}
-                    label={field.name}
-                  >
-                    {field.name === "Trạng thái" ? (
-                      <Select placeholder="Chọn trạng thái" style={{ width: "20%" }}>
-                        <Option value="1">Báo cáo lần 1</Option>
-                        <Option value="2">Báo cáo lần 2</Option>
-                        <Option value="3">Báo cáo nhiều hơn 2 lần</Option>
-                      </Select>
-                    ) : (
-                      <InputNumber style={{ width: "20%" }} />
-                    )}
-                  </Form.Item>
-                ))}
+                <Row>
+                  {api.fields.map((field) => (
+                    <Col span={12}>
+                      <Form.Item
+                        key={field.key}
+                        name={field.key}
+                        rules={[
+                          {
+                            required: true,
+                            message: `Xin hãy nhập ${
+                              field.name === "Trạng thái" ? "trạng thái" : "số"
+                            }!`,
+                          },
+                        ]}
+                        label={field.name}
+                      >
+                        {field.name === "Trạng thái" ? (
+                          <Select
+                            placeholder="Chọn trạng thái"
+                            style={{ width: "50%" }}
+                          >
+                            <Option value="1">Báo cáo lần 1</Option>
+                            <Option value="2">Báo cáo lần 2</Option>
+                            <Option value="3">Báo cáo nhiều hơn 2 lần</Option>
+                          </Select>
+                        ) : (
+                          <InputNumber style={{ width: "50%" }} />
+                        )}
+                      </Form.Item>
+                    </Col>
+                  ))}
+                </Row>
                 <Form.Item>
                   <Button type="primary" htmlType="submit">
                     Thực thi

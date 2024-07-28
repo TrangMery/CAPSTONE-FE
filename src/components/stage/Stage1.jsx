@@ -22,7 +22,6 @@ const Stage1 = () => {
   const handleSubmit = async (values, url, index) => {
     setLoading(true);
     setError(null);
-    console.log(index === 5);
     try {
       let response;
       if (index === 6) {
@@ -44,6 +43,7 @@ const Stage1 = () => {
       }
 
       if (response.status === 200) {
+        console.log(response);
         setCompleted({ ...completed, [index]: true });
         setSuccessPanel({ ...successPanel, [index]: true });
       }
@@ -147,7 +147,7 @@ const Stage1 = () => {
                 }
                 layout="vertical"
               >
-                {api.key === 5 ? (
+                {api.key === 5 || api.key === 3 ? (
                   <></>
                 ) : (
                   <>

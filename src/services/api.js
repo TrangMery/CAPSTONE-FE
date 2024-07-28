@@ -8,6 +8,11 @@ export const getUserInformation = (params) => {
   return axios.get(`/api/user/infor?${qs.stringify(params)}`);
 };
 
+// edit user information
+export const editUserInformation = (data) => {
+  return axios.post("/api/user/update-infor", data);
+};
+
 //register email
 export const registerEmail = (email) => {
   return axios.post("/api/account/register-email", email);

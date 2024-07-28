@@ -19,8 +19,10 @@ const TopicSearchFormStaff = (props) => {
   const [year, setYear] = useState(dayjs().year());
   const [searchText, setSearchText] = useState("");
   const [listState, setListState] = useState([]);
+  const [listUser, setListUser] = useState([])
   const { token } = theme.useToken();
   const [form] = Form.useForm();
+  const userId = sessionStorage.getItem("userId");
   const formStyle = {
     maxWidth: "none",
     background: token.colorFillAlter,
@@ -58,7 +60,15 @@ const TopicSearchFormStaff = (props) => {
       console.log("====================================");
     }
   };
-
+  const options = listUser.map((user) => ({
+    value: user.accountEmail,
+    label: (
+      <div>
+        {user.fullName} <br />
+        <small>{user.accountEmail}</small>
+      </div>
+    ),
+  }));
   const filteredOptions =
     searchText.length >= 3
       ? options.filter((option) =>
@@ -93,8 +103,18 @@ const TopicSearchFormStaff = (props) => {
       props.handleSearchTopic(query);
     }
   };
+  const getUser = async () => {
+    const res = await getAllUserAdmin({
+      userId: userId,
+    });
+    console.log(res);
+    if (res && res?.data) {
+      setListUser(res?.data);
+    }
+  };
   useEffect(() => {
     getStateProject();
+    getUser();
   }, []);
   return (
     <Form

@@ -13,8 +13,8 @@
 
 .edit-icon {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: -20px;
+  right: -10px;
 }
 
 .title {
@@ -66,5 +66,6 @@
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: auto; 
+  margin-bottom: 20px; 
 }

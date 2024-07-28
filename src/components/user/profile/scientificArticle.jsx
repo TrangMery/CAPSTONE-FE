@@ -50,7 +50,7 @@ const ScientificArticle = () => {
       {listProduct?.length === 0 ? (
         <Empty
           style={{ marginTop: 100 }}
-          description={<span>Chưa có bài báo chuyên đề</span>}
+          description={<span>Chưa có bài báo khoa học</span>}
         />
       ) : (
         <Col md={18} xs={24}>
@@ -70,17 +70,16 @@ const ScientificArticle = () => {
                 </div>
                 <div className="description">
                   <div className="info-row">
-                    <div>Tác giả: {product.authorName}</div>
-                    <div>Số trang: {product.numberOfPages}</div>
+                    <div>Tên bài báo: {product.achievementName}</div>
                     <div>Năm xuất bản: {product.publishYear}</div>
                   </div>
                   <a
-                    href={product.fileLink}
+                    href={product.articleLink}
                     className="file-link"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Link: {product.fileLink}
+                    Link: {product.articleLink}
                   </a>
                 </div>
               </div>

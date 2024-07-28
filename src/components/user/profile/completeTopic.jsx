@@ -33,8 +33,6 @@ const CompletedTopic = () => {
   const [topicId, setTopicId] = useState();
   const [isOwner, setIsOwner] = useState(false);
   const [file, setFile] = useState(null);
-  const [fileUrl, setFileUrl] = useState(null);
-  const proxyUrl = "https://cors-anywhere.herokuapp.com/";
   const userId = sessionStorage.getItem("userId");
   const getTopic = async () => {
     try {
@@ -52,20 +50,7 @@ const CompletedTopic = () => {
       console.log("====================================");
     }
   };
-  const getFileCvNewest = async () => {
-    try {
-      const res = await exportFileCv({
-        userId: userId,
-      });
-      if (res && res.statusCode === 200) {
-        setFileUrl(proxyUrl + res.data);
-      }
-    } catch (error) {
-      console.log("====================================");
-      console.log("Có lỗi tại getFileCvNewest: ", error);
-      console.log("====================================");
-    }
-  };
+
   const columns = [
     {
       title: "Mã đề tài",
@@ -126,7 +111,7 @@ const CompletedTopic = () => {
         <h2 style={{ fontWeight: "bold", fontSize: "20px", color: "#303972" }}>
           Danh sách các đề tài đã hoàn thành
         </h2>
-        {/* <ConfigProvider
+        <ConfigProvider
           theme={{
             token: {
               colorPrimary: "#55E6A0",
@@ -141,25 +126,12 @@ const CompletedTopic = () => {
           >
             Xuất hồ sơ cá nhân
           </Button>
-        </ConfigProvider> */}
+        </ConfigProvider>
       </div>
     </div>
   );
-  const loadFileFromUrl = async (url) => {
-    try {
-      const response = await axios.get(url, { responseType: "arraybuffer" });
-      const zip = new PizZip(response.data);
-      const doc = new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true,
-      });
-      setFile(doc);
-    } catch (error) {
-      console.error("Error loading DOCX file:", error);
-    }
-  };
   const handleExportFile = async () => {
-    if (!fileUrl || listTopic.length === 0) {
+    if (listTopic.length === 0) {
       notification.error({
         message: "Xuất hồ sơ không thành công",
         description: "Bạn chưa có đề tài để xuất hồ sơ",
@@ -167,50 +139,12 @@ const CompletedTopic = () => {
       return;
     }
     try {
-      const response = await axios.get(fileUrl, {
-        responseType: "arraybuffer",
-      });
-      const zip = new PizZip(response.data);
-      const doc = new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true,
-      });
-
-      const fullText = doc.getFullText();
-      const tablePosition = fullText.indexOf(
-        "Các đề tài nghiên cứu khoa học đã và đang tham gia:"
-      );
-      if (tablePosition !== -1) {
-        const tableText = fullText.slice(tablePosition);
-        const existingRows =
-          tableText.split("\n").filter((row) => row.trim().length > 0).length -
-          1; 
-        const newRowText = listTopic
-          .map(
-            (item, index) =>
-              `${existingRows + index + 1}\t${item.topicName}\t${dayjs(
-                item.createdAt
-              ).format("YYYY")}/${dayjs(item.completedDate).format(
-                "YYYY"
-              )}\t${"Cấp cơ sở"}\t${
-                item.leaderName === null ? "Chủ nhiệm đề tài" : ""
-              }`
-          )
-          .join("\n");
-        const updatedTableText = `${tableText}\n${newRowText}`;
-        doc.setData({ table: updatedTableText });
-        doc.render();
-      }
-
-      const output = doc.getZip().generate({ type: "blob" });
-      saveAs(output, "Ly_Lich_Khoa_Hoc.docx");
     } catch (error) {
       console.error("Error downloading or processing the file", error);
     }
   };
   useEffect(() => {
     getTopic();
-    getFileCvNewest();
   }, []);
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination.current !== current) {

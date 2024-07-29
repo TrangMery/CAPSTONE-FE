@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   Col,
@@ -23,7 +23,9 @@ const ArticalEditModal = (props) => {
   const onSubmit = async (values) => {
     try {
       const res = await updateArticle(values);
+      setLoading(true);
       if (res && res.statusCode === 200) {
+        setLoading(false);
         notification.success({
           message: "Thông báo",
           description: "Chỉnh sửa bài báo khoa học thành công",
@@ -50,9 +52,6 @@ const ArticalEditModal = (props) => {
         footer={[
           <Button key="back" onClick={handleCancel}>
             Quay về
-          </Button>,
-          <Button danger onClick={() => {}}>
-            Xóa
           </Button>,
           <Button
             key="submit"

@@ -1,10 +1,13 @@
-import { Col, Row, Empty, Button, Pagination } from "antd";
+import { Col, Row, Empty, Button, Pagination, Card } from "antd";
 import { useEffect, useState } from "react";
-import { EditOutlined } from "@ant-design/icons";
 import { getAllArticle } from "../../../services/api";
 import ArticalModal from "./modalArticle";
 import ArticalEditModal from "./modalEditArtical";
-import "./scientific.scss";
+import {
+  DeleteOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
+
 const ScientificArticle = () => {
   const [listProduct, setListProduct] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -12,11 +15,18 @@ const ScientificArticle = () => {
   const UserId = sessionStorage.getItem("userId");
   const [currentPage, setCurrentPage] = useState(1);
   const [product, setProduct] = useState();
-  const itemsPerPage = 3;
+  const itemsPerPage = 4;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = listProduct.slice(indexOfFirstItem, indexOfLastItem);
-
+  const actions = [
+    <EditOutlined
+      style={{ color: "blue" }}
+      key="edit"
+      onClick={() => setIsOpenEdit(true)}
+    />,
+    <DeleteOutlined style={{ color: "red" }} key="setting" />,
+  ];
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -53,47 +63,42 @@ const ScientificArticle = () => {
           description={<span>Chưa có bài báo khoa học</span>}
         />
       ) : (
-        <Col md={18} xs={24}>
+        <Row gutter={[10, 10]}>
           {currentItems.map((product, index) => (
-            <div className="papper" key={index}>
-              <div className="papper-content">
-                <EditOutlined
-                  className="edit-icon"
-                  style={{ cursor: "pointer" }}
-                  twoToneColor="#eb2f96"
-                  onClick={() => {
-                    setIsOpenEdit(true), setProduct(product);
-                  }}
-                />
-                <div className="title">
-                  <div>{product.articleName}</div>
-                </div>
-                <div className="description">
-                  <div className="info-row">
-                    <div>Tên bài báo: {product.achievementName}</div>
-                    <div>Năm xuất bản: {product.publishYear}</div>
-                  </div>
-                  <a
-                    href={product.articleLink}
-                    className="file-link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Link: {product.articleLink}
-                  </a>
-                </div>
+            <Col span={12} key={index}>
+              <div>
+                <Card actions={actions}>
+                  <Card.Meta
+                    title={product.achievementName}
+                    description={
+                      <>
+                        <p>Năm xuất bản: {product.publishYear}</p>
+                        <a
+                          href={product.articleLink}
+                          className="file-link"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Đường dẫn: {product.articleLink}
+                        </a>
+                      </>
+                    }
+                  />
+                </Card>
               </div>
-            </div>
+            </Col>
           ))}
-          <div className="pagination">
-            <Pagination
-              current={currentPage}
-              pageSize={itemsPerPage}
-              total={listProduct.length}
-              onChange={handlePageChange}
-            />
-          </div>
-        </Col>
+          <Col span={24}>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Pagination
+                current={currentPage}
+                pageSize={itemsPerPage}
+                total={listProduct.length}
+                onChange={handlePageChange}
+              />
+            </div>
+          </Col>
+        </Row>
       )}
       <ArticalModal
         openModal={isOpen}

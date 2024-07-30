@@ -63,9 +63,7 @@ const UploadByFile = (props) => {
         users: listAccounts,
       };
       const res = await createAccountAdmin(data);
-      console.log("====================================");
-      console.log(res);
-      console.log("====================================");
+      setLoading(true);
       if (res && res.statusCode === 200) {
         setLoading(false);
         notification.success({
@@ -188,6 +186,7 @@ const UploadByFile = (props) => {
     accept:
       ".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     customRequest: async ({ file, onSuccess, onError }) => {
+      setLoading(true);
       try {
         const isCompressedFile =
           file.type ===
@@ -198,7 +197,7 @@ const UploadByFile = (props) => {
           return;
         }
         const response = await uploadFileAdmin(file);
-        setLoading(true);
+
         if (response.status === 500) {
           onError(response, file);
           message.error(`${file.name} file tải lên không thành công.`);

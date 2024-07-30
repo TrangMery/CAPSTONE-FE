@@ -3,6 +3,7 @@ import { Tabs } from "antd";
 import ScientificArticle from "./scientificArticle";
 import CompletedTopic from "./completeTopic";
 const ProductPage = () => {
+  const [checktab, setCheckTab] = useState("")
   const items = [
     {
       key: "1",
@@ -12,7 +13,7 @@ const ProductPage = () => {
     {
       key: "2",
       label: "Đề tài đã hoàn thành",
-      children: <CompletedTopic/>,
+      children: <CompletedTopic checktab={checktab}/>,
     },
   ];
   return (
@@ -22,6 +23,9 @@ const ProductPage = () => {
         tabPosition="left"
         style={{
           height: 220,
+        }}
+        onChange={(value) => {
+          setCheckTab(value)
         }}
         items={items}
       />

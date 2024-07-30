@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Table, Tooltip, message, Row, Col } from "antd";
-import { CloudDownloadOutlined, ExportOutlined } from "@ant-design/icons";
+import {
+  CloudDownloadOutlined,
+  ExportOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import { exportFileAmdin, getTopicCompleted } from "../../services/api";
 import TopicSearchForm from "./TopicSearch";
 const ExportFile = () => {
@@ -76,10 +80,32 @@ const ExportFile = () => {
         return (
           <div>
             <Tooltip placement="top" title="Xuất file tổng kết">
-              <CloudDownloadOutlined
-                onClick={() => handleExport(record.topicId)}
-                style={style1}
-              />
+              {loading ? (
+                <>
+                  <LoadingOutlined
+                    style={{
+                      color: "blue",
+                      fontSize: "18px",
+                      cursor: "pointer",
+                      paddingTop: "2px",
+                    }}
+                  />
+                </>
+              ) : (
+                <>
+                  <CloudDownloadOutlined
+                    onClick={(event) => {
+                      handleExport(record.topicId), event.stopPropagation();
+                    }}
+                    style={{
+                      color: "blue",
+                      fontSize: "18px",
+                      cursor: "pointer",
+                      paddingTop: "2px",
+                    }}
+                  />
+                </>
+              )}
             </Tooltip>
           </div>
         );
@@ -129,7 +155,6 @@ const ExportFile = () => {
             title={renderHeader}
             columns={columns}
             dataSource={listTopic}
-            loading={loading}
             onChange={onChange}
             pagination={{
               current: current,

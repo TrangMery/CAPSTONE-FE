@@ -76,12 +76,6 @@ const ArticalEditModal = (props) => {
                 name="newsName"
                 label="Tên bài báo khoa học"
                 labelCol={{ span: 24 }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Xin hãy thêm tên bài báo khoa học",
-                  },
-                ]}
               >
                 <Input />
               </Form.Item>
@@ -91,12 +85,6 @@ const ArticalEditModal = (props) => {
                 name="link"
                 label="Link bài báo khoa học"
                 labelCol={{ span: 24 }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Xin hãy nhập link bài báo",
-                  },
-                ]}
               >
                 <Input />
               </Form.Item>

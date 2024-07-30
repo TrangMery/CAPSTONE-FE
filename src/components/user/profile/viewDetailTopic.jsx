@@ -1,16 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Drawer, List } from "antd";
+import { Drawer, List, Collapse, theme, Tooltip } from "antd";
 import {
-  getContractDone,
+  exportFileAmdin,
   getHistoryProject,
   getUserTopic,
 } from "../../../services/api";
 import TimelineComponent from "./Timeline";
+import {
+  CaretRightOutlined,
+  CloudDownloadOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 const ViewDetailTopic = (props) => {
   const [listUser, setListUser] = useState([]);
-  const [file, setFile] = useState({});
   const [process, setProcess] = useState([]);
-  let checkEnd;
+  const [loading, setLoading] = useState(false);
+  const { token } = theme.useToken();
+  const panelStyle = {
+    marginBottom: 24,
+    background: token.colorFillAlter,
+    borderRadius: token.borderRadiusLG,
+    border: "none",
+  };
   const onClose = () => {
     props.setOpen(false);
   };
@@ -29,18 +40,12 @@ const ViewDetailTopic = (props) => {
     }
   };
   const getTopicDetail = async () => {
-    const data = {
-      topicId: props.topicId,
-    };
     try {
       const res = await getUserTopic({
         TopicId: props.topicId,
       });
-      const getFile = await getContractDone(data);
-      if (res.statusCode === 200 || getFile.status === 200) {
+      if (res.statusCode === 200) {
         setListUser(res.data);
-        setFile(getFile.data);
-        checkEnd = getFile.data.contractLink.endsWith(".docx");
       }
     } catch (error) {
       console.log("====================================");
@@ -48,63 +53,123 @@ const ViewDetailTopic = (props) => {
       console.log("====================================");
     }
   };
-  useEffect(() => {
-    if (props.isOwner === true) {
-      getHistoryTopic();
+  const handleExport = async () => {
+    setLoading(true);
+    try {
+      const res = await exportFileAmdin({
+        topicId: props.topicId,
+      });
+      if (res && res.statusCode === 200) {
+        setLoading(false);
+        const link = document.createElement("a");
+        link.href = res.data;
+        link.setAttribute("download", "");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } else {
+        setLoading(false);
+        message.error("Vui lòng thử lại sau");
+      }
+    } catch (error) {
+      console.log("Error tại xuất file admin: ", error);
     }
+  };
+  useEffect(() => {
+    getHistoryTopic();
     getTopicDetail();
   }, [props.open === true]);
+  const genExtra = () => (
+    <Tooltip placement="top" title="Xuất file tổng kết">
+      {loading ? (
+        <>
+          <LoadingOutlined
+            style={{
+              color: "blue",
+              fontSize: "18px",
+              cursor: "pointer",
+              paddingTop: "2px",
+            }}
+          />
+        </>
+      ) : (
+        <>
+          <CloudDownloadOutlined
+            onClick={(event) => {
+              handleExport(), event.stopPropagation();
+            }}
+            style={{
+              color: "blue",
+              fontSize: "18px",
+              cursor: "pointer",
+              paddingTop: "2px",
+            }}
+          />
+        </>
+      )}
+    </Tooltip>
+  );
+  const getItems = (panelStyle) => [
+    {
+      key: 1,
+      label: "Xem thành viên",
+      children: (
+        <>
+          <List
+            header={<div>Danh sách thành viên</div>}
+            bordered
+            dataSource={listUser}
+            renderItem={(item) => (
+              <List.Item key={item.email}>
+                <List.Item.Meta
+                  title={item.fullName}
+                  description={item.email}
+                />
+                <div>
+                  {item.taskDescription === null
+                    ? "Chủ nhiệm đề tài"
+                    : item.taskDescription}
+                </div>
+              </List.Item>
+            )}
+          />
+        </>
+      ),
+      style: panelStyle,
+    },
+    {
+      key: 2,
+      label: "Xem lịch sử đề tài",
+      children: (
+        <>
+          <TimelineComponent process={process} />
+        </>
+      ),
+      style: panelStyle,
+      extra: genExtra(),
+    },
+  ];
 
   return (
     <>
       <Drawer
-        title="Xem lịch sử đề tài"
+        title="Xem chi tiết đề tài"
         placement="right"
-        width={500}
+        width={600}
         onClose={onClose}
         open={props.open}
       >
-        {props.isOwner !== true ? (
-          <>
-            <List
-              header={<div>Danh sách thành viên</div>}
-              bordered
-              dataSource={listUser}
-              renderItem={(item) => (
-                <List.Item key={item.email}>
-                  <List.Item.Meta
-                    title={item.fullName}
-                    description={item.email}
-                  />
-                  <div>
-                    {item.taskDescription === null
-                      ? "Chủ nhiệm đề tài"
-                      : item.taskDescription}
-                  </div>
-                </List.Item>
-              )}
-            />
-            <p style={{ marginTop: "20px", fontWeight: "bold" }}>
-              Tài liệu liên quan
-            </p>
-            <span>
-              <a
-                href={
-                  checkEnd
-                    ? `https://view.officeapps.live.com/op/view.aspx?src=` +
-                      file.contractLink
-                    : file.contractLink
-                }
-                target="_blank"
-                rel={file.contractName}
-              >
-                {file.contractName}
-              </a>
-            </span>
-          </>
-        ) : (
-          <TimelineComponent process={process} />
-        )}
+        <Collapse
+          bordered={false}
+          defaultActiveKey={1}
+          expandIcon={({ isActive }) => (
+            <CaretRightOutlined rotate={isActive ? 90 : 0} />
+          )}
+          style={{
+            background: token.colorBgContainer,
+          }}
+          items={getItems(panelStyle)}
+        />
       </Drawer>
     </>
   );

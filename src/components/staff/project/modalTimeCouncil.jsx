@@ -52,7 +52,8 @@ const ModalTimeCouncil = (props) => {
     try {
       const res = await getAllHoliday(today);
       if (res && res.statusCode === 200) {
-        setholiday(res.data);
+        const formattedDates = res.data.map(item => item.date.split('T')[0]);
+        setholiday(formattedDates);
       }
     } catch (error) {
       console.log("====================================");

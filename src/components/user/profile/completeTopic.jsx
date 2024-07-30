@@ -22,7 +22,7 @@ dayjs.extend(customParseFormat);
 import "./Roboto-Regular";
 const dateFormat = "DD/MM/YYYY";
 import logo from "../../../assets/logoBV.png";
-const CompletedTopic = () => {
+const CompletedTopic = ({checktab}) => {
   const [loading, setLoading] = useState(false);
   const [listTopic, setListTopic] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -292,11 +292,12 @@ const CompletedTopic = () => {
       console.error("Error downloading or processing the file", error);
     }
   };
+  // add state check tab to get newest data 
   useEffect(() => {
     getTopic();
     getAccountInfor();
     getArtical();
-  }, []);
+  }, [checktab]);
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination.current !== current) {
       setCurrent(pagination.current);

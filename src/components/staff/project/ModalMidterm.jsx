@@ -112,7 +112,8 @@ const ModalMidTerm = (props) => {
     try {
       const res = await getAllHoliday(today);
       if (res && res.statusCode === 200) {
-        setholiday(res.data);
+        const formattedDates = res.data.map(item => item.date.split('T')[0]);
+        setholiday(formattedDates);
       }
     } catch (error) {
       console.log("====================================");
@@ -135,8 +136,7 @@ const ModalMidTerm = (props) => {
       return true;
     }
     // Disable holidays
-    const holidays = ["2024-04-30", "2024-05-01", "2024-04-29"];
-    return holidays.some((holiday) => current.isSame(holiday, "day"));
+    return holiday.some((holiday) => current.isSame(holiday, "day"));
   };
   useEffect(() => {
     getHoliday();

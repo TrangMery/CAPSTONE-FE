@@ -1,22 +1,48 @@
-import { Button, Col, Divider, Form, Input, Row } from "antd";
+import {
+  AutoComplete,
+  Button,
+  Col,
+  Divider,
+  Form,
+  Input,
+  message,
+  Row,
+  Space,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import "./basicProfile.scss";
-import { getAllDepartment, getUserInformation } from "../../../services/api";
+import {
+  getAllDepartment,
+  getUserInformation,
+  editUserInformation,
+} from "../../../services/api";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import axios from "axios";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
 
 const BasicProfile = () => {
   const { TextArea } = Input;
   const [form] = Form.useForm();
-  const [departMent, setDepartMent] = useState([]);
+  const [bankName, setBankName] = useState([{}]);
+  const [isEdit, setIsEdit] = useState(true);
+  const [searchText, setSearchText] = useState("");
   const userId = sessionStorage.getItem("userId");
+  const options = bankName.map((bank) => ({
+    value: bank.shortName,
+    label: bank.name,
+  }));
+  const filteredOptions = searchText.length
+    ? options.filter((option) =>
+        option.value.toLowerCase().includes(searchText.toLowerCase())
+      )
+    : [];
   const getDepartment = async () => {
     try {
       const res = await getAllDepartment();
       if (res && res.statusCode === 200) {
-        setDepartMent(res.data);
+        getAccountInfor(res.data);
       }
     } catch (error) {
       console.log("====================================");
@@ -24,7 +50,7 @@ const BasicProfile = () => {
       console.log("====================================");
     }
   };
-  const getAccountInfor = async () => {
+  const getAccountInfor = async (departMent) => {
     try {
       const res = await getUserInformation({
         UserId: userId,
@@ -52,12 +78,45 @@ const BasicProfile = () => {
       console.log("====================================");
     }
   };
+  const handleOk = () => {
+    form.submit();
+  };
+  const editAccount = async (values) => {
+    try {
+      const data = {
+        userId: userId,
+        phoneNumber: values.phoneNumber,
+        bankAccountNumber: values.bankAccountNumber,
+        bank: values.bank,
+      };
+      const res = await editUserInformation(data);
+      if (res && res.statusCode === 200) {
+        message.success("Cập nhật thành công");
+        setIsEdit(true);
+        getAccountInfor();
+      } else {
+        message.error("Vui lòng thử lại sau");
+      }
+    } catch (error) {
+      console.log("Error at edit user information", error);
+    }
+  };
+  const getBankName = async () => {
+    try {
+      const res = await axios.get("https://api.vietqr.io/v2/banks");
+      if (res.data && res.status === 200) {
+        setBankName(res.data.data);
+      }
+    } catch (error) {
+      console.log("====================================");
+      console.log("có lỗi tại get bank name", error);
+      console.log("====================================");
+    }
+  };
   useEffect(() => {
     getDepartment();
+    getBankName();
   }, []);
-  if (departMent.length) {
-    getAccountInfor();
-  }
   return (
     <>
       <div
@@ -70,15 +129,77 @@ const BasicProfile = () => {
       >
         <h3>Thông tin cá nhân</h3>
       </div>
+      <div>
+        <Space
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          {isEdit === true ? (
+            <></>
+          ) : (
+            <>
+              {" "}
+              <Button type="primary" danger onClick={() => setIsEdit(true)}>
+                Hủy
+              </Button>
+            </>
+          )}
 
+          <Button
+            type="primary"
+            htmlType="submit"
+            onClick={() => {
+              setIsEdit(false);
+              if (isEdit !== true) {
+                handleOk();
+              }
+            }}
+          >
+            {isEdit === true ? "Chỉnh sửa" : "Xác nhận"}
+          </Button>
+        </Space>
+      </div>
       <Divider />
       <div className="parent-container">
         <div className="form-container">
-          <Form form={form} name="basic" layout="vertical" disabled={true}>
+          <Form
+            form={form}
+            name="basic"
+            layout="vertical"
+            disabled={true}
+            onFinish={editAccount}
+          >
             <Row gutter={10}>
               <Col span={12}>
                 <Form.Item name="fullName" label="Họ và Tên">
                   <Input />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="phoneNumber" label="Số điện thoại">
+                  <Input disabled={isEdit} />
+                </Form.Item>
+              </Col>
+
+              <Col span={12}>
+                <Form.Item name="bank" label="Ngân hàng sử dụng">
+                  <AutoComplete
+                    value={searchText}
+                    options={filteredOptions}
+                    onSearch={setSearchText}
+                    filterOption={true}
+                    disabled={isEdit}
+                  >
+                    <Input />
+                  </AutoComplete>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="bankAccountNumber" label="Số tài khoản">
+                  <Input disabled={isEdit} />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -111,11 +232,7 @@ const BasicProfile = () => {
                   <Input />
                 </Form.Item>
               </Col>
-              <Col span={12}>
-                <Form.Item name="phoneNumber" label="Số điện thoại">
-                  <Input />
-                </Form.Item>
-              </Col>
+
               <Col span={12}>
                 <Form.Item
                   name="officePhoneNumber"
@@ -149,16 +266,6 @@ const BasicProfile = () => {
               </Col>
               <Col span={12}>
                 <Form.Item name="taxCode" label="Mã số thuế">
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="bank" label="Ngân hàng sử dụng">
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="bankAccountNumber" label="Số tài khoản">
                   <Input />
                 </Form.Item>
               </Col>

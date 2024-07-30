@@ -26,7 +26,7 @@ const ProjectForTrack = () => {
   const navigate = useNavigate();
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  // const [status, setStatus] = useState(true);  
+  // const [status, setStatus] = useState(true);
   const [dataTopicForMember, setdataTopicForMember] = useState([]);
   const getProjectProcess = async () => {
     try {
@@ -112,7 +112,10 @@ const ProjectForTrack = () => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase().trim()),
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -169,19 +172,30 @@ const ProjectForTrack = () => {
         return 0;
       },
       render: (text, record, index) => {
-        const content = record.status === true ? "Đang thực hiện" : "Bị hủy đề tài";
-        const color = record.status === true ? "green" : "red";
+        const content =
+          record.status === true ? "Đang thực hiện" : "Bị hủy đề tài";
+        const color = record.status === true ? "processing" : "red";
+        if (record.progress !== "Completed")
+          return (
+            <Tag
+              style={{
+                fontSize: "13px",
+              }}
+              color={color}
+            >
+              {content}
+            </Tag>
+          );
         return (
           <Tag
             style={{
               fontSize: "13px",
             }}
-            color={color}
+            color={"success"}
           >
-            {content}
+            Đã hoàn thành
           </Tag>
         );
-        return;
       },
     },
 
@@ -220,7 +234,7 @@ const ProjectForTrack = () => {
     setSearchText(selectedKeys[0].trim());
     setSearchedColumn(dataIndex);
   };
-const handleReset = (clearFilters, confirm) => {
+  const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
     confirm();
@@ -240,7 +254,7 @@ const handleReset = (clearFilters, confirm) => {
   }, []);
   const locale = {
     // Tùy chỉnh thông báo sắp xếp
-    sortTitle: 'Sắp xếp theo trạng thái đề tài',
+    sortTitle: "Sắp xếp theo trạng thái đề tài",
     triggerDesc: "Đang thực hiện",
     triggerAsc: "Bị hủy đề tài",
     cancelSort: "Hủy sắp xếp",

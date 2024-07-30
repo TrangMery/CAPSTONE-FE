@@ -28,21 +28,27 @@ const StaffPage = () => {
     topicWaitingForCouncilDecision: "Hội đồng sơ duyệt thông qua",
     topicWaitingForConfigureConference: "Chờ tạo lịch họp",
     topicWaitingForMeeting: "Chờ hội đồng phê duyệt",
-    topicWaitingForResubmit: "Chờ nộp lại",
+    topicWaitingResubmitFirstTime: "Nộp lại lần 1",
+    topicWaitingResubmitSecondTime: "Nộp lại lần 2",
+    topicWaitingResubmitMoreThanSecondTime: "Nộp lại nhiều hơn 2 lần",
     topicWaitingForChairmanApproval: "Chờ chủ tịch hội đồng duyệt",
     topicWaitingForUploadContract: "Chờ tải hợp đồng",
     topicWaitingForUploadMeetingMinutes: "Chờ biên bản cuộc họp",
+
     // mid term
-    topicWaitingForDocumentSupplementation: "Chờ tải lên báo cáo giữa kỳ",
-    topicWaitingForMakeReviewSchedule: "Chờ tạo lịch báo cáo",
+    topicWaitingForDocumentSupplementation: "Chờ tải lên báo cáo",
+    topicWaitingForMakeReviewSchedule: "Chờ tạo lịch nộp tài liệu",
     topicWaitingForUploadEvaluate: "Chờ biên bản cuộc họp",
+    firstReport: "Báo cáo lần 1",
+    secondReport: "Báo cáo lần 2",
+    moreThanTwoTimes: "Báo cáo nhiều hơn 2 lần",
     // final term
     topicWaitingForChairmanDecision: "Chờ chủ tịch hội đồng duyệt",
     //ending term
     censorshipRemuneration: "Đã tải file tính ngày công",
     waitingForUploadEndingContract: "Tải lên file quyết định thông qua",
     waitingForUploadRemuneration: "Chờ tải lên file tính ngày công",
-    completedTopic: "Đề tài đã hoàn thành"
+    completedTopic: "Đề tài đã hoàn thành",
   };
   const transformStages = (stages) => {
     return Object.keys(stages).map((key) => ({
@@ -50,7 +56,6 @@ const StaffPage = () => {
       value: stages[key],
     }));
   };
-
 
   const getAllProjects = async () => {
     try {
@@ -133,9 +138,9 @@ const StaffPage = () => {
 
     try {
       const stages4 = await endingStatistic().then((res) => res.data);
-      console.log('====================================');
+      console.log("====================================");
       console.log(stages4);
-      console.log('====================================');
+      console.log("====================================");
       setProjectStages((prev) => ({
         ...prev,
         "Hoàn thành đề tài": transformStages(stages4),

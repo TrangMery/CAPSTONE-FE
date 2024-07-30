@@ -13,6 +13,7 @@ import {
   Row,
   Select,
   Steps,
+  Tag,
   Upload,
   message,
   notification,
@@ -264,7 +265,7 @@ const ModalPickTimeLeader = (props) => {
                 >
                   {item.fullName} - {item.position} - {item.degree}{" "}
                   {item.isChairman ? (
-                    <span style={{ color: "red" }}> Chủ tịch hội đồng</span>
+                    <Tag color="success">Chủ tịch hội đồng</Tag>
                   ) : null}
                 </List.Item>
               )}

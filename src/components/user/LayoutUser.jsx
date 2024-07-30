@@ -246,6 +246,7 @@ const LayoutUser = () => {
       label: <Link to="/user/review">Xem đề tài</Link>,
       key: "review",
       icon: <FileSyncOutlined />,
+      hidden: role !== "User",
     },
     {
       label: <Link to="/user/track">Theo dõi tiến độ</Link>,

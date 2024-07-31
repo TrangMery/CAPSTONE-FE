@@ -14,7 +14,7 @@ import {
 import { createAccountAdmin, uploadFileAdmin } from "../../services/api";
 const { Dragger } = Upload;
 import "./department.scss";
-import book from "./Book1.xlsx?url";
+import book from "./SampleFile.xlsx?url";
 const EditableCell = ({
   editing,
   dataIndex,

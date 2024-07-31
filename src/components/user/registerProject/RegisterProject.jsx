@@ -30,6 +30,7 @@ import {
 import ModalAddMember from "./ModalAddMember";
 import { getAllCategory, getAllUser, uploadFile } from "../../../services/api";
 import "./register.scss";
+import sampleFile from "./xetduyetdetai.rar?url";
 import ModalConfirm from "./ModalConfirm";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
@@ -499,7 +500,7 @@ const RegisterProject = () => {
               Chỉ hỗ trợ cái file như zip hoặc rar :{" "}
               <a
                 onClick={(e) => e.stopPropagation()}
-                href="https://srms2.sgp1.cdn.digitaloceanspaces.com/1.xetduyetdetai-20240614002212615.rar"
+                href={sampleFile}
                 download
               >
                 Tải tập tin mẫu

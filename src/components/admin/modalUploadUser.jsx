@@ -14,6 +14,7 @@ import {
 import { createAccountAdmin, uploadFileAdmin } from "../../services/api";
 const { Dragger } = Upload;
 import "./department.scss";
+import book from "./Book1.xlsx?url";
 const EditableCell = ({
   editing,
   dataIndex,
@@ -218,8 +219,6 @@ const UploadByFile = (props) => {
       console.log("Dropped files", e.dataTransfer.files);
     },
   };
-  const url =
-    "https://srms2.sgp1.cdn.digitaloceanspaces.com/Book1-20240731224955780.xlsx";
   return (
     <>
       <Modal
@@ -243,7 +242,7 @@ const UploadByFile = (props) => {
           <p className="ant-upload-hint">
             Hỗ trợ cho một tập tin duy nhất và không được trùng dữ liệu cũ. Chỉ
             chấp nhận .csv, .xls, .xlsx hoặc &nbsp;
-            <a onClick={(e) => e.stopPropagation()} href={url} download>
+            <a onClick={(e) => e.stopPropagation()} href={book} download>
               Tải tập tin mẫu
             </a>
           </p>

@@ -219,7 +219,7 @@ const UploadByFile = (props) => {
     },
   };
   const url =
-    "https://srms2.sgp1.cdn.digitaloceanspaces.com/Book1-20240721161353428.xlsx";
+    "https://srms2.sgp1.cdn.digitaloceanspaces.com/Book1-20240731224955780.xlsx";
   return (
     <>
       <Modal

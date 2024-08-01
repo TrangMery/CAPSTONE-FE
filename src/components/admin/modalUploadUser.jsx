@@ -198,7 +198,6 @@ const UploadByFile = (props) => {
           return;
         }
         const response = await uploadFileAdmin(file);
-
         if (response.status === 500) {
           onError(response, file);
           message.error(`${file.name} file tải lên không thành công.`);
@@ -231,6 +230,9 @@ const UploadByFile = (props) => {
         okText="Thêm mới"
         centered
         loading={loading}
+        okButtonProps={{
+          disabled: listAccounts.length > 0 ? false : true,
+        }}
       >
         <Dragger {...propsUpload}>
           <p className="ant-upload-drag-icon">

@@ -32,10 +32,8 @@ const Stage2 = () => {
       if (index === 4) {
         response2 = await axios.post(
           `${url}${
-            "numberOfMoveOn=" +
-            values.numberOfMoveOn +
-            "&numberOfReportAgain=" +
-            values.numberOfReportAgain +
+            "numberOfTopic=" +
+            values.numberOfTopic +
             "&numberOfReport=" +
             values.numberOfReport
           }`
@@ -45,8 +43,10 @@ const Stage2 = () => {
           const link = "http://localhost:5132/api/mock/move-to-final?";
           response = await axios.post(
             `${link}${
-              "numberOfTopic=" +
-              values.numberOfTopic +
+              "numberOfMoveOn=" +
+              values.numberOfMoveOn +
+              "&numberOfReportAgain=" +
+              values.numberOfReportAgain +
               "&numberOfReport=" +
               values.numberOfReport
             }`

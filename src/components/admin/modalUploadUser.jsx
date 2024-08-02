@@ -14,7 +14,6 @@ import {
 import { createAccountAdmin, uploadFileAdmin } from "../../services/api";
 const { Dragger } = Upload;
 import "./department.scss";
-import book from "./SampleFile.xlsx?url";
 const EditableCell = ({
   editing,
   dataIndex,
@@ -57,7 +56,7 @@ const UploadByFile = (props) => {
   const [fileList, setFileList] = useState([]);
   const [listAccounts, setAccountList] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const sampleFile = import.meta.env.VITE_FILE_EXP;
   const handleSubmit = async () => {
     try {
       const data = {
@@ -198,10 +197,12 @@ const UploadByFile = (props) => {
           return;
         }
         const response = await uploadFileAdmin(file);
-        if (response.status === 500) {
+
+        if (response.statusCode === 500) {
           onError(response, file);
           message.error(`${file.name} file tải lên không thành công.`);
-        } else {
+          console.log(response);
+        } else if (response.statusCode === 200) {
           setLoading(false);
           setAccountList(response.data);
           onSuccess(response, file);
@@ -244,7 +245,7 @@ const UploadByFile = (props) => {
           <p className="ant-upload-hint">
             Hỗ trợ cho một tập tin duy nhất và không được trùng dữ liệu cũ. Chỉ
             chấp nhận .csv, .xls, .xlsx hoặc &nbsp;
-            <a onClick={(e) => e.stopPropagation()} href={book} download>
+            <a onClick={(e) => e.stopPropagation()} href={sampleFile} download>
               Tải tập tin mẫu
             </a>
           </p>
@@ -258,7 +259,14 @@ const UploadByFile = (props) => {
                 },
               }}
               dataSource={listAccounts}
-              title={() => <span>Dữ liệu tải lên</span>}
+              title={() => (
+                <>
+                  <p style={{ color: "red" }}>
+                    Vui lòng nhập theo các cột dữ liệu đã có trong file mẫu
+                  </p>
+                  <span>Dữ liệu tải lên</span>
+                </>
+              )}
               columns={mergedColumns}
               rowKey={"email"}
               pagination={{

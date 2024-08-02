@@ -222,7 +222,9 @@ const ModalPickTimeLeader = (props) => {
               <Col span={24}>
                 <p>Chỉ hỗ trợ cái file như docx hoặc pdf</p>
                 <Upload {...propsUpload}>
-                  <Button icon={<UploadOutlined />}>Tải file minh chứng </Button>
+                  <Button icon={<UploadOutlined />}>
+                    Tải file minh chứng{" "}
+                  </Button>
                 </Upload>
                 {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
               </Col>
@@ -331,7 +333,7 @@ const ModalPickTimeLeader = (props) => {
       creationCouncilDirectiveFile: newTopicFiles.fileLink,
       roomId: meetingRoom,
     };
-    console.log(data);
+
     let res;
     try {
       if (checkTerm === "earlyterm") {
@@ -339,6 +341,7 @@ const ModalPickTimeLeader = (props) => {
           console.error("Lỗi trong councilConfigEarly:", error);
           throw error;
         });
+        console.log(res);
       } else if (checkTerm === "midterm") {
         res = await councilConfigMidterm(data).catch((error) => {
           console.error("Lỗi trong councilConfigMidterm:", error);

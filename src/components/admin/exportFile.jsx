@@ -80,18 +80,6 @@ const ExportFile = () => {
         return (
           <div>
             <Tooltip placement="top" title="Xuất file tổng kết">
-              {loading ? (
-                <>
-                  <LoadingOutlined
-                    style={{
-                      color: "blue",
-                      fontSize: "18px",
-                      cursor: "pointer",
-                      paddingTop: "2px",
-                    }}
-                  />
-                </>
-              ) : (
                 <>
                   <CloudDownloadOutlined
                     onClick={(event) => {
@@ -105,7 +93,6 @@ const ExportFile = () => {
                     }}
                   />
                 </>
-              )}
             </Tooltip>
           </div>
         );
@@ -156,6 +143,7 @@ const ExportFile = () => {
             columns={columns}
             dataSource={listTopic}
             onChange={onChange}
+            loading={loading}
             pagination={{
               current: current,
               pageSize: pageSize,

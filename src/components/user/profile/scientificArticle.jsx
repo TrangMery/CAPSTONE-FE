@@ -1,12 +1,9 @@
-import { Col, Row, Empty, Button, Pagination, Card } from "antd";
+import { Col, Row, Empty, Button, Pagination, Card, message } from "antd";
 import { useEffect, useState } from "react";
-import { getAllArticle } from "../../../services/api";
+import { deleteArticleApi, getAllArticle } from "../../../services/api";
 import ArticalModal from "./modalArticle";
 import ArticalEditModal from "./modalEditArtical";
-import {
-  DeleteOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 const ScientificArticle = () => {
   const [listProduct, setListProduct] = useState([]);
@@ -19,13 +16,19 @@ const ScientificArticle = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = listProduct.slice(indexOfFirstItem, indexOfLastItem);
-  const actions = [
+  const actions = (id) => [
     <EditOutlined
       style={{ color: "blue" }}
       key="edit"
       onClick={() => setIsOpenEdit(true)}
     />,
-    <DeleteOutlined style={{ color: "red" }} key="setting" />,
+    <DeleteOutlined
+      style={{ color: "red" }}
+      onClick={() => {
+        deleteArticle(id);
+      }}
+      key="setting"
+    />,
   ];
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -40,6 +43,19 @@ const ScientificArticle = () => {
       }
     } catch (error) {
       console.log("Có lỗi tại getArtical", error);
+    }
+  };
+  const deleteArticle = async (id) => {
+    try {
+      const res = await deleteArticleApi({
+        id: id,
+      });
+      if (res && res.statusCode === 200) {
+        message.success("Xóa bài báo thành công");
+        getArtical();
+      }
+    } catch (error) {
+      console.log("Có lỗi tại deleteArtical", error);
     }
   };
   useEffect(() => {
@@ -67,7 +83,7 @@ const ScientificArticle = () => {
           {currentItems.map((product, index) => (
             <Col span={12} key={index}>
               <div>
-                <Card actions={actions}>
+                <Card actions={actions(product.articleId)}>
                   <Card.Meta
                     title={product.achievementName}
                     description={

@@ -1,10 +1,20 @@
-import { Col, Row, Empty, Button, Pagination, Card, message } from "antd";
+import {
+  Col,
+  Row,
+  Empty,
+  Button,
+  Pagination,
+  Card,
+  message,
+  Typography,
+} from "antd";
 import { useEffect, useState } from "react";
 import { deleteArticleApi, getAllArticle } from "../../../services/api";
 import ArticalModal from "./modalArticle";
 import ArticalEditModal from "./modalEditArtical";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-
+import "./article.scss";
+const { Link } = Typography;
 const ScientificArticle = () => {
   const [listProduct, setListProduct] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +49,8 @@ const ScientificArticle = () => {
         UserId: UserId,
       });
       if (res && res?.data) {
-        setListProduct(res.data);
+        const sortArticles = res.data.sort((a, b) => b.publishYear - a.publishYear);
+        setListProduct(sortArticles);
       }
     } catch (error) {
       console.log("Có lỗi tại getArtical", error);
@@ -82,21 +93,20 @@ const ScientificArticle = () => {
         <Row gutter={[10, 10]}>
           {currentItems.map((product, index) => (
             <Col span={12} key={index}>
-              <div>
-                <Card actions={actions(product.articleId)}>
+              <div className="card-container">
+                <Card actions={actions(product.id)} className="custom-card">
                   <Card.Meta
                     title={product.achievementName}
                     description={
                       <>
                         <p>Năm xuất bản: {product.publishYear}</p>
-                        <a
+                        <Link
                           href={product.articleLink}
-                          className="file-link"
-                          target="_blank"
                           rel="noopener noreferrer"
+                          target="_blank"
                         >
-                          Đường dẫn: {product.articleLink}
-                        </a>
+                          Đường dẫn bài báo
+                        </Link>
                       </>
                     }
                   />

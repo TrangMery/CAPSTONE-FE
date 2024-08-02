@@ -55,7 +55,8 @@ const CompletedTopic = ({checktab}) => {
         UserId: userId,
       });
       if (res && res?.data) {
-        setListProduct(res.data);
+        const sortArticles = res.data.sort((a, b) => b.publishYear - a.publishYear);
+        setListProduct(sortArticles);
       }
     } catch (error) {
       console.log("Có lỗi tại getArtical", error);

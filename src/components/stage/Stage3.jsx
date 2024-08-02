@@ -138,14 +138,14 @@ const Stage3 = () => {
                         name={field.key}
                         rules={[
                           {
-                            required: index !== 4 ? true : false,
+                            required: api.key !== 4 ? true : false,
                             message: "Xin hãy nhập số!",
                           },
                         ]}
                         label={field.name}
                       >
                         <InputNumber
-                          disabled={index === 4}
+                          disabled={api.key === 4}
                           style={{ width: "20%" }}
                         />
                       </Form.Item>

@@ -19,7 +19,7 @@ const TopicSearchFormStaff = (props) => {
   const [year, setYear] = useState(dayjs().year());
   const [searchText, setSearchText] = useState("");
   const [listState, setListState] = useState([]);
-  const [listUser, setListUser] = useState([])
+  const [listUser, setListUser] = useState([]);
   const { token } = theme.useToken();
   const [form] = Form.useForm();
   const userId = sessionStorage.getItem("userId");
@@ -46,6 +46,7 @@ const TopicSearchFormStaff = (props) => {
         midtermReport: "Báo cáo giữa kỳ",
         finaltermReport: "Báo cáo cuối kỳ",
         endingPhase: "Giai đoạn kết thúc",
+        compeleted: "Hoàn thành đề tài"
       };
       if (res && res?.data) {
         const resultArray = Object.keys(res?.data).map((key) => ({
@@ -82,6 +83,7 @@ const TopicSearchFormStaff = (props) => {
       2: "Báo cáo giữa kỳ",
       3: "Báo cáo cuối kỳ",
       4: "Giai đoạn kết thúc",
+      5: "Đề tài hoàn thành",
     };
     let query = "";
     if (values.Email) {
@@ -97,7 +99,7 @@ const TopicSearchFormStaff = (props) => {
     }
     if (values.State !== null && values.State !== undefined) {
       query += `&State=${values.State}`;
-      props.handleState(translations[values.State])
+      props.handleState(translations[values.State]);
     }
     if (query) {
       props.handleSearchTopic(query);

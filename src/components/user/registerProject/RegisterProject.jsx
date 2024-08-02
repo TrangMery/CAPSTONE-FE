@@ -30,7 +30,7 @@ import {
 import ModalAddMember from "./ModalAddMember";
 import { getAllCategory, getAllUser, uploadFile } from "../../../services/api";
 import "./register.scss";
-import sampleFile from "./xetduyetdetai.rar?url";
+
 import ModalConfirm from "./ModalConfirm";
 dayjs.extend(customParseFormat);
 const dateFormat = "DD/MM/YYYY";
@@ -53,6 +53,7 @@ const RegisterProject = () => {
   const hideUserModal = () => {
     setOpen(false);
   };
+  const sampleFile = import.meta.env.VITE_FILE_EARLY_TERM; 
   const listUserReview = (
     <div>
       <List

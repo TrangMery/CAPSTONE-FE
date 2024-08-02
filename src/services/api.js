@@ -466,7 +466,10 @@ export const createArticle = (data) => {
 export const updateArticle = (data) => {
   return axios.put("/api/article/update", data);
 };
-
+//user delete a article
+export const deleteArticleApi = (param) => {
+  return axios.delete(`/api/article/delete?${qs.stringify(param)}`);
+};
 //admin update file type
 export const updateFileType = (data) => {
   return axios.put("/api/filetype", data);

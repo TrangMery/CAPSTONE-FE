@@ -262,7 +262,7 @@ const UploadByFile = (props) => {
               title={() => (
                 <>
                   <p style={{ color: "red" }}>
-                    Vui lòng nhập theo các cột dữ liệu đã có trong file mẫu
+                    Vui lòng nhập dữ liệu theo các cột có trong file mẫu 
                   </p>
                   <span>Dữ liệu tải lên</span>
                 </>

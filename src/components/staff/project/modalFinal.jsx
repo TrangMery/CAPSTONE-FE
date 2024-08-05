@@ -74,6 +74,7 @@ const ModalFinal = (props) => {
           if (endPhase && endPhase.statusCode === 200) {
             message.success("Tải biên bản lên thành công");
             props.getTopicSumarizeTerm();
+            props.finalAmountApi();
           }
         }
         handleCancel();

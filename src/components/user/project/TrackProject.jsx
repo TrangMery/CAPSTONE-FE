@@ -283,7 +283,8 @@ const TrackProject = () => {
                                           "EarlyTermReport")
                                     ? "Nộp lại tài liệu đã chỉnh sửa"
                                     : dataProcess?.progress ===
-                                      "WaitingForCouncilDecision"
+                                        "WaitingForCouncilDecision" &&
+                                      dataProcess?.state !== "PreliminaryReview"
                                     ? "Chờ quyết định của hội đồng"
                                     : "Tải lên quyết định ",
                                 status:
@@ -302,7 +303,8 @@ const TrackProject = () => {
                                           "EarlyTermReport")
                                     ? "error"
                                     : dataProcess?.progress ===
-                                      "WaitingForCouncilDecision"
+                                        "WaitingForCouncilDecision" &&
+                                      dataProcess?.state !== "PreliminaryReview"
                                     ? "process"
                                     : dataProcess?.earlyTermReportProcess
                                         ?.waitingForContractSigning ===

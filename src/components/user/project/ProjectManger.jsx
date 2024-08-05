@@ -60,7 +60,7 @@ const ProjectManagerUser = () => {
   const getTopicHadReviwed = async () => {
     try {
       const res = await getReviewedByMember({
-        memberId: userId, // Nguyen Van A
+        memberId: userId,
       });
       if (res && res?.data) {
         setdataTopicForMember(res.data);

@@ -26,6 +26,7 @@ const AddMemberApprove = () => {
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [maxSelectedMembers, setMaxSelectedMembers] = useState();
   const [modalVisible, setModalVisible] = useState(false);
+  const [checkAction, setCheckAction] = useState(true);
   const [newData, setNewData] = useState([]);
   const location = useLocation();
   let checkPath = location.pathname.split("/");
@@ -40,10 +41,12 @@ const AddMemberApprove = () => {
   };
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    setSearchText(selectedKeys[0].trim());
+    if (selectedKeys[0] !== undefined) {
+      setSearchText(selectedKeys[0].trim());
+    }
     setSearchedColumn(dataIndex);
   };
-const handleReset = (clearFilters, confirm) => {
+  const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
     confirm();
@@ -117,7 +120,10 @@ const handleReset = (clearFilters, confirm) => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase().trim()),
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -222,8 +228,12 @@ const handleReset = (clearFilters, confirm) => {
     getUserAPI();
   }, []);
   useEffect(() => {
-    if (current === 1 && newData.length > 1) setUser(newData);
-  }, [current]);
+    if (current === 1 && newData.length > 1) {
+      if (checkAction === false) {
+        setUser(newData);
+      }
+    }
+  }, [checkAction]);
 
   const maskEmail = (accountEmail) => {
     const [username, domain] = accountEmail.split("@");
@@ -283,7 +293,11 @@ const handleReset = (clearFilters, confirm) => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
-    console.log("parms: ", pagination, filters, sorter, extra);
+    if (extra.currentDataSource.length === user.length) {
+      setCheckAction(false);
+    } else {
+      setCheckAction(true);
+    }
   };
   const renderFooter = () => (
     <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -349,7 +363,7 @@ const handleReset = (clearFilters, confirm) => {
           )}
         </div>
         {hasSelected ? (
-          <div style={{ maxWidth: "400px" }}>
+          <div style={{ maxWidth: "500px" }}>
             <List
               grid={{
                 sm: 2,

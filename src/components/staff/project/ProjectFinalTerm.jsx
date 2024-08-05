@@ -36,7 +36,6 @@ import {
   topicWaitingMeeting,
 } from "../../../services/api";
 import ModalMidTerm from "./ModalMidterm";
-import { useNavigate } from "react-router-dom";
 import ModalFinal from "./modalFinal";
 import ModalTimeCouncil from "./modalTimeCouncil";
 const ProjectManagerFinalTerm = () => {
@@ -549,6 +548,7 @@ const ProjectManagerFinalTerm = () => {
         isModalOpen={isModalFinalOpen}
         setIsModalOpen={setIsModalFinalOpen}
         getTopicSumarizeTerm={getTopicSumarizeTerm}
+        finalAmountApi={finalAmountApi}
       />
       <ModalTimeCouncil
         data={dataPro}

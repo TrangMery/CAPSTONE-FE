@@ -200,8 +200,10 @@ const UploadByFile = (props) => {
 
         if (response.statusCode === 500) {
           onError(response, file);
-          message.error(`${file.name} file tải lên không thành công.`);
-          console.log(response);
+          notification.error({
+            description: "Vui lòng kiểm tra các lại các trường thông tin trong file",
+            message: `${file.name} file tải lên không thành công vui.`,
+          })
         } else if (response.statusCode === 200) {
           setLoading(false);
           setAccountList(response.data);
@@ -262,7 +264,7 @@ const UploadByFile = (props) => {
               title={() => (
                 <>
                   <p style={{ color: "red" }}>
-                    Vui lòng nhập theo các cột dữ liệu đã có trong file mẫu
+                    Vui lòng nhập dữ liệu theo các cột có trong file mẫu 
                   </p>
                   <span>Dữ liệu tải lên</span>
                 </>

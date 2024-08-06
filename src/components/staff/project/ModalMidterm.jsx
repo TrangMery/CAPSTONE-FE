@@ -56,7 +56,7 @@ const ModalMidTerm = (props) => {
           res = await makeDeadlineSubmit(data);
         }
         if (res && res.isSuccess) {
-          message.success("Tạo deadline thành công");
+          message.success("Tạo lịch nộp báo cáo thành công");
           closeModal();
         }
       }

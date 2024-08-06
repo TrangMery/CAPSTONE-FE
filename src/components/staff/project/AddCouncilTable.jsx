@@ -29,6 +29,7 @@ const AddCouncilTable = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFullData, setShowFullData] = useState({});
   const [selectedKeys, setSelectedKeys] = useState([]);
+  const [checkAction, setCheckAction] = useState(true);
   const [maxSelectedMembers, setMaxSelectedMembers] = useState();
   const [newData, setNewData] = useState([]);
   const isRowDisabled = (record) => {
@@ -43,7 +44,7 @@ const AddCouncilTable = (props) => {
     setSearchText(selectedKeys[0].trim());
     setSearchedColumn(dataIndex);
   };
-const handleReset = (clearFilters, confirm) => {
+  const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
     confirm();
@@ -117,7 +118,10 @@ const handleReset = (clearFilters, confirm) => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase().trim()),
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes(value.toLowerCase().trim()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -201,8 +205,12 @@ const handleReset = (clearFilters, confirm) => {
     },
   ];
   useEffect(() => {
-    if (current === 1 && newData.length > 1) setUser(newData);
-  }, [current]);
+    if (current === 1 && newData.length > 1) {
+      if (checkAction === false) {
+        setUser(newData);
+      }
+    }
+  }, [checkAction]);
   useEffect(() => {
     setUser(props.data);
   }, []);
@@ -236,7 +244,6 @@ const handleReset = (clearFilters, confirm) => {
       [key]: !prevState[key],
     }));
   };
-
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       const newData = [...user];
@@ -252,7 +259,6 @@ const handleReset = (clearFilters, confirm) => {
         ? selectedRows
         : [firstMember, ...selectedRows];
 
-      // Use a Set to ensure uniqueness
       const newSelectedSet = new Set(updatedSelection);
       setSelectedUser(Array.from(newSelectedSet));
     },
@@ -270,6 +276,11 @@ const handleReset = (clearFilters, confirm) => {
     if (pagination.pageSize !== pageSize) {
       setPageSize(pagination.pageSize);
       setCurrent(1);
+    }
+    if (extra.currentDataSource.length === user.length) {
+      setCheckAction(false);
+    } else {
+      setCheckAction(true);
     }
   };
 
